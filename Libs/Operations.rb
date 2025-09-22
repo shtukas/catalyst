@@ -213,10 +213,10 @@ class Operations
 
     # Operations::morning()
     def self.morning()
-        puts "We start with front renames (if needed)"
+        puts "We start with front renames (if needed)".green
         Operations::frontRenames()
 
-        puts "Input things you want/need to do today"
+        puts "Input things you want/need to do today".green
         want1 = Operations::interactivelyGetLinesUsingTerminal()
             .reverse
             .map{|line|
@@ -226,7 +226,7 @@ class Operations
                 item
             }
 
-        puts "We now select the items we really need to do or work on today"
+        puts "We now select the items we really need to do or work on today".green
         ondates, _ = LucilleCore::selectZeroOrMore("NxOnDates", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         projects, _ = LucilleCore::selectZeroOrMore("NxProjects", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         highs, _ = LucilleCore::selectZeroOrMore(
@@ -237,7 +237,7 @@ class Operations
         )
         waves, _ = LucilleCore::selectZeroOrMore("Waves", [], Waves::nonInterruptionItemsForListing(), lambda{|i| PolyFunctions::toString(i) })
 
-        puts "Input things you want/need to do today"
+        puts "Input things you want/need to do today".green
         want2 = Operations::interactivelyGetLinesUsingTerminal()
             .reverse
             .map{|line|
@@ -249,7 +249,20 @@ class Operations
 
         items = [Waves::listingItemsInterruption(), want1, want2, ondates, projects, highs, waves].flatten
 
-        puts "general ordering"
+        today = CommonUtils::today()
+        items = items.map{|item|
+            item["mark-1531"] = today
+            Items::setAttribute(item["uuid"], "mark-1531", today)
+            item
+        }
+
+        puts "select items that are actually already done".green
+        e1, items = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
+        e1.each{|item|
+            PolyActions::done(item)
+        }
+
+        puts "general ordering".green
         e1, e2 = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
         items = e1 + e2
         items.reverse.each{|item|

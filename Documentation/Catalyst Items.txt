@@ -8,10 +8,6 @@ Database:
 Cross types conventions (all optional):
     - skip-0843      : unixtime (skipped until this time)
     - uxpayload-b4e4 : UxPayload
-    - timespan-1308  : TimeSpan1308
+    - mark-1531      : Date YYYY-MM-DD
 
-TimeSpan1308 {
-    "uuid"             : String,
-    "date"             : "YYYY-MM-DD",
-    "timespanInSecond" : Integer
-}
+This date is added by the morning process. If present and equal to the current date add a star to the listing

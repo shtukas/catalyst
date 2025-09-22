@@ -21,9 +21,10 @@ class FrontPage
         # Edits to this function should be mirrored in ListingService::decideListingLines(item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
+        mark1531 = (item["mark-1531"] == CommonUtils::today()) ? "🔥 " : " "
 
         lines = []
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix2(item)}"
+        line = "#{storePrefix} #{mark1531}#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix2(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -57,7 +58,6 @@ class FrontPage
             puts "Code change detected"
             exit
         end
-
         Operations::dispatchPickUp()
     end
 
