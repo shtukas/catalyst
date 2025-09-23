@@ -21,10 +21,12 @@ class FrontPage
         # Edits to this function should be mirrored in ListingService::decideListingLines(item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        mark1531 = (item["mark-1531"] == CommonUtils::today()) ? "🔥 " : " "
+        if item["mark-1531"] == CommonUtils::today() then
+            storePrefix = storePrefix.green
+        end
 
         lines = []
-        line = "#{storePrefix} #{mark1531}#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix2(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix2(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -131,7 +133,11 @@ class FrontPage
 
                 # Display the first line
                 line = lines.shift
-                line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
+                sprefix = "(#{store.prefixString()})"
+                if item["mark-1531"] == CommonUtils::today() then
+                    sprefix = sprefix.green
+                end
+                line = line.gsub("STORE-PREFIX", sprefix)
                 if entry["position"] then
                     line = line + " (#{entry["position"]})".yellow
                 end

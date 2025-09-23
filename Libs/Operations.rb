@@ -213,9 +213,11 @@ class Operations
 
     # Operations::morning()
     def self.morning()
+        system('clear')
         puts "We start with front renames (if needed)".green
         Operations::frontRenames()
 
+        system('clear')
         puts "Input things you want/need to do today".green
         want1 = Operations::interactivelyGetLinesUsingTerminal()
             .reverse
@@ -226,17 +228,28 @@ class Operations
                 item
             }
 
+        system('clear')
         puts "We now select the items we really need to do or work on today".green
         ondates, _ = LucilleCore::selectZeroOrMore("NxOnDates", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+
+        system('clear')
+        puts "We now select the items we really need to do or work on today".green
         projects, _ = LucilleCore::selectZeroOrMore("NxProjects", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+
+        system('clear')
+        puts "We now select the items we really need to do or work on today".green
         highs, _ = LucilleCore::selectZeroOrMore(
             "NxTask, high",
             [],
             Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" },
             lambda{|i| PolyFunctions::toString(i) }
         )
+
+        system('clear')
+        puts "We now select the items we really need to do or work on today".green
         waves, _ = LucilleCore::selectZeroOrMore("Waves", [], Waves::nonInterruptionItemsForListing(), lambda{|i| PolyFunctions::toString(i) })
 
+        system('clear')
         puts "Input things you want/need to do today".green
         want2 = Operations::interactivelyGetLinesUsingTerminal()
             .reverse
@@ -253,15 +266,18 @@ class Operations
         items = items.map{|item|
             item["mark-1531"] = today
             Items::setAttribute(item["uuid"], "mark-1531", today)
+            ListingService::ensure(item)
             item
         }
 
+        system('clear')
         puts "select items that are actually already done".green
         e1, items = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
         e1.each{|item|
             PolyActions::done(item)
         }
 
+        system('clear')
         puts "general ordering".green
         e1, e2 = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
         items = e1 + e2
