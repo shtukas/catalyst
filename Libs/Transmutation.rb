@@ -6,7 +6,6 @@ class Transmutation
         return if targetMikuType.nil?
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
         if item["mikuType"] == "NxOnDate" and targetMikuType == "NxTask" then
-            Items::setAttribute(item["uuid"], "priorityLevel48", PriorityLevels::interactivelySelectOne())
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             ListingService::evaluate(item["uuid"])
             return
@@ -17,7 +16,6 @@ class Transmutation
             return
         end
         if item["mikuType"] == "NxProject" and targetMikuType == "NxTask" then
-            Items::setAttribute(item["uuid"], "priorityLevel48", PriorityLevels::interactivelySelectOne())
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             ListingService::evaluate(item["uuid"])
             return

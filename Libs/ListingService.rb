@@ -421,10 +421,7 @@ class ListingService
         end
 
         if item["mikuType"] == "NxTask" then
-            level = item["priorityLevel48"]
-            primaryPosition = PriorityLevels::primaryPosition(level)
-            secondaryPosition = BankData::recoveredAverageHoursPerDay(item["uuid"]).to_f/1_000_000
-            return primaryPosition + secondaryPosition
+            return 0.810 + ListingService::realLineTo01Increasing(item["unixtime"] - 1759064213).to_f/2
         end
 
         puts "I do not know how to ListingService::computePositionForItem(#{JSON.pretty_generate(item)})"

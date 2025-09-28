@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | project | event",
-            "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | lines | low | regular | high | projects | events",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event",
+            "              : transmute * | >> * (transmute)",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | lines | projects | events",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers | morning",
         ].join("\n")
@@ -167,15 +167,14 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("priority", input) then
-            item = NxLines::interactivelyIssueNewOrNull()
-            return if item.nil?
-            NxBalls::activeItems().each{|i|
-                NxBalls::pause(i)
-            }
-            ListingService::ensureAtFirstPositionForTheDay(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
-                PolyActions::start(item)
-            end
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            Operations::issuePriority(description)
+            return
+        end
+
+        if input.start_with?("priority ") then
+            description = input[8, input.size].strip
+            Operations::issuePriority(description)
             return
         end
 
@@ -336,38 +335,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("projects", input) then
             Operations::program3(lambda { Items::mikuType("NxProject").sort_by{|item| item["unixtime"] } })
-            return
-        end
-
-        if Interpreting::match("level", input) then
-            item = store.getDefault()
-            return if item.nil?
-            level = PriorityLevels::interactivelySelectOne()
-            Items::setAttribute(item["uuid"], "priorityLevel48", level)
-            return
-        end
-
-        if Interpreting::match("level *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            level = PriorityLevels::interactivelySelectOne()
-            Items::setAttribute(item["uuid"], "priorityLevel48", level)
-            return
-        end
-
-        if Interpreting::match("low", input) then
-            Operations::program3(lambda { Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "low" } })
-            return
-        end
-
-        if Interpreting::match("regular", input) then
-            Operations::program3(lambda { Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "regular" } })
-            return
-        end
-
-        if Interpreting::match("high", input) then
-            Operations::program3(lambda { Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" } })
             return
         end
 

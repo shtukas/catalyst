@@ -13,15 +13,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["priorityLevel48"] then
-            level = item["priorityLevel48"]
-            accountNumber = PriorityLevels::levelToBankAccount(item["priorityLevel48"])
-            accounts << {
-                "description" => "priority level: #{level}",
-                "number"      => accountNumber
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

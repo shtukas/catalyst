@@ -133,22 +133,15 @@ class Operations
     def self.dispatchPickUp()
         pathToCatalyst = "#{Config::pathToGalaxy()}/DataHub/Catalyst"
 
-        PriorityLevels::levels().each{|level|
-            directory = "#{pathToCatalyst}/Dispatch/NxTask/#{level}"
-            if !File.exist?(directory) then
-                puts "I cannot see: #{directory}. Exit"
-                exit
-            end
-            LucilleCore::locationsAtFolder(directory)
-                .select{|location| File.basename(location)[0, 1] != "." }
-                .each{|location|
-                    puts location.yellow
-                    description = File.basename(location)
-                    item = NxTasks::locationToTask(description, location, level)
-                    ListingService::evaluate(item["uuid"])
-                    LucilleCore::removeFileSystemLocation(location)
-                }
-        }
+        LucilleCore::locationsAtFolder("#{pathToCatalyst}/Dispatch/NxTask")
+            .select{|location| File.basename(location)[0, 1] != "." }
+            .each{|location|
+                puts location.yellow
+                description = File.basename(location)
+                item = NxTasks::locationToTask(description, location)
+                ListingService::evaluate(item["uuid"])
+                LucilleCore::removeFileSystemLocation(location)
+            }
 
         directory = "#{pathToCatalyst}/Dispatch/Today"
         if !File.exist?(directory) then
@@ -201,8 +194,7 @@ class Operations
         loop {
             ondates = NxOnDates::listingItems()
             projects = NxProjects::listingItems()
-            highs = Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" }
-            items = [ondates, projects, highs].flatten
+            items = [ondates, projects].flatten
             item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|i| PolyFunctions::toString(i) })
             break if item.nil?
             PolyActions::access(item)
@@ -229,24 +221,15 @@ class Operations
             }
 
         system('clear')
-        puts "We now select the items we really need to do or work on today".green
+        puts "We now select the items we really need to do or work on today (on dates)".green
         ondates, _ = LucilleCore::selectZeroOrMore("NxOnDates", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
 
         system('clear')
-        puts "We now select the items we really need to do or work on today".green
+        puts "We now select the items we really need to do or work on today (projects)".green
         projects, _ = LucilleCore::selectZeroOrMore("NxProjects", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
 
         system('clear')
-        puts "We now select the items we really need to do or work on today".green
-        highs, _ = LucilleCore::selectZeroOrMore(
-            "NxTask, high",
-            [],
-            Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" },
-            lambda{|i| PolyFunctions::toString(i) }
-        )
-
-        system('clear')
-        puts "We now select the items we really need to do or work on today".green
+        puts "We now select the items we really need to do or work on today (waves)".green
         waves, _ = LucilleCore::selectZeroOrMore("Waves", [], Waves::nonInterruptionItemsForListing(), lambda{|i| PolyFunctions::toString(i) })
 
         system('clear')
@@ -260,7 +243,7 @@ class Operations
                 item
             }
 
-        items = [Waves::listingItemsInterruption(), want1, want2, ondates, projects, highs, waves].flatten
+        items = [Waves::listingItemsInterruption(), want1, want2, ondates, projects, waves].flatten
 
         today = CommonUtils::today()
         items = items.map{|item|
@@ -303,6 +286,19 @@ class Operations
         if option == "destroy" then
             Items::deleteItem(item["uuid"])
             ListingService::removeEntry(item["uuid"])
+        end
+    end
+
+    # Operations::issuePriority(description)
+    def self.issuePriority(description)
+        item = NxLines::issue(description)
+        return if item.nil?
+        NxBalls::activeItems().each{|i|
+            NxBalls::pause(i)
+        }
+        ListingService::ensureAtFirstPositionForTheDay(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
+            PolyActions::start(item)
         end
     end
 end

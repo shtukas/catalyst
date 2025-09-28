@@ -190,7 +190,7 @@ class UxPayload
         end
         if payload["type"] == "breakdown" then
             return if payload["lines"].empty?
-            puts "focus: #{payload["lines"].first.green}"
+            puts payload["lines"]
             LucilleCore::pressEnterToContinue()
             return
         end
