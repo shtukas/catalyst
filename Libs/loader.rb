@@ -158,6 +158,7 @@ require_relative "NxLambdas.rb"
 require_relative "NxLines.rb"
 require_relative "NxProjects.rb"
 require_relative "NxEvents.rb"
+require_relative "NxAwaits.rb"
 
 require_relative "Operations.rb"
 

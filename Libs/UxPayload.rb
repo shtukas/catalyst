@@ -338,25 +338,24 @@ class UxPayload
     # UxPayload::payloadProgram(item)
     def self.payloadProgram(item)
         payload = nil
-        loop {
-            if item["uxpayload-b4e4"] then
-                options = ["access", "edit", "make new (default)"]
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-                if option == "access" then
-                    payload = UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-                end
-                if option == "edit" then
-                    payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
-                end
-                if option.nil? or option == "make new (default)" then
-                    payload = UxPayload::makeNewOrNull(item["uuid"])
-                end
-            else
+        if item["uxpayload-b4e4"] then
+            options = ["access", "edit", "make new (default)"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            if option == "access" then
+                payload = UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            end
+            if option == "edit" then
+                payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
+            end
+            if option.nil? or option == "make new (default)" then
                 payload = UxPayload::makeNewOrNull(item["uuid"])
             end
-            return if payload.nil?
-            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-            ListingService::evaluate(item["uuid"])
-        }
+        else
+            payload = UxPayload::makeNewOrNull(item["uuid"])
+        end
+        return if payload.nil?
+        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+        item = Items::itemOrNull(item["uuid"])
+        ListingService::evaluate(item["uuid"])
     end
 end

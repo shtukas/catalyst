@@ -269,6 +269,10 @@ class ListingService
 
     # ListingService::isListable(item)
     def self.isListable(item)
+        if item["mikuType"] == "NxAwait" then
+            return true
+        end
+
         if item["mikuType"] == "NxEvent" then
             return true
         end
@@ -369,6 +373,7 @@ class ListingService
 
         # 0.010 -> 0.020 Wave interruption
         # 0.100 -> 0.150 NxEvents
+        # 0.160 -> 0.160 NxAwait
         # 0.260 -> 0.280 NxAnniversary
         # 0.280 -> 0.300 NxLambda
         # 0.300 -> 0.320 Wave sticky
@@ -382,6 +387,11 @@ class ListingService
             d1 = DateTime.parse("#{item["date"]}T17:28:01Z").to_time.to_i - 1757661467
             d2 = ListingService::realLineTo01Increasing(d1)
             return 0.100 + d2.to_f/100
+        end
+
+        if item["mikuType"] == "NxAwait" then
+            dx = ListingService::realLineTo01Increasing(item["unixtime"] - 1759082216)
+            return 0.160 + dx.to_f/1000
         end
 
         if item["mikuType"] == "NxLine" then
@@ -476,6 +486,7 @@ class ListingService
             NxEvents::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
+            NxAwaits::listingItems(),
             NxBackups::listingItems(),
             Items::mikuType("NxLine"),
             NxOnDates::listingItems(),

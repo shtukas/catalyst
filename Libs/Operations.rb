@@ -233,6 +233,10 @@ class Operations
         waves, _ = LucilleCore::selectZeroOrMore("Waves", [], Waves::nonInterruptionItemsForListing(), lambda{|i| PolyFunctions::toString(i) })
 
         system('clear')
+        puts "We now select the items we really need to do or work on today (tasks)".green
+        tasks, _ = LucilleCore::selectZeroOrMore("NxTasks", [], NxTasks::tasksInOrder(), lambda{|i| PolyFunctions::toString(i) })
+
+        system('clear')
         puts "Input things you want/need to do today".green
         want2 = Operations::interactivelyGetLinesUsingTerminal()
             .reverse
@@ -243,7 +247,7 @@ class Operations
                 item
             }
 
-        items = [Waves::listingItemsInterruption(), want1, want2, ondates, projects, waves].flatten
+        items = [Waves::listingItemsInterruption(), want1, want2, ondates, projects, waves, tasks].flatten
 
         today = CommonUtils::today()
         items = items.map{|item|

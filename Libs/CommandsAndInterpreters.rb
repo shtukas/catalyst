@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await",
             "              : transmute * | >> * (transmute)",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | lines | projects | events",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | lines | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers | morning",
         ].join("\n")
@@ -289,6 +289,18 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::access(item)
+            return
+        end
+
+        if Interpreting::match("await", input) then
+            item = NxAwaits::interactivelyIssueNewOrNull()
+            return if item.nil?
+            ListingService::evaluate(item["uuid"])
+            return
+        end
+
+        if Interpreting::match("awaits", input) then
+            Operations::program3(lambda { Items::mikuType("NxAwait").sort_by{|item| item["unixtime"] } })
             return
         end
 

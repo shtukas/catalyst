@@ -45,6 +45,11 @@ class NxTasks
         "#{NxTasks::icon(item)} #{item["description"]}"
     end
 
+    # NxTasks::tasksInOrder()
+    def self.tasksInOrder()
+        Items::mikuType("NxTask").sort_by{|item| item["unixtime"] }
+    end
+
     # ------------------
     # Ops
 
