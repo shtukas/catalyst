@@ -4,3 +4,7 @@ TxBehaviour
     "btype": "listing-position"
     "position": Float
 }
+{
+    "btype": "NxAwait"
+    "creationUnixtime": Float
+}
