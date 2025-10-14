@@ -148,6 +148,17 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPolymorph" then
+            behaviours = TxBehaviour::doneBehaviours(item["behaviours"])
+            if behaviours.empty? then
+                Items::deleteItem(item["uuid"])
+            else
+                Items::setAttribute(item["uuid"], "behaviours", behaviours)
+                ListingService::evaluate(item["uuid"])
+            end
+            return
+        end
+
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -238,6 +249,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPolymorph" then
+            PolyActions::start(item)
+            PolyActions::access(item)
+            LucilleCore::pressEnterToContinue("Press [enter] to done: ")
+            PolyActions::done(item)
+            return
+        end
+
         puts "I do not know how to PolyActions::tripleDots(#{JSON.pretty_generate(item)})"
         raise "(error: ba36812e-bd85-4c1a-9a10-e1d650a239a5)"
     end
@@ -317,6 +336,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+                ListingService::removeEntry(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxPolymorph" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
