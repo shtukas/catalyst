@@ -20,4 +20,14 @@ class NxPolymorphs
         icon = TxBehaviour::behaviourToIcon(behaviour)
         "#{icon} #{item["description"]}"
     end
+
+    # NxPolymorphs::doNotShowUntil(item, unixtime)
+    def self.doNotShowUntil(item, unixtime)
+        behaviour = {
+            "btype" => "do-not-show-until",
+            "unixtime" => unixtime
+        }
+        behaviours = [behaviour] + item["behaviours"]
+        Items::setAttribute(uuid, "behaviours", behaviours)
+    end
 end

@@ -136,14 +136,12 @@ class Waves
     def self.listingItemsInterruption()
         Items::mikuType("Wave")
             .select{|item| item["interruption"]}
-            .select { |wave| DoNotShowUntil::isVisible(wave["uuid"]) }
     end
 
     # Waves::nonInterruptionItemsForListing()
     def self.nonInterruptionItemsForListing()
         Items::mikuType("Wave")
             .select { |item| !item["interruption"]}
-            .select { |wave| DoNotShowUntil::isVisible(wave["uuid"]) }
             .sort_by{|item| item["lastDoneUnixtime"]}
     end
 
@@ -159,7 +157,7 @@ class Waves
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
 
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
-        PolyActions::doNotShowUntil(item, unixtime + rand)
+        NxPolymorphs::doNotShowUntil(item, unixtime + rand)
     end
 
     # Waves::program0(item)
@@ -209,14 +207,7 @@ class Waves
 
     # Waves::program2()
     def self.program2()
-        l = lambda { 
-            items = Items::mikuType("Wave").select{|wave|
-                unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])
-                unixtime.nil? or unixtime < Time.new.to_i
-            }
-            i1, i2 = items.partition{|item| item["interruption"] }
-            i1 + i2
-        }
+        l = lambda { Items::mikuType("Wave") }
         Operations::program3(l)
     end
 end

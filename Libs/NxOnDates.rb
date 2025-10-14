@@ -110,7 +110,6 @@ class NxOnDates
     def self.listingItems()
         items = Items::mikuType("NxOnDate")
             .select{|item| item["date"][0, 10] <= CommonUtils::today() }
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
     # ---------------

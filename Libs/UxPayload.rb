@@ -355,7 +355,5 @@ class UxPayload
         end
         return if payload.nil?
         Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-        item = Items::itemOrNull(item["uuid"])
-        ListingService::evaluate(item["uuid"])
     end
 end

@@ -8,6 +8,5 @@ Database:
 Cross types conventions (all optional):
     - skip-0843      : unixtime (skipped until this time)
     - uxpayload-b4e4 : UxPayload
-    - mark-1531      : Date YYYY-MM-DD
 
 This date is added by the morning process. If present and equal to the current date add a star to the listing

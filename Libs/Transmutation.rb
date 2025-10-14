@@ -7,28 +7,23 @@ class Transmutation
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
         if item["mikuType"] == "NxOnDate" and targetMikuType == "NxTask" then
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            ListingService::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxOnDate" and targetMikuType == "NxProject" then
             Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-            ListingService::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxProject" and targetMikuType == "NxTask" then
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            ListingService::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxOnDate" then
             Items::setAttribute(item["uuid"], "date", CommonUtils::interactivelyMakeADateOrNull())
             Items::setAttribute(item["uuid"], "mikuType", "NxOnDate")
-            ListingService::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxProject" then
             Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-            ListingService::evaluate(item["uuid"])
             return
         end
         puts "I do not know how to transmute mikuType #{item["mikuType"]} to #{targetMikuType}. Aborting."

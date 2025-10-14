@@ -18,45 +18,19 @@ class FrontPage
 
     # FrontPage::toString2(store, item)
     def self.toString2(store, item)
-        # Edits to this function should be mirrored in ListingService::decideListingLines(item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        if item["mark-1531"] == CommonUtils::today() then
-            storePrefix = storePrefix.green
-        end
-
-        lines = []
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix2(item)}"
-
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TxBehaviour::doNotShowUntilSuffix(item["behaviours"].first)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
-
         if NxBalls::itemIsActive(item) then
             line = line.yellow
         end
-
         if NxBalls::itemIsRunning(item) then
             line = line.green
         end
-
-        lines << line
-
-        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "breakdown" then
-            item["uxpayload-b4e4"]["lines"].each{|l|
-                lines << "         ✏︎ #{l}"
-            }
-        end
-
-        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "todo-text-file-by-name-fragment" then
-            name1 = item["uxpayload-b4e4"]["name"]
-            location = CommonUtils::locateGalaxyFileByNameFragment(name1)
-            if location then
-                lines = lines + IO.read(location).strip.lines.map{|line| "         #{line.chomp}" }.take(5)
-            end
-        end
-
-        lines
+        line
     end
 
     # -----------------------------------------
@@ -69,6 +43,13 @@ class FrontPage
             exit
         end
         Operations::dispatchPickUp()
+    end
+
+    # FrontPage::itemsForListing()
+    def self.itemsForListing()
+        Items::mikuType("NxPolymorph")
+            .select{|item| TxBehaviour::isVisibleOnFrontPage(item["behaviours"].first) }
+            .sort_by{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }
     end
 
     # FrontPage::displayListingOnce()
@@ -86,12 +67,6 @@ class FrontPage
             puts "Running global maintenance (every half a day)"
             Operations::globalMaintenance()
             XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
-        end
-
-        if XCacheExensions::trueNoMoreOftenThanNSeconds("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", 3600) then
-            puts "Running listing maintenance (every hour)"
-            ListingService::maintenance()
-            XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 
         # Palmer reporting
@@ -118,50 +93,20 @@ class FrontPage
             .map{|packet| packet["item"] }
             .each{|item|
                 store.register(item, FrontPage::canBeDefault(item))
-                lines = FrontPage::toString2(store, item)
-                lines.each{|line|
-                    printer.call(line.green)
-                }
-                lines.each{|line|
-                    sheight = sheight - (line.size/swidth + 1)
-                }
+                line = FrontPage::toString2(store, item)
+                printer.call(line.green)
+                sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 4
             }
 
-        activeuuids = activePackets.map{|px| px["item"]["uuid"]}
-
-        entries = ListingService::entriesForListing(activeuuids)
-        entries = CommonUtils::removeDuplicateObjectsOnAttribute(entries, "itemuuid")
-        entries
-            .each{|entry|
-                item = entry["item"]
-
+        items = FrontPage::itemsForListing()
+        items
+            .each{|item|
                 store.register(item, FrontPage::canBeDefault(item))
-                lines = entry["listing_lines"]
-
-                # Display the first line
-                line = lines.shift
-                sprefix = "(#{store.prefixString()})"
-                if item["mark-1531"] == CommonUtils::today() then
-                    sprefix = sprefix.green
-                end
-                line = line.gsub("STORE-PREFIX", sprefix)
-                if entry["position"] then
-                    line = line + " (#{entry["position"]})".yellow
-                end
-                if NxBalls::itemIsRunning(item) then
-                    line = line.green
-                end
+                line = FrontPage::toString2(store, item)
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
-                break if sheight <= 3
-
-                # Display the other lines
-                lines.each{|line|
-                    printer.call(line)
-                    sheight = sheight - (line.size/swidth + 1)
-                    break if sheight <= 3
-                }
+                break if sheight <= 4
             }
 
         t2 = Time.new.to_f

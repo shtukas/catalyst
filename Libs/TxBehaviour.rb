@@ -1,6 +1,9 @@
 
 class TxBehaviour
 
+    # ---------------------------------------------------------------
+    # Makers
+
     # TxBehaviour::interactivelyMakeBehaviourOrNull()
     def self.interactivelyMakeBehaviourOrNull()
         options = [
@@ -29,6 +32,36 @@ class TxBehaviour
         raise "(error 6b7b3eab)"
     end
 
+    # ---------------------------------------------------------------
+    # Data
+
+    # TxBehaviour::isVisibleOnFrontPage(behaviour)
+    def self.isVisibleOnFrontPage(behaviour)
+        # {
+        #     "btype": "listing-position"
+        #     "position": Float
+        # }
+        if behaviour["btype"] == "listing-position" then
+            return true
+        end
+
+        # {
+        #     "btype": "NxAwait"
+        #     "creationUnixtime": Float
+        # }
+        if behaviour["btype"] == "NxAwait" then
+            return true
+        end
+
+        # {
+        #    "btype": "do-not-show-until"
+        #    "unixtime": Float
+        # }
+        if behaviour["btype"] == "do-not-show-until" then
+            return Time.new.to_i >= behaviour["unixtime"]
+        end
+    end
+
     # TxBehaviour::behaviourToIcon(behaviour)
     def self.behaviourToIcon(behaviour)
         # {
@@ -46,6 +79,19 @@ class TxBehaviour
         if behaviour["btype"] == "NxAwait" then
             return "😴"
         end
+
+        # {
+        #    "btype": "do-not-show-until"
+        #    "unixtime": Float
+        # }
+        if behaviour["btype"] == "do-not-show-until" then
+            return "🫥"
+        end
+    end
+
+    # TxBehaviour::realLineTo01Increasing(x)
+    def self.realLineTo01Increasing(x)
+        (2 + Math.atan(x)).to_f/10
     end
 
     # TxBehaviour::behaviourToListingPosition(behaviour)
@@ -77,7 +123,7 @@ class TxBehaviour
         #    "creationUnixtime": Float
         #}
         if behaviour["btype"] == "NxAwait" then
-            dx = ListingService::realLineTo01Increasing(behaviour["creationUnixtime"] - 1759082216)
+            dx = TxBehaviour::realLineTo01Increasing(behaviour["creationUnixtime"] - 1759082216)
             return 0.160 + dx.to_f/1000
         end
 
@@ -102,6 +148,14 @@ class TxBehaviour
             return nil # it's being destroyed
         end
 
+        # {
+        #    "btype": "do-not-show-until"
+        #    "unixtime": Float
+        # }
+        if behaviour["btype"] == "do-not-show-until" then
+            return behaviour
+        end
+
         raise "I do not know how to perform done for behaviour: #{behaviour}"
     end
 
@@ -111,4 +165,13 @@ class TxBehaviour
             .map{|behaviour| TxBehaviour::doneBehaviour(behaviour) }
             .compact
     end
+
+    # TxBehaviour::doNotShowUntilSuffix(behaviour)
+    def self.doNotShowUntilSuffix(behaviour)
+        return "" if behaviour["btype"] != "do-not-show-until"
+        unixtime = behaviour["unixtime"]
+        return "" if unixtime < Time.new.to_i
+        " (dot not show until: #{Time.at(unixtime).to_s})".yellow
+    end
+
 end

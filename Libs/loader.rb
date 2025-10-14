@@ -133,7 +133,6 @@ require_relative "CommandsAndInterpreters.rb"
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
-require_relative "DoNotShowUntil.rb"
 require_relative "Datablocks.rb"
 
 require_relative "Elizabeth.rb"
@@ -147,8 +146,6 @@ require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Instances.rb"
 require_relative "Items.rb"
-
-require_relative "ListingService.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"

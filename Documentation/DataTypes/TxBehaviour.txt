@@ -8,3 +8,7 @@ TxBehaviour
     "btype": "NxAwait"
     "creationUnixtime": Float
 }
+{
+    "btype": "do-not-show-until"
+    "unixtime": Float
+}

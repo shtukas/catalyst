@@ -25,7 +25,6 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        ListingService::evaluate(item["uuid"])
     end
 
     # PolyActions::done(item)
@@ -62,20 +61,17 @@ class PolyActions
         PolyActions::stop(item)
 
         if item["mikuType"] == "NxLambda" then
-            ListingService::removeEntry(item["uuid"])
             return
         end
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
-            ListingService::removeEntry(item["uuid"])
             return
         end
 
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 DropBox::done(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
             end
             return
         end
@@ -83,16 +79,14 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
                 NxBalls::stop(item)
-                PolyActions::doNotShowUntil(item, Time.new.to_i + item["period"] * 86400 + rand)
+                NxPolymorphs::doNotShowUntil(item, Time.new.to_i + item["period"] * 86400 + rand)
                 Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
-                ListingService::removeEntry(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::mark_next_celebration_date(item)
-            ListingService::removeEntry(item["uuid"])
             return
         end
 
@@ -109,7 +103,6 @@ class PolyActions
         if item["mikuType"] == "NxOnDate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
             end
             return
         end
@@ -117,7 +110,6 @@ class PolyActions
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
             end
             return
         end
@@ -130,21 +122,18 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
             Waves::perform_done(item)
-            ListingService::removeEntry(item["uuid"])
             return
         end
 
 
         if item["mikuType"] == "NxDeleted" then
             Items::deleteItem(item["uuid"])
-            ListingService::removeEntry(item["uuid"])
             return
         end
 
@@ -154,7 +143,6 @@ class PolyActions
                 Items::deleteItem(item["uuid"])
             else
                 Items::setAttribute(item["uuid"], "behaviours", behaviours)
-                ListingService::evaluate(item["uuid"])
             end
             return
         end
@@ -267,14 +255,13 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxLambda" then
-            ListingService::removeEntry(item["uuid"])
             return
         end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -282,7 +269,7 @@ class PolyActions
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -290,7 +277,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -298,7 +285,7 @@ class PolyActions
         if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -306,7 +293,7 @@ class PolyActions
         if item["mikuType"] == "NxAwait" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -314,7 +301,7 @@ class PolyActions
         if item["mikuType"] == "NxEvent" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -322,7 +309,7 @@ class PolyActions
         if item["mikuType"] == "NxOnDate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -330,7 +317,7 @@ class PolyActions
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -338,7 +325,7 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -346,7 +333,7 @@ class PolyActions
         if item["mikuType"] == "NxPolymorph" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
+                
             end
             return
         end
@@ -391,10 +378,5 @@ class PolyActions
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
         Items::setAttribute(item["uuid"], "description", description)
-    end
-
-    # PolyActions::doNotShowUntil(item, unixtime)
-    def self.doNotShowUntil(item, unixtime)
-        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 end

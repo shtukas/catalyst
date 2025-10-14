@@ -39,6 +39,6 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        Items::mikuType("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+        Items::mikuType("NxBackup")
     end
 end

@@ -21,8 +21,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
-                PolyActions::doNotShowUntil(item, unixtime)
-                ListingService::removeEntry(item["uuid"])
+                NxPolymorphs::doNotShowUntil(item, unixtime)
                 return
             end
         end
@@ -61,7 +60,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Transmutation::transmute2(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -70,7 +68,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -80,7 +77,7 @@ class CommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
-            PolyActions::doNotShowUntil(item, unixtime)
+            NxPolymorphs::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -103,13 +100,12 @@ class CommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
-                position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
+                position = 0.9 * [0.20].min
                 px17 = {
                     "type"  => "overriden",
                     "value" => position,
                     "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
                 }
-                ListingService::setPx17(i["uuid"], px17)
             }
             return
         end
@@ -130,7 +126,7 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             NxBalls::stop(item)
-            PolyActions::doNotShowUntil(item, unixtime)
+            NxPolymorphs::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -181,7 +177,7 @@ class CommandsAndInterpreters
                 .each{|line|
                     puts "processing: #{line}".green
                     item = NxLines::issue(line)
-                    ListingService::ensureAtFirstPositionForTheDay(item)
+                    # TODO
                     last_item = item
                 }
             if last_item then
@@ -201,7 +197,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             UxPayload::payloadProgram(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -210,7 +205,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             UxPayload::payloadProgram(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -221,7 +215,6 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueAtGivenDateOrNull(date)
             return if item.nil?
             puts JSON.pretty_generate(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -229,7 +222,6 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -242,7 +234,6 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -251,7 +242,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -298,7 +288,6 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(description, behaviour, payload)
             puts JSON.pretty_generate(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -320,21 +309,18 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            ListingService::evaluate(item["uuid"])
             return
         end
 
         if Interpreting::match("project", input) then
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
-            ListingService::evaluate(item["uuid"])
             return
         end
 
         if Interpreting::match("event", input) then
             item = NxEvents::interactivelyIssueNewOrNull()
             return if item.nil?
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -363,7 +349,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::editDescription(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -372,7 +357,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -380,7 +364,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Operations::editItem(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -389,7 +372,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::editItem(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -427,7 +409,6 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
-            ListingService::removeEntry(item["uuid"])
             return
         end
 
@@ -479,7 +460,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -488,7 +468,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -496,7 +475,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -505,7 +483,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 

@@ -34,7 +34,6 @@ class Operations
         if option == "edit json" then
             Operations::editItemJson(item)
         end
-        ListingService::evaluate(item["uuid"])
     end
 
     # Operations::program3(lx)
@@ -46,9 +45,7 @@ class Operations
             elements
                 .each{|item|
                     store.register(item, FrontPage::canBeDefault(item))
-                    FrontPage::toString2(store, item).each {|line|
-                        puts line
-                    }
+                    puts FrontPage::toString2(store, item)
                 }
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
@@ -62,8 +59,6 @@ class Operations
     def self.globalMaintenance()
         puts "NxTasks::maintenance()"
         NxTasks::maintenance()
-        puts "ListingService::maintenance()"
-        ListingService::maintenance()
         puts "BankVault::maintenance()"
         BankVault::maintenance()
         puts "Items::maintenance()"
@@ -107,23 +102,12 @@ class Operations
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        PolyActions::doNotShowUntil(item, unixtime)
+        NxPolymorphs::doNotShowUntil(item, unixtime)
     end
 
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
-        puts ""
-        puts "do not show until:"
-        unixtime = DoNotShowUntil::getUnixtimeOrNull(item["uuid"])
-        puts "  unixtime: #{unixtime}"
-        if unixtime then
-            puts "  datetime: #{Time.at(unixtime).to_s}"
-        end
-        puts ""
-        puts "listing service entry:"
-        entry = ListingService::getEntryOrNull(item["uuid"])
-        puts JSON.pretty_generate(entry)
         puts ""
         puts "front page line: #{FrontPage::toString2(ItemStore.new(), item)}"
         LucilleCore::pressEnterToContinue()
@@ -139,7 +123,6 @@ class Operations
                 puts location.yellow
                 description = File.basename(location)
                 item = NxTasks::locationToTask(description, location)
-                ListingService::evaluate(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
             }
 
@@ -199,7 +182,6 @@ class Operations
             break if item.nil?
             PolyActions::access(item)
             PolyActions::editDescription(item)
-            ListingService::evaluate(item["uuid"])
         }
     end
 
@@ -216,7 +198,7 @@ class Operations
             .map{|line|
                 puts "processing: #{line}".green
                 item = NxLines::issue(line)
-                ListingService::ensureAtFirstPositionForTheDay(item)
+                # TODO
                 item
             }
 
@@ -243,32 +225,23 @@ class Operations
             .map{|line|
                 puts "processing: #{line}".green
                 item = NxLines::issue(line)
-                ListingService::ensureAtFirstPositionForTheDay(item)
+                # TODO
                 item
             }
 
         items = [Waves::listingItemsInterruption(), want1, want2, ondates, projects, waves, tasks].flatten
-
-        today = CommonUtils::today()
-        items = items.map{|item|
-            item["mark-1531"] = today
-            Items::setAttribute(item["uuid"], "mark-1531", today)
-            ListingService::ensure(item)
-            item
-        }
 
         system('clear')
         puts "general ordering".green
         e1, e2 = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
         items = e1 + e2
         items.reverse.each{|item|
-            position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
+            position = 0.9 * [0.20].min
             px17 = {
                 "type"  => "overriden",
                 "value" => position,
                 "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
             }
-            ListingService::setPx17(item["uuid"], px17)
         }
     end
 
@@ -278,12 +251,10 @@ class Operations
         options = ["postpone to tomorrow (default)", "destroy"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option.nil? or option == "postpone to tomorrow (default)" then
-            PolyActions::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            ListingService::removeEntry(item["uuid"])
+            NxPolymorphs::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
         end
         if option == "destroy" then
             Items::deleteItem(item["uuid"])
-            ListingService::removeEntry(item["uuid"])
         end
     end
 
@@ -294,7 +265,7 @@ class Operations
         NxBalls::activeItems().each{|i|
             NxBalls::pause(i)
         }
-        ListingService::ensureAtFirstPositionForTheDay(item)
+        # TODO
         if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
             PolyActions::start(item)
         end
