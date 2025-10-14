@@ -383,8 +383,15 @@ class TxBehaviour
             return 0.5
         end
 
-        raise "I do not know how to compute listing position for behaviour: #{behaviour}"
+        if behaviour["btype"] == "do-not-show-until" then
+            return 1
+        end
+
+        raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
     end
+
+    # ---------------------------------------------------------------
+    # Ops
 
     # TxBehaviour::postponeToTomorrowOrNil(behaviour) # TxBehaviour -> null or Array[TxBehaviour]
     def self.postponeToTomorrowOrNil(behaviour)
@@ -403,14 +410,14 @@ class TxBehaviour
         raise "(error: 0a89fff3)"
     end
 
-    # TxBehaviour::doneBehaviour(behaviour: TxBehaviour) -> Array[TxBehaviour]
-    def self.doneBehaviour(behaviour)
+    # TxBehaviour::done(behaviour: TxBehaviour) -> Array[TxBehaviour]
+    def self.done(behaviour)
         # {
         #     "btype": "listing-position"
         #     "position": Float
         # }
         if behaviour["btype"] == "listing-position" then
-            return nil # it's being destroyed
+            return [] # it's being destroyed
         end
 
         #{
@@ -418,7 +425,7 @@ class TxBehaviour
         #    "creationUnixtime": Float
         #}
         if behaviour["btype"] == "NxAwait" then
-            return nil # it's being destroyed
+            return [] # it's being destroyed
         end
 
         # {
@@ -426,7 +433,7 @@ class TxBehaviour
         #    "unixtime": Float
         # }
         if behaviour["btype"] == "do-not-show-until" then
-            return behaviour
+            return [behaviour]
         end
 
         #{
@@ -468,7 +475,7 @@ class TxBehaviour
     # TxBehaviour::doneArrayOfBehaviours(behaviours: Array[TxBehaviour]) -> Array[TxBehaviour]
     def self.doneArrayOfBehaviours(behaviours)
         behaviours
-            .map{|behaviour| TxBehaviour::doneBehaviour(behaviour) }
+            .map{|behaviour| TxBehaviour::done(behaviour) }
             .flatten
             .compact
     end
