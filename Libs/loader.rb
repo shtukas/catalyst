@@ -159,6 +159,7 @@ require_relative "NxLines.rb"
 require_relative "NxProjects.rb"
 require_relative "NxEvents.rb"
 require_relative "NxAwaits.rb"
+require_relative "NxPolymorphs.rb"
 
 require_relative "Operations.rb"
 
@@ -172,6 +173,7 @@ require_relative "StoredProcedures.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmutation.rb"
+require_relative "TxBehaviour.rb"
 
 require_relative "UxPayload.rb"
 

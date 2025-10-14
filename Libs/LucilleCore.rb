@@ -310,6 +310,10 @@ class LucilleCore
 
         item = counterToItemMapping[itemNumber]
 
+        if item.nil? then
+            return LucilleCore::selectZeroOrMore(type, selected, unselected, toStringLambda)
+        end
+
         if selected.include?(item)  then
             # We move the item from 'selected' to 'unselected'
             LucilleCore::selectZeroOrMore(type, selected.reject{|x| toStringLambda.call(x) == toStringLambda.call(item) }, unselected + [item], toStringLambda)

@@ -258,13 +258,6 @@ class Operations
         }
 
         system('clear')
-        puts "select items that are actually already done".green
-        e1, items = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
-        e1.each{|item|
-            PolyActions::done(item)
-        }
-
-        system('clear')
         puts "general ordering".green
         e1, e2 = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
         items = e1 + e2
@@ -281,6 +274,7 @@ class Operations
 
     # Operations::postponeToTomorrowOrDestroy(item)
     def self.postponeToTomorrowOrDestroy(item)
+        puts PolyFunctions::toString(item).green
         options = ["postpone to tomorrow (default)", "destroy"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option.nil? or option == "postpone to tomorrow (default)" then

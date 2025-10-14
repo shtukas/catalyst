@@ -264,6 +264,14 @@ class ListingService
             }
         end
 
+        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "todo-text-file-by-name-fragment" then
+            name1 = item["uxpayload-b4e4"]["name"]
+            location = CommonUtils::locateGalaxyFileByNameFragment(name1)
+            if location then
+                lines = lines + IO.read(location).strip.lines.map{|line| "         #{line.chomp}" }.take(5)
+            end
+        end
+
         lines
     end
 
@@ -311,6 +319,10 @@ class ListingService
 
         if item["mikuType"] == "NxDeleted" then
             return false
+        end
+
+        if item["mikuType"] == "NxPolymorph" then
+            return true
         end
 
         puts "I do not know how to ListingService::isListable(#{JSON.pretty_generate(item)})"
@@ -434,6 +446,11 @@ class ListingService
             return 0.810 + ListingService::realLineTo01Increasing(item["unixtime"] - 1759064213).to_f/2
         end
 
+        if item["mikuType"] == "NxPolymorph" then
+            behaviour = item["behaviours"].first
+            return TxBehaviour::behaviourToListingPosition(behaviour)
+        end
+
         puts "I do not know how to ListingService::computePositionForItem(#{JSON.pretty_generate(item)})"
         raise "(error: df253fc4)"
     end
@@ -493,6 +510,7 @@ class ListingService
             NxProjects::listingItems(),
             Items::mikuType("NxTask"),
             Waves::nonInterruptionItemsForListing(),
+            Items::mikuType("NxPolymorph")
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }

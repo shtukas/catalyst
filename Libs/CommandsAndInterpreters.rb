@@ -6,11 +6,11 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress",
             "              : transmute * | >> * (transmute)",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | lines | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers | morning",
+            "misc          : search | commands | fsck | probe-head | select | maintenance | numbers | morning",
         ].join("\n")
     end
 
@@ -101,20 +101,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("select", input) then
             items = store.items()
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|i| PolyFunctions::toString(i) })
-            return if item.nil?
-            position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
-            px17 = {
-                "type"  => "overriden",
-                "value" => position,
-                "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
-            }
-            ListingService::setPx17(item["uuid"], px17)
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
@@ -163,6 +149,13 @@ class CommandsAndInterpreters
 
         if Interpreting::match("probe-head", input) then
             Operations::probeHead()
+            return
+        end
+
+        if input == "in progress" then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            item = NxLines::issue(description)
+            PolyActions::start(item)
             return
         end
 
