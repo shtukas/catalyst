@@ -1,8 +1,55 @@
 
 class TxBehaviour
 
-    # TxBehaviour::behaviourToListingPosition(behavior)
-    def self.behaviourToListingPosition(behavior)
+    # TxBehaviour::interactivelyMakeBehaviourOrNull()
+    def self.interactivelyMakeBehaviourOrNull()
+        options = [
+            "listing position",
+            "await"
+        ]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
+        return nil if option.nil?
+
+        if option == "listing position" then
+            position = LucilleCore::askQuestionAnswerAsString("position (>0): ").to_f
+            return nil if position <= 0
+            return {
+                 "btype" => "listing-position",
+                 "position" => position
+            }
+        end
+
+        if option == "await" then
+            return {
+                 "btype" => "NxAwait",
+                 "creationUnixtime" => Time.new.to_i
+            }
+        end
+
+        raise "(error 6b7b3eab)"
+    end
+
+    # TxBehaviour::behaviourToIcon(behaviour)
+    def self.behaviourToIcon(behaviour)
+        # {
+        #     "btype": "listing-position"
+        #     "position": Float
+        # }
+        if behaviour["btype"] == "listing-position" then
+            return "🖋️ "
+        end
+
+        #{
+        #    "btype": "NxAwait"
+        #    "creationUnixtime": Float
+        #}
+        if behaviour["btype"] == "NxAwait" then
+            return "😴"
+        end
+    end
+
+    # TxBehaviour::behaviourToListingPosition(behaviour)
+    def self.behaviourToListingPosition(behaviour)
         # There should not be negative positions
 
         # 0.010 -> 0.020 Wave interruption
@@ -21,29 +68,29 @@ class TxBehaviour
         #     "btype": "listing-position"
         #     "position": Float
         # }
-        if behavior["btype"] == "listing-position" then
-            return behavior["position"]
+        if behaviour["btype"] == "listing-position" then
+            return behaviour["position"]
         end
 
         #{
         #    "btype": "NxAwait"
         #    "creationUnixtime": Float
         #}
-        if behavior["btype"] == "NxAwait" then
-            dx = ListingService::realLineTo01Increasing(behavior["creationUnixtime"] - 1759082216)
+        if behaviour["btype"] == "NxAwait" then
+            dx = ListingService::realLineTo01Increasing(behaviour["creationUnixtime"] - 1759082216)
             return 0.160 + dx.to_f/1000
         end
 
         raise "I do not know how to compute listing position for behaviour: #{behaviour}"
     end
 
-    # TxBehaviour::doneBehaviour(behavior: TxBehaviour) -> TxBehaviour
-    def self.doneBehaviour(behavior)
+    # TxBehaviour::doneBehaviour(behaviour: TxBehaviour) -> TxBehaviour
+    def self.doneBehaviour(behaviour)
         # {
         #     "btype": "listing-position"
         #     "position": Float
         # }
-        if behavior["btype"] == "listing-position" then
+        if behaviour["btype"] == "listing-position" then
             return nil # it's being destroyed
         end
 
@@ -51,7 +98,7 @@ class TxBehaviour
         #    "btype": "NxAwait"
         #    "creationUnixtime": Float
         #}
-        if behavior["btype"] == "NxAwait" then
+        if behaviour["btype"] == "NxAwait" then
             return nil # it's being destroyed
         end
 

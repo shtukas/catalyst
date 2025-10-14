@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | new",
             "              : transmute * | >> * (transmute)",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | lines | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -285,9 +285,19 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("await", input) then
-            item = NxAwaits::interactivelyIssueNewOrNull()
-            return if item.nil?
+        if Interpreting::match("new", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
+            if behaviour.nil? then
+                Items::deleteItem(uuid)
+                return
+            end
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
             ListingService::evaluate(item["uuid"])
             return
         end
