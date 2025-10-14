@@ -48,6 +48,7 @@ class FrontPage
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         Items::mikuType("NxPolymorph")
+            .map{|item| NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item) }
             .select{|item| TxBehaviour::isVisibleOnFrontPage(item["behaviours"].first) }
             .sort_by{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }
     end

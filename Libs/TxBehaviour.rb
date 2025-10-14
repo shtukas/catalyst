@@ -390,6 +390,18 @@ class TxBehaviour
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
     end
 
+    # TxBehaviour::preDisplayProcessing(behaviour)
+    def self.preDisplayProcessing(behaviour) # Array[TxBehaviour]
+        if behaviour["btype"] == "do-not-show-until" then
+            if Time.new.to_i > behaviour["unixtime"] then
+                return []
+            else
+                return [behaviour]
+            end
+        end
+        [behaviour]
+    end
+
     # ---------------------------------------------------------------
     # Ops
 

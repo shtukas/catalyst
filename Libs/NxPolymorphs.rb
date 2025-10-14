@@ -35,4 +35,16 @@ class NxPolymorphs
     def self.itemHasBehaviour(item, btype)
         item["behaviours"].any?{|behaviour| behaviour["btype"] == btype }
     end
+
+    # NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item)
+    def self.identityOrSimilarWithUpdatedBehaviours(item)
+        trace1 = JSON.generate(item["behaviours"])
+        item["behaviours"] = item["behaviours"]
+            .map{|behaviour| TxBehaviour::preDisplayProcessing(behaviour) }
+            .flatten
+        trace2 = JSON.generate(item["behaviours"])
+        return item if trace1 == trace2
+        Items::setAttribute(item["uuid"], "behaviours", item["behaviours"])
+        item
+    end
 end
