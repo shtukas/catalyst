@@ -43,6 +43,77 @@ class TxBehaviour
     # ---------------------------------------------------------------
     # Data
 
+    # TxBehaviour::behaviourToDescriptionLeft(before, behaviour, after)
+    def self.behaviourToDescriptionLeft(before, behaviour, after)
+        # {
+        #     "btype": "listing-position"
+        #     "position": Float
+        # }
+        if behaviour["btype"] == "listing-position" then
+            return ""
+        end
+
+        # {
+        #     "btype": "NxAwait"
+        #     "creationUnixtime": Float
+        # }
+        if behaviour["btype"] == "NxAwait" then
+            return ""
+        end
+
+        # {
+        #    "btype": "do-not-show-until"
+        #    "unixtime": Float
+        # }
+        if behaviour["btype"] == "do-not-show-until" then
+            return ""
+        end
+
+        #{
+        #     "btype" => "calendar-event",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "calendar-event" then
+            return "#{before}(#{behaviour["date"]})#{after}"
+        end
+    end
+
+    # TxBehaviour::behaviourToDescriptionRight(before, behaviour, after)
+    def self.behaviourToDescriptionRight(before, behaviour, after)
+        # {
+        #     "btype": "listing-position"
+        #     "position": Float
+        # }
+        if behaviour["btype"] == "listing-position" then
+            return ""
+        end
+
+        # {
+        #     "btype": "NxAwait"
+        #     "creationUnixtime": Float
+        # }
+        if behaviour["btype"] == "NxAwait" then
+            return ""
+        end
+
+        # {
+        #    "btype": "do-not-show-until"
+        #    "unixtime": Float
+        # }
+        if behaviour["btype"] == "do-not-show-until" then
+            s = "(do not show until #{Time.at(behaviour["unixtime"]).to_s})".yellow
+            return "#{before}#{s}#{after}"
+        end
+
+        #{
+        #     "btype" => "calendar-event",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "calendar-event" then
+            return ""
+        end
+    end
+
     # TxBehaviour::isVisibleOnFrontPage(behaviour)
     def self.isVisibleOnFrontPage(behaviour)
         # {
@@ -225,13 +296,4 @@ class TxBehaviour
             .flatten
             .compact
     end
-
-    # TxBehaviour::doNotShowUntilSuffix(behaviour)
-    def self.doNotShowUntilSuffix(behaviour)
-        return "" if behaviour["btype"] != "do-not-show-until"
-        unixtime = behaviour["unixtime"]
-        return "" if unixtime < Time.new.to_i
-        " (dot not show until: #{Time.at(unixtime).to_s})".yellow
-    end
-
 end

@@ -188,6 +188,21 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("event", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            behaviour = {
+                 "btype" => "calendar-event",
+                 "date" => CommonUtils::interactivelyMakeADate()
+            }
+            Items::init(uuid)
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
         if Interpreting::match("events", input) then
             Operations::program3ItemsWithGivenBehaviour("calendar-event")
             return
@@ -297,7 +312,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("awaits", input) then
-            Operations::program3(lambda { Items::mikuType("NxAwait").sort_by{|item| item["unixtime"] } })
+            Operations::program3ItemsWithGivenBehaviour("NxAwait")
             return
         end
 
