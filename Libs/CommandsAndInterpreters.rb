@@ -188,6 +188,11 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("events", input) then
+            Operations::program3ItemsWithGivenBehaviour("calendar-event")
+            return
+        end
+
         if Interpreting::match("backups", input) then
             Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
             return

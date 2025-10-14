@@ -30,4 +30,9 @@ class NxPolymorphs
         behaviours = [behaviour] + item["behaviours"]
         Items::setAttribute(uuid, "behaviours", behaviours)
     end
+
+    # NxPolymorphs::itemHasBehaviour(item, btype)
+    def self.itemHasBehaviour(item, btype)
+        item["behaviours"].any?{|behaviour| behaviour["btype"] == btype }
+    end
 end

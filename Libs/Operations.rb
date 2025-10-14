@@ -270,4 +270,9 @@ class Operations
             PolyActions::start(item)
         end
     end
+
+    # Operations::program3ItemsWithGivenBehaviour(btype)
+    def self.program3ItemsWithGivenBehaviour(btype)
+        Operations::program3(lambda { Items::mikuType("NxPolymorph").select{|item| NxPolymorphs::itemHasBehaviour(item, btype) } })
+    end
 end
