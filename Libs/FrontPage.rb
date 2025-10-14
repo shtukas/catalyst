@@ -69,19 +69,6 @@ class FrontPage
             XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
         end
 
-        # Palmer reporting
-
-        performance = `palmer report:performance`.strip
-        i = performance.index('(')
-        percentage = performance[i, 10].to_f
-        if percentage < 100 then
-            puts performance.red
-        else
-            if percentage < 120 then
-                puts performance.yellow
-            end
-        end
-
         t1 = Time.new.to_f
 
         # Main listing
