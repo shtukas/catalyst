@@ -459,7 +459,7 @@ class TxBehaviour
         #    "date" : "YYYY-MM-DD"
         #}
         if behaviour["btype"] == "project" then
-            return behaviour
+            return TxBehaviour::postponeToTomorrowOrNil(behaviour)
         end
 
         raise "I do not know how to perform done for behaviour: #{behaviour}"

@@ -8,7 +8,7 @@ class NxTimeCommitment
         options = [
             "day",
             "week",
-            "until-date"
+            "until date"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
