@@ -60,9 +60,6 @@ class PolyFunctions
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
-        end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end

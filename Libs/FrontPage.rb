@@ -53,8 +53,8 @@ class FrontPage
             .sort_by{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }
     end
 
-    # FrontPage::displayListingOnce()
-    def self.displayListingOnce()
+    # FrontPage::displayListing()
+    def self.displayListing()
         store = ItemStore.new()
         printer = lambda{|line| puts line }
         printer.call("")
@@ -155,7 +155,7 @@ class FrontPage
 
         loop {
             FrontPage::preliminaries(initialCodeTrace)
-            FrontPage::displayListingOnce()
+            FrontPage::displayListing()
         }
     end
 end

@@ -7,10 +7,9 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | new",
-            "              : transmute * | >> * (transmute)",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | lines | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | select | maintenance | numbers | morning",
+            "misc          : search | commands | fsck | probe-head | select | maintenance | numbers",
         ].join("\n")
     end
 
@@ -56,21 +55,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Transmutation::transmute2(item)
-            return
-        end
-
-        if Interpreting::match(">> *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutation::transmute2(item)
-            return
-        end
-
         if Interpreting::match("* on *", input) then
             listord, _, datecode = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -78,11 +62,6 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
             NxPolymorphs::doNotShowUntil(item, unixtime)
-            return
-        end
-
-        if Interpreting::match("morning", input) then
-            Operations::morning()
             return
         end
 

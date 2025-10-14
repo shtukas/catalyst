@@ -109,11 +109,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            Operations::postponeToTomorrowOrDestroy(item)
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
@@ -208,14 +203,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to stop: ")
-            PolyActions::stop(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -262,14 +249,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 

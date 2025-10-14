@@ -153,7 +153,6 @@ require_relative "NxBackups.rb"
 require_relative "NxOnDates.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxLines.rb"
-require_relative "NxProjects.rb"
 require_relative "NxAwaits.rb"
 require_relative "NxPolymorphs.rb"
 require_relative "NxTimeCommitment.rb"
@@ -166,10 +165,8 @@ require_relative "PriorityLevels.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
-require_relative "StoredProcedures.rb"
 
 require_relative "TmpSkip1.rb"
-require_relative "Transmutation.rb"
 require_relative "TxBehaviour.rb"
 
 require_relative "UxPayload.rb"

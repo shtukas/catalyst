@@ -194,11 +194,6 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             return
         end
-        if payload["type"] == "stored-procedure" then
-            ticket = payload["ticket"]
-            StoredProcedures::run(ticket)
-            return
-        end
     end
 
     # UxPayload::edit(itemuuid, payload)

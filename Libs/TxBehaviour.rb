@@ -315,6 +315,36 @@ class TxBehaviour
         (2 + Math.atan(x)).to_f/10
     end
 
+    # TxBehaviour::ratio(behaviour)
+    def self.ratio(behaviour)
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "until-date"
+        #    "uuid" : String
+        #    "hours": float
+        #    "date" : "YYYY-MM-DD"
+        #}
+        if behaviour["btype"] == "project" then
+            return 0.45
+        end
+
+        raise "(error 39498e23) #{behaviour}"
+    end
+
     # TxBehaviour::behaviourToListingPosition(behaviour)
     def self.behaviourToListingPosition(behaviour)
         # There should not be negative positions
@@ -327,9 +357,10 @@ class TxBehaviour
         # 0.300 -> 0.320 Wave sticky
         # 0.400 -> 0.450 NxBackup
         # 0.500 -> 0.600 NxOnDate
-        # 0.750 -> 0.780 NxProject
+        # 0.600 -> 0.800 Wave (overlay)
         # 0.800 -> 0.880 NxTask
-        # 0.390 -> 1.000 Wave (overlay)
+
+        # 0.350 -> 0.800 polymorph: project
 
         # {
         #     "btype": "listing-position"
@@ -380,7 +411,7 @@ class TxBehaviour
         #    "date" : "YYYY-MM-DD"
         #}
         if behaviour["btype"] == "project" then
-            return 0.5
+            return 0.350 + TxBehaviour::ratio(behaviour)*(0.800 - 0.350)
         end
 
         if behaviour["btype"] == "do-not-show-until" then
