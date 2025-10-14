@@ -16,3 +16,8 @@ TxBehaviour
     "btype": "calendar-event"
     "date": YYYY-MM-DD
 }
+
+{
+    "btype": "project"
+    "timeCommitment": NxTimeCommitment
+}

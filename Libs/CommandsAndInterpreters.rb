@@ -333,8 +333,19 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("project", input) then
-            item = NxProjects::interactivelyIssueNewOrNull()
-            return if item.nil?
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
+            return if timeCommitment.nil?
+            behaviour = {
+                "btype" => "project",
+                "timeCommitment" => timeCommitment
+            }
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -344,7 +355,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("projects", input) then
-            Operations::program3(lambda { Items::mikuType("NxProject").sort_by{|item| item["unixtime"] } })
+            Operations::program3ItemsWithGivenBehaviour("project")
             return
         end
 

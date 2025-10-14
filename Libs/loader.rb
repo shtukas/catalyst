@@ -156,6 +156,7 @@ require_relative "NxLines.rb"
 require_relative "NxProjects.rb"
 require_relative "NxAwaits.rb"
 require_relative "NxPolymorphs.rb"
+require_relative "NxTimeCommitment.rb"
 
 require_relative "Operations.rb"
 

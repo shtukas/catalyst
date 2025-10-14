@@ -1,0 +1,18 @@
+
+NxTimeCommitment
+{
+    "type" : "day"
+    "uuid" : String
+    "hours": float
+}
+{
+    "type" : "week"
+    "uuid" : String
+    "hours": float
+}
+{
+    "type" : "until-date"
+    "uuid" : String
+    "hours": float
+    "date" : "YYYY-MM-DD"
+}

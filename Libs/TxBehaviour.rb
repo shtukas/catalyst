@@ -9,7 +9,8 @@ class TxBehaviour
         options = [
             "listing position",
             "await",
-            "calendar event"
+            "calendar event",
+            "project"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
@@ -34,6 +35,15 @@ class TxBehaviour
             return {
                  "btype" => "calendar-event",
                  "date" => CommonUtils::interactivelyMakeADate()
+            }
+        end
+
+        if option == "project" then
+            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
+            return nil if timeCommitment.nil?
+            return {
+                "btype" => "project",
+                "timeCommitment" => timeCommitment
             }
         end
 
@@ -76,6 +86,33 @@ class TxBehaviour
         if behaviour["btype"] == "calendar-event" then
             return "#{before}(#{behaviour["date"]})#{after}"
         end
+
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "until-date"
+        #    "uuid" : String
+        #    "hours": float
+        #    "date" : "YYYY-MM-DD"
+        #}
+        if behaviour["btype"] == "project" then
+            return "#{before}(#{JSON.generate(behaviour)})#{after}"
+        end
+
+        raise "(error 4fba7460) #{behaviour}"
     end
 
     # TxBehaviour::behaviourToDescriptionRight(before, behaviour, after)
@@ -112,6 +149,33 @@ class TxBehaviour
         if behaviour["btype"] == "calendar-event" then
             return ""
         end
+
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "until-date"
+        #    "uuid" : String
+        #    "hours": float
+        #    "date" : "YYYY-MM-DD"
+        #}
+        if behaviour["btype"] == "project" then
+            return ""
+        end
+
+        raise "(error c073968d) #{behaviour}"
     end
 
     # TxBehaviour::isVisibleOnFrontPage(behaviour)
@@ -147,6 +211,41 @@ class TxBehaviour
         if behaviour["btype"] == "calendar-event" then
             return CommonUtils::today() >= behaviour["date"]
         end
+
+        # {
+        #     "btype": "NxAwait"
+        #     "creationUnixtime": Float
+        # }
+        if behaviour["btype"] == "NxAwait" then
+            return true
+        end
+
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "until-date"
+        #    "uuid" : String
+        #    "hours": float
+        #    "date" : "YYYY-MM-DD"
+        #}
+        if behaviour["btype"] == "project" then
+            return true
+        end
+
+        raise "(error 288f4204) #{behaviour}"
     end
 
     # TxBehaviour::behaviourToIcon(behaviour)
@@ -182,6 +281,33 @@ class TxBehaviour
         if behaviour["btype"] == "calendar-event" then
             return "📆"
         end
+
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "until-date"
+        #    "uuid" : String
+        #    "hours": float
+        #    "date" : "YYYY-MM-DD"
+        #}
+        if behaviour["btype"] == "project" then
+            return "⛵️"
+        end
+
+        raise "(error 865c0eea) #{behaviour}"
     end
 
     # TxBehaviour::realLineTo01Increasing(x)
@@ -230,6 +356,31 @@ class TxBehaviour
             d1 = DateTime.parse("#{behaviour["date"]}T17:28:01Z").to_time.to_i - 1757661467
             d2 = TxBehaviour::realLineTo01Increasing(d1)
             return 0.100 + d2.to_f/100
+        end
+
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "until-date"
+        #    "uuid" : String
+        #    "hours": float
+        #    "date" : "YYYY-MM-DD"
+        #}
+        if behaviour["btype"] == "project" then
+            return 0.5
         end
 
         raise "I do not know how to compute listing position for behaviour: #{behaviour}"
@@ -284,6 +435,31 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "calendar-event" then
             return TxBehaviour::postponeToTomorrowOrNil(behaviour)
+        end
+
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "until-date"
+        #    "uuid" : String
+        #    "hours": float
+        #    "date" : "YYYY-MM-DD"
+        #}
+        if behaviour["btype"] == "project" then
+            return behaviour
         end
 
         raise "I do not know how to perform done for behaviour: #{behaviour}"
