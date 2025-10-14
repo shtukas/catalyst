@@ -187,7 +187,7 @@ class Operations
 
     # Operations::issuePriority(description)
     def self.issuePriority(description)
-        item = NxLines::issue(description)
+        item = nil
         return if item.nil?
         NxBalls::activeItems().each{|i|
             NxBalls::pause(i)

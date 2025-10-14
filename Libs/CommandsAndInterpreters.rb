@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | new",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | lines | projects | events | awaits",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | select | maintenance | numbers",
         ].join("\n")
@@ -127,13 +127,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if input == "in progress" then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            item = NxLines::issue(description)
-            PolyActions::start(item)
-            return
-        end
-
         if Interpreting::match("priority", input) then
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             Operations::issuePriority(description)
@@ -155,7 +148,7 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    item = NxLines::issue(line)
+                    # TODO
                     # TODO
                     last_item = item
                 }
@@ -325,11 +318,6 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(description, behaviour, payload)
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("lines", input) then
-            Operations::program3(lambda { Items::mikuType("NxLine").sort_by{|item| item["unixtime"] } })
             return
         end
 
