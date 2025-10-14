@@ -318,17 +318,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("event", input) then
-            item = NxEvents::interactivelyIssueNewOrNull()
-            return if item.nil?
-            return
-        end
-
-        if Interpreting::match("events", input) then
-            Operations::program3(lambda { Items::mikuType("NxEvent").sort_by{|item| item["date"] } })
-            return
-        end
-
         if Interpreting::match("lines", input) then
             Operations::program3(lambda { Items::mikuType("NxLine").sort_by{|item| item["unixtime"] } })
             return

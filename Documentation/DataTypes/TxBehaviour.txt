@@ -12,3 +12,7 @@ TxBehaviour
     "btype": "do-not-show-until"
     "unixtime": Float
 }
+{
+    "btype": "calendar-event"
+    "date": YYYY-MM-DD
+}

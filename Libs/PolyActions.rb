@@ -95,11 +95,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxEvent" then
-            Operations::postponeToTomorrowOrDestroy(item)
-            return
-        end
-
         if item["mikuType"] == "NxOnDate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
@@ -138,7 +133,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPolymorph" then
-            behaviours = TxBehaviour::doneBehaviours(item["behaviours"])
+            behaviours = TxBehaviour::doneArrayOfBehaviours(item["behaviours"])
             if behaviours.empty? then
                 Items::deleteItem(item["uuid"])
             else
@@ -202,14 +197,6 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
             PolyActions::destroy(item)
-            return
-        end
-
-        if item["mikuType"] == "NxEvent" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to stop: ")
-            PolyActions::stop(item)
             return
         end
 
@@ -291,14 +278,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAwait" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxEvent" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 

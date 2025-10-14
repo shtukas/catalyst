@@ -8,7 +8,8 @@ class TxBehaviour
     def self.interactivelyMakeBehaviourOrNull()
         options = [
             "listing position",
-            "await"
+            "await",
+            "calendar event"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
@@ -26,6 +27,13 @@ class TxBehaviour
             return {
                  "btype" => "NxAwait",
                  "creationUnixtime" => Time.new.to_i
+            }
+        end
+
+        if option == "calendar event" then
+            return {
+                 "btype" => "calendar-event",
+                 "date" => CommonUtils::interactivelyMakeADate()
             }
         end
 
@@ -60,6 +68,14 @@ class TxBehaviour
         if behaviour["btype"] == "do-not-show-until" then
             return Time.new.to_i >= behaviour["unixtime"]
         end
+
+        #{
+        #     "btype" => "calendar-event",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "calendar-event" then
+            return CommonUtils::today() >= behaviour["date"]
+        end
     end
 
     # TxBehaviour::behaviourToIcon(behaviour)
@@ -87,6 +103,14 @@ class TxBehaviour
         if behaviour["btype"] == "do-not-show-until" then
             return "🫥"
         end
+
+        #{
+        #     "btype" => "calendar-event",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "calendar-event" then
+            return "📆"
+        end
     end
 
     # TxBehaviour::realLineTo01Increasing(x)
@@ -99,7 +123,7 @@ class TxBehaviour
         # There should not be negative positions
 
         # 0.010 -> 0.020 Wave interruption
-        # 0.100 -> 0.150 NxEvents
+        # 0.100 -> 0.150 polymorph: calendar-event
         # 0.160 -> 0.160 NxAwait
         # 0.260 -> 0.280 NxAnniversary
         # 0.280 -> 0.300 NxLambda
@@ -127,10 +151,37 @@ class TxBehaviour
             return 0.160 + dx.to_f/1000
         end
 
+        #{
+        #     "btype" => "calendar-event",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "calendar-event" then
+            d1 = DateTime.parse("#{behaviour["date"]}T17:28:01Z").to_time.to_i - 1757661467
+            d2 = TxBehaviour::realLineTo01Increasing(d1)
+            return 0.100 + d2.to_f/100
+        end
+
         raise "I do not know how to compute listing position for behaviour: #{behaviour}"
     end
 
-    # TxBehaviour::doneBehaviour(behaviour: TxBehaviour) -> TxBehaviour
+    # TxBehaviour::postponeToTomorrowOrNil(behaviour) # TxBehaviour -> null or Array[TxBehaviour]
+    def self.postponeToTomorrowOrNil(behaviour)
+        options = ["postpone to tomorrow (default)", "destroy"]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        if option.nil? or option == "postpone to tomorrow (default)" then
+            b1 = {
+                "btype" => "do-not-show-until",
+                "unixtime" => CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+            }
+            return [b1, behaviour]
+        end
+        if option == "destroy" then
+            return nil
+        end
+        raise "(error: 0a89fff3)"
+    end
+
+    # TxBehaviour::doneBehaviour(behaviour: TxBehaviour) -> Array[TxBehaviour]
     def self.doneBehaviour(behaviour)
         # {
         #     "btype": "listing-position"
@@ -156,13 +207,22 @@ class TxBehaviour
             return behaviour
         end
 
+        #{
+        #     "btype" => "calendar-event",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "calendar-event" then
+            return TxBehaviour::postponeToTomorrowOrNil(behaviour)
+        end
+
         raise "I do not know how to perform done for behaviour: #{behaviour}"
     end
 
-    # TxBehaviour::doneBehaviours(behaviours: Array[TxBehaviour]) -> Array[TxBehaviour]
-    def self.doneBehaviours(behaviours)
+    # TxBehaviour::doneArrayOfBehaviours(behaviours: Array[TxBehaviour]) -> Array[TxBehaviour]
+    def self.doneArrayOfBehaviours(behaviours)
         behaviours
             .map{|behaviour| TxBehaviour::doneBehaviour(behaviour) }
+            .flatten
             .compact
     end
 

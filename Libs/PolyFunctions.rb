@@ -39,9 +39,6 @@ class PolyFunctions
         if item["mikuType"] == "NxAwait" then
             return NxAwaits::toString(item)
         end
-        if item["mikuType"] == "NxEvent" then
-            return NxEvents::toString(item)
-        end
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
