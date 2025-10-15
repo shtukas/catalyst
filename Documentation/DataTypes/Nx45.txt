@@ -11,7 +11,6 @@ And another example is
 Compare with a proper uuid
     "4703b12d-bf92-45f0-98be-bfc606d901e4"
 
-
 -----------------------
 
 ```
