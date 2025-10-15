@@ -98,7 +98,9 @@ class PolyActions
         if item["mikuType"] == "NxPolymorph" then
             behaviours = TxBehaviour::doneArrayOfBehaviours(item["behaviours"])
             if behaviours.empty? then
-                Items::deleteItem(item["uuid"])
+                if LucilleCore::askQuestionAnswerAsBoolean("confirm destroy '#{PolyFunctions::toString(item).green}': ") then
+                    Items::deleteItem(item["uuid"])
+                end
             else
                 Items::setAttribute(item["uuid"], "behaviours", behaviours)
             end

@@ -55,6 +55,7 @@ class TxBehaviour
             return nil if timeCommitment.nil?
             return {
                 "btype" => "ondate",
+                "creationUnixtime" => Time.new.to_f,
                 "date" => CommonUtils::interactivelyMakeADate()
             }
         end
@@ -502,7 +503,9 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "ondate" then
             dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
-            return 0.51 + TxBehaviour::realLineTo01Increasing(dayNumber).to_f/1000
+            creationUnixtime = behaviour["creationUnixtime"] || 1760531105
+            d2 = dayNumber + TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
+            return 0.51 + TxBehaviour::realLineTo01Increasing(dayNumber + d2).to_f/1000
         end
 
         # {
