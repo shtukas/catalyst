@@ -140,7 +140,7 @@ class TxBehaviour
         #    "date" : "YYYY-MM-DD"
         #}
         if behaviour["btype"] == "project" then
-            return "#{before}(#{JSON.generate(behaviour)})#{after}"
+            return "#{before}#{TxBehaviourProject::toString(behaviour)}#{after}"
         end
 
         #{

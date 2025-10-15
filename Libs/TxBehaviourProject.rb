@@ -42,7 +42,6 @@ class TxBehaviourProject
                     .map{|date| BankVault::getValueAtDate(behaviour["uuid"], date) }
                     .sum
             b2 = t2.to_f/timeCommitment["hours"]
-
             b3 = BankData::recoveredAverageHoursPerDay(timeCommitment["uuid"]).to_f/(0.2*timeCommitment["hours"])
             return [b2, b3].max
         end
@@ -52,5 +51,26 @@ class TxBehaviourProject
         end
 
         raise "(error 39498e23) #{behaviour}"
+    end
+
+    # TxBehaviourProject::toString(behaviour)
+    def self.toString(behaviour)
+        if behaviour["btype"] != "project" then
+            raise "(error 28ad66c3) #{behaviour}"
+        end
+
+        timeCommitment = behaviour["timeCommitment"]
+
+        if timeCommitment["type"] == "day" then
+            return "(day: #{timeCommitment["hours"]} hours)"
+        end
+
+        if timeCommitment["type"] == "week" then
+            return "(week: #{timeCommitment["hours"]} hours)"
+        end
+
+        if timeCommitment["type"] == "until-date" then
+            return "(until-date: #{timeCommitment["hours"]}, #{timeCommitment["hours"]} hours)"
+        end
     end
 end
