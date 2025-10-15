@@ -504,8 +504,8 @@ class TxBehaviour
         if behaviour["btype"] == "ondate" then
             dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
             creationUnixtime = behaviour["creationUnixtime"] || 1760531105
-            d2 = dayNumber + TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
-            return 0.51 + TxBehaviour::realLineTo01Increasing(dayNumber + d2).to_f/1000
+            epsilon = TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
+            return 0.51 + TxBehaviour::realLineTo01Increasing(dayNumber + epsilon).to_f/100
         end
 
         # {
@@ -530,9 +530,10 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "calendar-event" then
-            d1 = DateTime.parse("#{behaviour["date"]}T17:28:01Z").to_time.to_i - 1757661467
-            d2 = TxBehaviour::realLineTo01Increasing(d1)
-            return 0.100 + d2.to_f/100
+            dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
+            creationUnixtime = behaviour["creationUnixtime"] || 1760531105
+            epsilon = TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
+            return 0.100 + TxBehaviour::realLineTo01Increasing(dayNumber + epsilon).to_f/100
         end
 
         #{
@@ -571,13 +572,14 @@ class TxBehaviour
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
         if behaviour["btype"] == "wave" then
+            epsilon = TxBehaviour::realLineTo01Increasing(behaviour["lastDoneUnixtime"] - 1760531105).to_f/1000
             if behaviour["interruption"] then
-                return 0.015
+                return 0.015 + epsilon
             end
             if behaviour["nx46"]["type"]["sticky"] then
-                return 0.310
+                return 0.310 + epsilon
             end
-            return 0.700
+            return 0.700 + epsilon
         end
 
         #{

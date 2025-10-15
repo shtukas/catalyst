@@ -166,6 +166,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             behaviour = {
                  "btype" => "calendar-event",
+                 "creationUnixtime" => Time.new.to_f,
                  "date" => CommonUtils::interactivelyMakeADate()
             }
             Items::init(uuid)

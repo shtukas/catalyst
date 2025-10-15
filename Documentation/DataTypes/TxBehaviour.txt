@@ -19,6 +19,7 @@ TxBehaviour
 }
 {
     "btype": "calendar-event"
+    "creationUnixtime": Float
     "date": YYYY-MM-DD
 }
 {
