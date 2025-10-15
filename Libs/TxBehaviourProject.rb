@@ -9,22 +9,24 @@ class TxBehaviourProject
         #    "btype": "project"
         #    "timeCommitment": NxTimeCommitment
         #}
+
         #NxTimeCommitment
         #{
-        #    "type" : "day"
-        #    "uuid" : String
-        #    "hours": float
+        #    "type"  : "day"
+        #    "uuid"  : String
+        #    "hours" : float
         #}
         #{
-        #    "type" : "week"
-        #    "uuid" : String
-        #    "hours": float
+        #    "type"  : "week"
+        #    "uuid"  : String
+        #    "hours" : float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Unixtime
+        #    "end"   : Unixtime
         #}
 
         if behaviour["btype"] != "project" then
@@ -46,7 +48,7 @@ class TxBehaviourProject
             return [b2, b3].max
         end
 
-        if timeCommitment["type"] == "until-date" then
+        if timeCommitment["type"] == "unt1l-date-1958" then
             return BankData::recoveredAverageHoursPerDay(timeCommitment["uuid"]).to_f
         end
 
@@ -69,8 +71,8 @@ class TxBehaviourProject
             return "(week: #{timeCommitment["hours"]} hours)"
         end
 
-        if timeCommitment["type"] == "until-date" then
-            return "(until-date: #{timeCommitment["hours"]}, #{timeCommitment["hours"]} hours)"
+        if timeCommitment["type"] == "unt1l-date-1958" then
+            return "(until-date: #{Time.at(timeCommitment["end"]).to_s[0, 10]}, #{timeCommitment["hours"]} hours)"
         end
     end
 end

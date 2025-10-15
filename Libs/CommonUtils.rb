@@ -124,6 +124,14 @@ class CommonUtils
         unixtime
     end
 
+    # CommonUtils::interactivelyMakeUnixtimeUsingDateCode()
+    def self.interactivelyMakeUnixtimeUsingDateCode()
+        loop {
+            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+            return unixtime if unixtime
+        }
+    end
+
     # CommonUtils::interactivelyMakeADateOrNull()
     def self.interactivelyMakeADateOrNull()
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()

@@ -34,10 +34,11 @@ class NxTimeCommitment
         if option == "until date" then
             hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
             return {
-                 "type" => "until-date",
-                 "uuid" => SecureRandom.uuid,
+                 "type"  => "unt1l-date-1958",
+                 "uuid"  => SecureRandom.uuid,
                  "hours" => hours,
-                 "date" => CommonUtils::interactivelyMakeADate()
+                 "start" => Time.new.to_i,
+                 "end"   => CommonUtils::interactivelyMakeUnixtimeUsingDateCode()
             }
         end
 

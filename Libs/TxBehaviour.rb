@@ -134,10 +134,11 @@ class TxBehaviour
         #    "hours": float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
             return "#{before}#{TxBehaviourProject::toString(behaviour)}#{after}"
@@ -223,10 +224,11 @@ class TxBehaviour
         #    "hours": float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
             return ""
@@ -319,10 +321,11 @@ class TxBehaviour
         #    "hours": float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
             return true
@@ -407,10 +410,11 @@ class TxBehaviour
         #    "hours": float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
             return "⛵️"
@@ -522,10 +526,11 @@ class TxBehaviour
         #    "hours": float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
             return 0.350 + TxBehaviourProject::ratio(behaviour)*(0.800 - 0.350)
@@ -594,10 +599,11 @@ class TxBehaviour
         #    "hours": float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
             return [behaviour["timeCommitment"]["uuid"]]
@@ -683,10 +689,11 @@ class TxBehaviour
         #    "hours": float
         #}
         #{
-        #    "type" : "until-date"
-        #    "uuid" : String
-        #    "hours": float
-        #    "date" : "YYYY-MM-DD"
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
             return TxBehaviour::postponeToTomorrowOrNil(behaviour)
