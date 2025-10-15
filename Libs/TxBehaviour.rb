@@ -336,7 +336,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "ondate" then
-            return true
+            return CommonUtils::today() >= behaviour["date"]
         end
 
         #{
