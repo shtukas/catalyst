@@ -36,9 +36,6 @@ class PolyFunctions
         if item["mikuType"] == "DeviceBackup" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxAwait" then
-            return NxAwaits::toString(item)
-        end
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
@@ -48,9 +45,6 @@ class PolyFunctions
         if item["mikuType"] == "NxDeleted" then
             return "NxDeleted: uuid: #{item["uuid"]}"
         end
-        if item["mikuType"] == "NxOnDate" then
-            return NxOnDates::toString(item)
-        end
         if item["mikuType"] == "NxIce" then
             return NxTasks::toString(item)
         end
@@ -59,9 +53,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
-        end
-        if item["mikuType"] == "Wave" then
-            return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

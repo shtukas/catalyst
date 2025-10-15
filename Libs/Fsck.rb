@@ -23,9 +23,6 @@ class Fsck
         if item["mikuType"] == "Wave" then
             return
         end
-        if item["mikuType"] == "NxOnDate" then
-            return
-        end
         if item["mikuType"] == "NxMonitor" then
             return
         end

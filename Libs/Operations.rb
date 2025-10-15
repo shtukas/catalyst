@@ -122,7 +122,20 @@ class Operations
             .each{|location|
                 puts location.yellow
                 description = File.basename(location)
-                item = NxTasks::locationToTask(description, location)
+
+                (lambda {
+                    date = CommonUtils::tomorrow()
+                    uuid = SecureRandom.uuid
+                    Items::init(uuid)
+                    behaviour = {
+                        "btype" => "ondate",
+                        "date" => date
+                    }
+                    payload = UxPayload::locationToPayload(uuid, location)
+                    item = NxPolymorphs::issueNew(description, behaviour, payload)
+                    puts JSON.pretty_generate(item)
+                }).call()
+
                 LucilleCore::removeFileSystemLocation(location)
             }
 
@@ -136,7 +149,20 @@ class Operations
             .each{|location|
                 puts location.yellow
                 description = File.basename(location)
-                item = NxOnDates::locationToItem(description, location)
+
+                (lambda {
+                    date = CommonUtils::today()
+                    uuid = SecureRandom.uuid
+                    Items::init(uuid)
+                    behaviour = {
+                        "btype" => "ondate",
+                        "date" => date
+                    }
+                    payload = UxPayload::locationToPayload(uuid, location)
+                    item = NxPolymorphs::issueNew(description, behaviour, payload)
+                    puts JSON.pretty_generate(item)
+                }).call()
+
                 LucilleCore::removeFileSystemLocation(location)
             }
 
@@ -150,8 +176,20 @@ class Operations
             .each{|location|
                 puts location.yellow
                 description = File.basename(location)
-                item = NxOnDates::locationToItem(description, location)
-                Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
+
+                (lambda {
+                    date = CommonUtils::tomorrow()
+                    uuid = SecureRandom.uuid
+                    Items::init(uuid)
+                    behaviour = {
+                        "btype" => "ondate",
+                        "date" => date
+                    }
+                    payload = UxPayload::locationToPayload(uuid, location)
+                    item = NxPolymorphs::issueNew(description, behaviour, payload)
+                    puts JSON.pretty_generate(item)
+                }).call()
+
                 LucilleCore::removeFileSystemLocation(location)
             }
     end

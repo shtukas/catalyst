@@ -90,30 +90,12 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxAwait" then
-            Operations::postponeToTomorrowOrDestroy(item)
-            return
-        end
-
-        if item["mikuType"] == "NxOnDate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end
             return
         end
-
-        if item["mikuType"] == "Wave" then
-            Waves::perform_done(item)
-            return
-        end
-
 
         if item["mikuType"] == "NxDeleted" then
             Items::deleteItem(item["uuid"])
@@ -172,22 +154,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOnDate" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
-            PolyActions::destroy(item)
-            return
-        end
-
-        if item["mikuType"] == "NxAwait" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to stop: ")
-            PolyActions::stop(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -233,22 +199,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxAwait" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxOnDate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
@@ -275,23 +225,6 @@ class PolyActions
 
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
-    end
-
-    # PolyActions::program(item)
-    def self.program(item)
-
-        if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::program1(item)
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            Waves::program0(item)
-            return
-        end
-
-        puts "PolyActions::program has not yet been implemented for miku type #{item["mikuType"]}"
-        LucilleCore::pressEnterToContinue()
     end
 
     # PolyActions::pursue(item)

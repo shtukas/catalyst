@@ -1,8 +1,0 @@
-
-NxOnDate:
-    - uuid               : String
-    - mikuType           : "NxOnDate"
-    - unixtime           : Float
-    - datetime           : DateTime Iso 8601 UTC Zulu
-    - description        : String
-    - date               : YYYY-MM-DD

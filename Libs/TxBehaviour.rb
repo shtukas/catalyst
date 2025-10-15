@@ -10,7 +10,8 @@ class TxBehaviour
             "listing position",
             "await",
             "calendar event",
-            "project"
+            "project",
+            "ondate"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
@@ -45,6 +46,25 @@ class TxBehaviour
                 "btype" => "project",
                 "timeCommitment" => timeCommitment
             }
+        end
+
+        if option == "ondate" then
+            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
+            return nil if timeCommitment.nil?
+            return {
+                "btype" => "ondate",
+                "date" => CommonUtils::interactivelyMakeADate()
+            }
+        end
+
+        #{
+        #    "btype": "wave"
+        #    "nx46": Nx46
+        #    "lastDoneUnixtime" : Integer
+        #    "interruption" : null or boolean, indicates if the item is interruption
+        #}
+        if behaviour["btype"] == "wave" then
+            return TxBehaviourWave::interactivelyMakeNewOrNull()
         end
 
         raise "(error 6b7b3eab)"
@@ -112,6 +132,24 @@ class TxBehaviour
             return "#{before}(#{JSON.generate(behaviour)})#{after}"
         end
 
+        #{
+        #     "btype" => "ondate",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "ondate" then
+            return "#{before}(#{behaviour["date"]})#{after}"
+        end
+
+        #{
+        #    "btype": "wave"
+        #    "nx46": Nx46
+        #    "lastDoneUnixtime" : Integer
+        #    "interruption" : null or boolean, indicates if the item is interruption
+        #}
+        if behaviour["btype"] == "wave" then
+            return "#{TxBehaviourWave::nx46ToString(behaviour["nx46"]).yellow} "
+        end
+
         raise "(error 4fba7460) #{behaviour}"
     end
 
@@ -172,6 +210,24 @@ class TxBehaviour
         #    "date" : "YYYY-MM-DD"
         #}
         if behaviour["btype"] == "project" then
+            return ""
+        end
+
+        #{
+        #     "btype" => "ondate",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "ondate" then
+            return ""
+        end
+
+        #{
+        #    "btype": "wave"
+        #    "nx46": Nx46
+        #    "lastDoneUnixtime" : Integer
+        #    "interruption" : null or boolean, indicates if the item is interruption
+        #}
+        if behaviour["btype"] == "wave" then
             return ""
         end
 
@@ -245,6 +301,24 @@ class TxBehaviour
             return true
         end
 
+        #{
+        #     "btype" => "ondate",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "ondate" then
+            return true
+        end
+
+        #{
+        #    "btype": "wave"
+        #    "nx46": Nx46
+        #    "lastDoneUnixtime" : Integer
+        #    "interruption" : null or boolean, indicates if the item is interruption
+        #}
+        if behaviour["btype"] == "wave" then
+            return true
+        end
+
         raise "(error 288f4204) #{behaviour}"
     end
 
@@ -307,6 +381,24 @@ class TxBehaviour
             return "⛵️"
         end
 
+        #{
+        #     "btype" => "ondate",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "ondate" then
+            return "🗓️ "
+        end
+
+        #{
+        #    "btype": "wave"
+        #    "nx46": Nx46
+        #    "lastDoneUnixtime" : Integer
+        #    "interruption" : null or boolean, indicates if the item is interruption
+        #}
+        if behaviour["btype"] == "wave" then
+            return "🌊"
+        end
+
         raise "(error 865c0eea) #{behaviour}"
     end
 
@@ -349,18 +441,27 @@ class TxBehaviour
     def self.behaviourToListingPosition(behaviour)
         # There should not be negative positions
 
-        # 0.010 -> 0.020 Wave interruption
-        # 0.100 -> 0.150 polymorph: calendar-event
+        # 0.010 -> 0.020 wave, interruption
+        # 0.100 -> 0.150 calendar-event
         # 0.160 -> 0.160 NxAwait
         # 0.260 -> 0.280 NxAnniversary
         # 0.280 -> 0.300 NxLambda
-        # 0.300 -> 0.320 Wave sticky
+        # 0.300 -> 0.320 wave, sticky
         # 0.400 -> 0.450 NxBackup
-        # 0.500 -> 0.600 NxOnDate
-        # 0.600 -> 0.800 Wave (overlay)
+        # 0.500 -> 0.600 ondate
+        # 0.600 -> 0.800 wave, overlay
         # 0.800 -> 0.880 NxTask
 
         # 0.350 -> 0.800 polymorph: project
+
+        #{
+        #     "btype" => "ondate",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "ondate" then
+            dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
+            return 0.51 + TxBehaviour::realLineTo01Increasing(dayNumber).to_f/1000
+        end
 
         # {
         #     "btype": "listing-position"
@@ -416,6 +517,22 @@ class TxBehaviour
 
         if behaviour["btype"] == "do-not-show-until" then
             return 1
+        end
+
+        #{
+        #    "btype": "wave"
+        #    "nx46": Nx46
+        #    "lastDoneUnixtime" : Integer
+        #    "interruption" : null or boolean, indicates if the item is interruption
+        #}
+        if behaviour["btype"] == "wave" then
+            if behaviour["interruption"] then
+                return 0.015
+            end
+            if behaviour["nx46"]["type"]["sticky"] then
+                return 0.310
+            end
+            return 0.700
         end
 
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
@@ -510,6 +627,30 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "project" then
             return TxBehaviour::postponeToTomorrowOrNil(behaviour)
+        end
+
+        #{
+        #     "btype" => "ondate",
+        #     "date" => 
+        #}
+        if behaviour["btype"] == "ondate" then
+            return TxBehaviour::postponeToTomorrowOrNil(behaviour)
+        end
+
+        #{
+        #    "btype": "wave"
+        #    "nx46": Nx46
+        #    "lastDoneUnixtime" : Integer
+        #    "interruption" : null or boolean, indicates if the item is interruption
+        #}
+        if behaviour["btype"] == "wave" then
+            behaviour["lastDoneUnixtime"] = Time.new.to_i
+            unixtime = TxBehaviourWave::nx46ToNextDisplayUnixtime(behaviour["nx46"], Time.new.to_i)
+            b1 = {
+                "btype" => "do-not-show-until",
+                "unixtime" => unixtime
+            }
+            return [b1, behaviour]
         end
 
         raise "I do not know how to perform done for behaviour: #{behaviour}"

@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | new",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | select | maintenance | numbers",
@@ -200,32 +200,87 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("on *", input) then
-            _, weekdayName = Interpreting::tokenizer(input)
-            return if !["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].include?(weekdayName)
-            date = CommonUtils::selectDateOfNextNonTodayWeekDay(weekdayName)
-            item = NxOnDates::interactivelyIssueAtGivenDateOrNull(date)
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("today", input) then
-            item = NxOnDates::interactivelyIssueTodayOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if Interpreting::match("fsck", input) then
             Fsck::fsckAll()
             return
         end
 
-        if Interpreting::match("ondate", input) then
-            item = NxOnDates::interactivelyIssueNewOrNull()
-            return if item.nil?
+        if Interpreting::match("on *", input) then
+            _, weekdayName = Interpreting::tokenizer(input)
+            return if !["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].include?(weekdayName)
+            date = CommonUtils::selectDateOfNextNonTodayWeekDay(weekdayName)
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = {
+                "btype" => "ondate",
+                "date" => date
+            }
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("today", input) then
+            date = CommonUtils::today()
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = {
+                "btype" => "ondate",
+                "date" => date
+            }
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("todays", input) then
+            Operations::program3(lambda { 
+                Items::mikuType("NxPolymorph")
+                    .select{|item| item["behaviours"].first["btype"] == "ondate" } 
+                    .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() } 
+            })
+            return
+        end
+
+        if Interpreting::match("tomorrow", input) then
+            date = CommonUtils::tomorrow()
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = {
+                "btype" => "ondate",
+                "date" => date
+            }
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("ondate", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = {
+                "btype" => "ondate",
+                "date" => CommonUtils::interactivelyMakeADate()
+            }
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("ondates", input) then
+            Operations::program3ItemsWithGivenBehaviour("ondate")
             return
         end
 
@@ -267,7 +322,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("new", input) then
+        if Interpreting::match("polymorph", input) then
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             uuid = SecureRandom.uuid
@@ -277,6 +332,21 @@ class CommandsAndInterpreters
                 Items::deleteItem(uuid)
                 return
             end
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("await", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = {
+                "btype" => "NxAwait",
+                "creationUnixtime" => Time.new.to_i
+            }
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(description, behaviour, payload)
             puts JSON.pretty_generate(item)
@@ -414,35 +484,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("program", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::program(item)
-            return
-        end
-
-        if Interpreting::match("program *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            PolyActions::program(item)
-            return
-        end
-
-        if Interpreting::match("ondates", input) then
-            Operations::program3(lambda { Items::mikuType("NxOnDate").sort_by{|item| item["date"][0, 10] }})
-            return
-        end
-
-        if Interpreting::match("todays", input) then
-            Operations::program3(lambda { 
-                Items::mikuType("NxOnDate")
-                    .select{|item| item["date"][0, 10] <= CommonUtils::today() }
-                    .sort_by{|item| item["unixtime"] }
-            })
-            return
-        end
-
         if Interpreting::match("pause", input) then
             item = store.getDefault()
             return if item.nil?
@@ -518,29 +559,35 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("tomorrow", input) then
-            item = NxOnDates::interactivelyIssueTomorrowOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if input == "wave" then
-            item = Waves::issueNewWaveInteractivelyOrNull(SecureRandom.uuid)
-            return if item.nil?
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = TxBehaviourWave::interactivelyMakeNewOrNull()
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
 
         if input == "waves" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["full", "listing"])
-            return if option.nil?
-            if option == "full" then
-                Waves::program1()
-            end
-            if option == "listing" then
-                Waves::program2()
-            end
+            Operations::program3ItemsWithGivenBehaviour("wave")
+            return
+        end
+
+        if Interpreting::match("await", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = {
+                "btype" => "NxAwait",
+                "creationUnixtime" => Time.new.to_i
+            }
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
             return
         end
     end

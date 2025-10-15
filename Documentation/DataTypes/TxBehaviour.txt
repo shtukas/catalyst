@@ -13,11 +13,20 @@ TxBehaviour
     "unixtime": Float
 }
 {
+    "btype": "ondate"
+    "date": YYYY-MM-DD
+}
+{
     "btype": "calendar-event"
     "date": YYYY-MM-DD
 }
-
 {
     "btype": "project"
     "timeCommitment": NxTimeCommitment
+}
+{
+    "btype": "wave"
+    "nx46": Nx46
+    "lastDoneUnixtime" : Integer
+    "interruption" : null or boolean, indicates if the item is interruption
 }
