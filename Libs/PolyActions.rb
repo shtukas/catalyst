@@ -90,13 +90,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxDeleted" then
             Items::deleteItem(item["uuid"])
             return
@@ -146,22 +139,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to done: ")
-            PolyActions::destroy(item)
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to done: ")
-            PolyActions::done(item)
-            return
-        end
-
         if item["mikuType"] == "NxPolymorph" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -180,22 +157,6 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxLambda" then
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
             return
         end
 

@@ -17,12 +17,6 @@ class Fsck
         if item["mikuType"] == "NxBackup" then
             return
         end
-        if item["mikuType"] == "NxTask" then
-            return
-        end
-        if item["mikuType"] == "Wave" then
-            return
-        end
         if item["mikuType"] == "NxMonitor" then
             return
         end

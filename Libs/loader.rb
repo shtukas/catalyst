@@ -148,7 +148,6 @@ require_relative "Instances.rb"
 require_relative "Items.rb"
 
 require_relative "NxBalls.rb"
-require_relative "NxTasks.rb"
 require_relative "NxBackups.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxPolymorphs.rb"

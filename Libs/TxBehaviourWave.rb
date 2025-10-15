@@ -20,7 +20,7 @@ class TxBehaviourWave
     # TxBehaviourWave::nx46ToNextDisplayUnixtime(nx46: Nx46, cursor: Unixtime)
     def self.nx46ToNextDisplayUnixtime(nx46, cursor)
         if nx46["type"] == 'sticky' then
-            while cursor.hour != nx46["value"] do
+            while Time.at(cursor).hour != nx46["value"] do
                 cursor = cursor + 3600
             end
             return cursor
@@ -55,5 +55,15 @@ class TxBehaviourWave
             return "(sticky, from: #{nx46["value"]})"
         end
         "(#{nx46["type"]}: #{nx46["value"]})"
+    end
+
+    # TxBehaviourWave::intsWithPrefix(behaviour)
+    def self.intsWithPrefix(behaviour)
+        behaviour["interruption"] ? " [interruption]".red : ""
+    end
+
+    # TxBehaviourWave::behaviourToString(behaviour)
+    def self.behaviourToString(behaviour)
+        "#{TxBehaviourWave::nx46ToString(behaviour["nx46"]).yellow}#{TxBehaviourWave::intsWithPrefix(behaviour)}"
     end
 end

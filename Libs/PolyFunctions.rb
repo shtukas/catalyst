@@ -45,14 +45,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDeleted" then
             return "NxDeleted: uuid: #{item["uuid"]}"
         end
-        if item["mikuType"] == "NxIce" then
-            return NxTasks::toString(item)
-        end
         if item["mikuType"] == "NxPolymorph" then
             return NxPolymorphs::toString(item)
-        end
-        if item["mikuType"] == "NxTask" then
-            return NxTasks::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

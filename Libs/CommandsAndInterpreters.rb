@@ -369,8 +369,19 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
+            return if timeCommitment.nil?
+            behaviour = {
+                "btype" => "task",
+                "unixtime" => Time.new.to_i
+            }
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -572,7 +583,15 @@ class CommandsAndInterpreters
         end
 
         if input == "waves" then
-            Operations::program3ItemsWithGivenBehaviour("wave")
+            Operations::program3(lambda { 
+                Items::mikuType("NxPolymorph")
+                    .select{|item| NxPolymorphs::itemHasBehaviour(item, "wave") }
+                    .sort_by{|item| 
+                        item["behaviours"]
+                            .select{|behaviour| behaviour["btype"] == "wave" }
+                            .first["lastDoneUnixtime"]
+                    }
+            })
             return
         end
 

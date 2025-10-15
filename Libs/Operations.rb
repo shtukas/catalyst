@@ -57,8 +57,6 @@ class Operations
 
     # Operations::globalMaintenance()
     def self.globalMaintenance()
-        puts "NxTasks::maintenance()"
-        NxTasks::maintenance()
         puts "BankVault::maintenance()"
         BankVault::maintenance()
         puts "Items::maintenance()"
@@ -196,8 +194,7 @@ class Operations
 
     # Operations::probeHead()
     def self.probeHead()
-        Items::mikuType("NxTask").each{|item|
-            #puts "probing item #{item["description"]}"
+        Items::mikuType("NxPolymorph").each{|item|
             next if item["uxpayload-b4e4"].nil?
             if item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
                 unitId = item["uxpayload-b4e4"]["id"]

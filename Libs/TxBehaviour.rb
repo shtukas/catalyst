@@ -11,7 +11,9 @@ class TxBehaviour
             "await",
             "calendar event",
             "project",
-            "ondate"
+            "ondate",
+            "wave",
+            "task"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
@@ -64,6 +66,14 @@ class TxBehaviour
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
         if behaviour["btype"] == "wave" then
+            return TxBehaviourWave::interactivelyMakeNewOrNull()
+        end
+
+        #{
+        #    "btype": "task"
+        #    "unixtime": Float
+        #}
+        if behaviour["btype"] == "task" then
             return TxBehaviourWave::interactivelyMakeNewOrNull()
         end
 
@@ -147,7 +157,15 @@ class TxBehaviour
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
         if behaviour["btype"] == "wave" then
-            return "#{TxBehaviourWave::nx46ToString(behaviour["nx46"]).yellow} "
+            return "#{TxBehaviourWave::behaviourToString(behaviour)} "
+        end
+
+        #{
+        #    "btype": "task"
+        #    "unixtime": Float
+        #}
+        if behaviour["btype"] == "task" then
+            return ""
         end
 
         raise "(error 4fba7460) #{behaviour}"
@@ -228,6 +246,14 @@ class TxBehaviour
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
         if behaviour["btype"] == "wave" then
+            return ""
+        end
+
+        #{
+        #    "btype": "task"
+        #    "unixtime": Float
+        #}
+        if behaviour["btype"] == "task" then
             return ""
         end
 
@@ -319,6 +345,14 @@ class TxBehaviour
             return true
         end
 
+        #{
+        #    "btype": "task"
+        #    "unixtime": Float
+        #}
+        if behaviour["btype"] == "task" then
+            return true
+        end
+
         raise "(error 288f4204) #{behaviour}"
     end
 
@@ -399,6 +433,14 @@ class TxBehaviour
             return "🌊"
         end
 
+        #{
+        #    "btype": "task"
+        #    "unixtime": Float
+        #}
+        if behaviour["btype"] == "task" then
+            return "🔹"
+        end
+
         raise "(error 865c0eea) #{behaviour}"
     end
 
@@ -450,7 +492,7 @@ class TxBehaviour
         # 0.400 -> 0.450 NxBackup
         # 0.500 -> 0.600 ondate
         # 0.600 -> 0.800 wave, overlay
-        # 0.800 -> 0.880 NxTask
+        # 0.800 -> 0.880 task
 
         # 0.350 -> 0.800 polymorph: project
 
@@ -535,6 +577,15 @@ class TxBehaviour
             return 0.700
         end
 
+        #{
+        #    "btype": "task"
+        #    "unixtime": Float
+        #}
+        if behaviour["btype"] == "task" then
+            dx = TxBehaviour::realLineTo01Increasing(behaviour["unixtime"] - 1759082216)
+            return 0.800 + dx.to_f/1000
+        end
+
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
     end
 
@@ -585,6 +636,14 @@ class TxBehaviour
         #    "creationUnixtime": Float
         #}
         if behaviour["btype"] == "NxAwait" then
+            return [] # it's being destroyed
+        end
+
+        #{
+        #    "btype": "task"
+        #    "unixtime": Float
+        #}
+        if behaviour["btype"] == "task" then
             return [] # it's being destroyed
         end
 
@@ -650,6 +709,7 @@ class TxBehaviour
                 "btype" => "do-not-show-until",
                 "unixtime" => unixtime
             }
+            puts "do not show until #{Time.at(unixtime)}".yellow
             return [b1, behaviour]
         end
 
