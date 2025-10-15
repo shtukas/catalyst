@@ -47,4 +47,10 @@ class NxPolymorphs
         Items::setAttribute(item["uuid"], "behaviours", item["behaviours"])
         item
     end
+
+    # NxPolymorphs::behavioursBankAccountNumbers(item)
+    def self.behavioursBankAccountNumbers(item)
+        return [] if item["mikuType"] != "NxPolymorph"
+        item["behaviours"].map{|behaviour| TxBehaviour::bankAccountsNumbers(behaviour) }.flatten
+    end
 end

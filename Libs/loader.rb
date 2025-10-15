@@ -124,8 +124,7 @@ require_relative "Config.rb"
 require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
-require_relative "BankData.rb"
-require_relative "BankVault.rb"
+require_relative "Bank.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
@@ -166,6 +165,7 @@ require_relative "Search.rb"
 require_relative "TmpSkip1.rb"
 require_relative "TxBehaviour.rb"
 require_relative "TxBehaviourWave.rb"
+require_relative "TxBehaviourProject.rb"
 
 require_relative "UxPayload.rb"
 

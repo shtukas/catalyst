@@ -75,12 +75,15 @@ class FrontPage
 
         # Main listing
 
+        displayedItems = []
+
         activePackets = NxBalls::activePackets()
         activePackets
             .sort_by{|packet| packet["startunixtime"] }
             .reverse
             .map{|packet| packet["item"] }
             .each{|item|
+                displayedItems << item["uuid"]
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)
                 printer.call(line.green)
@@ -91,6 +94,7 @@ class FrontPage
         items = FrontPage::itemsForListing()
         items
             .each{|item|
+                next if displayedItems.include?(item["uuid"])
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)
                 printer.call(line)
