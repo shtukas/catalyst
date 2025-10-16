@@ -722,7 +722,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "calendar-event" then
-            return TxBehaviour::postponeToTomorrowOrNil(behaviour)
+            return []
         end
 
         #{
@@ -756,7 +756,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "ondate" then
-            return TxBehaviour::postponeToTomorrowOrNil(behaviour)
+            return []
         end
 
         #{
