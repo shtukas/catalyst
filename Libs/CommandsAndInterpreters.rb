@@ -272,7 +272,8 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Items::mikuType("NxPolymorph")
                     .select{|item| item["behaviours"].first["btype"] == "ondate" } 
-                    .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() } 
+                    .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() }
+                    .sort_by{|item| item["behaviours"].first["date"] }
             })
             return
         end
@@ -311,7 +312,12 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            Operations::program3ItemsWithGivenBehaviour("ondate")
+            Operations::program3(lambda { 
+                Items::mikuType("NxPolymorph")
+                    .select{|item| item["behaviours"].first["btype"] == "ondate" } 
+                    .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() }
+                    .sort_by{|item| item["behaviours"].first["date"] }
+            })
             return
         end
 
