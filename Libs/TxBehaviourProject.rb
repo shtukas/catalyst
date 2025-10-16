@@ -49,7 +49,12 @@ class TxBehaviourProject
         end
 
         if timeCommitment["type"] == "unt1l-date-1958" then
-            return BankData::recoveredAverageHoursPerDay(timeCommitment["uuid"]).to_f
+            totalTimespan = timeCommitment["end"] - timeCommitment["start"]
+            currentTimespan = Time.new.to_i - timeCommitment["start"]
+            timeRatio = currentTimespan.to_f/totalTimespan
+            idealDoneInHours = timeRatio * timeCommitment["hours"]
+            actualDoneInHours = BankVault::getValue(timeCommitment["uuid"]).to_f/3600
+            return actualDoneInHours.to_f/idealDoneInHours
         end
 
         raise "(error 39498e23) #{behaviour}"

@@ -469,7 +469,7 @@ class TxBehaviour
         # 0.600 -> 0.800 wave, overlay
         # 0.800 -> 0.880 task
 
-        # 0.350 -> 0.800 polymorph: project
+        # 0.350 -> 0.700 polymorph: project
 
         #{
         #     "btype" => "ondate",
@@ -533,7 +533,7 @@ class TxBehaviour
         #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
-            return 0.350 + TxBehaviourProject::ratio(behaviour)*(0.800 - 0.350)
+            return 0.350 + TxBehaviourProject::ratio(behaviour)*(0.700 - 0.350)
         end
 
         if behaviour["btype"] == "do-not-show-until" then

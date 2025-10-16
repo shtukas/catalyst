@@ -88,7 +88,6 @@ class FrontPage
                 line = FrontPage::toString2(store, item)
                 printer.call(line.green)
                 sheight = sheight - (line.size/swidth + 1)
-                break if sheight <= 4
             }
 
         items = FrontPage::itemsForListing()
@@ -99,7 +98,7 @@ class FrontPage
                 line = FrontPage::toString2(store, item)
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
-                break if sheight <= 4
+                break if sheight <= 3
             }
 
         t2 = Time.new.to_f
