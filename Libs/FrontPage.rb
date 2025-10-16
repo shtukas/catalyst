@@ -54,6 +54,16 @@ class FrontPage
             .sort_by{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }
     end
 
+    # FrontPage::extraLines(item)
+    def self.extraLines(item) # Array[String]
+        if item["uxpayload-b4e4"] then
+            if item["uxpayload-b4e4"]["type"] == "text" then
+                return item["uxpayload-b4e4"]["text"].lines(chomp: true)
+            end
+        end
+        []
+    end
+
     # FrontPage::displayListing()
     def self.displayListing()
         store = ItemStore.new()
@@ -88,6 +98,12 @@ class FrontPage
                 line = FrontPage::toString2(store, item)
                 printer.call(line.green)
                 sheight = sheight - (line.size/swidth + 1)
+                FrontPage::extraLines(item)
+                    .map{|line| "         #{line}" }
+                    .each{|line|
+                        printer.call(line)
+                        sheight = sheight - (line.size/swidth + 1)
+                    }
             }
 
         items = FrontPage::itemsForListing()
@@ -99,6 +115,13 @@ class FrontPage
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 3
+                FrontPage::extraLines(item)
+                    .map{|line| "         #{line}" }
+                    .each{|line|
+                        printer.call(line)
+                        sheight = sheight - (line.size/swidth + 1)
+                        break if sheight <= 3
+                    }
             }
 
         t2 = Time.new.to_f

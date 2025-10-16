@@ -18,7 +18,7 @@ class NxPolymorphs
     def self.toString(item)
         behaviour = item["behaviours"].first
         icon = TxBehaviour::behaviourToIcon(behaviour)
-        "#{icon} #{TxBehaviour::behaviourToDescriptionLeft("", behaviour, " ")}#{item["description"]}#{TxBehaviour::behaviourToDescriptionRight(" ", behaviour, "")}"
+        "#{icon} #{TxBehaviour::behaviourToDescriptionLeft(behaviour)}#{item["description"]}#{TxBehaviour::behaviourToDescriptionRight(behaviour)}"
     end
 
     # NxPolymorphs::doNotShowUntil(item, unixtime)

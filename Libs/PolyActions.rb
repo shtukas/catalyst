@@ -76,15 +76,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                NxBalls::stop(item)
-                NxPolymorphs::doNotShowUntil(item, Time.new.to_i + item["period"] * 86400 + rand)
-                Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
-            end
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::mark_next_celebration_date(item)
             return
@@ -163,14 +154,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 

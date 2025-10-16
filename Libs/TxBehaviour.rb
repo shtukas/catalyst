@@ -13,7 +13,8 @@ class TxBehaviour
             "project",
             "ondate",
             "wave",
-            "task"
+            "task",
+            "backup"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
@@ -78,14 +79,26 @@ class TxBehaviour
             return TxBehaviourWave::interactivelyMakeNewOrNull()
         end
 
+        #{
+        #    "btype": "backup"
+        #    "period": Float # period in Days
+        #}
+        if behaviour["btype"] == "backup" then
+            period = LucilleCore::askQuestionAnswerAsString("period (in days): ").to_f
+            return {
+                "btype" => "backup",
+                "period" => period
+            }
+        end
+
         raise "(error 6b7b3eab)"
     end
 
     # ---------------------------------------------------------------
     # Data
 
-    # TxBehaviour::behaviourToDescriptionLeft(before, behaviour, after)
-    def self.behaviourToDescriptionLeft(before, behaviour, after)
+    # TxBehaviour::behaviourToDescriptionLeft(behaviour)
+    def self.behaviourToDescriptionLeft(behaviour)
         # {
         #     "btype": "listing-position"
         #     "position": Float
@@ -115,7 +128,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "calendar-event" then
-            return "#{before}(#{behaviour["date"]})#{after}"
+            return "(#{behaviour["date"]}) "
         end
 
         #{
@@ -141,7 +154,7 @@ class TxBehaviour
         #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
-            return "#{before}#{TxBehaviourProject::toString(behaviour)}#{after}"
+            return "#{TxBehaviourProject::toString(behaviour)} "
         end
 
         #{
@@ -149,7 +162,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "ondate" then
-            return "#{before}(#{behaviour["date"]})#{after}"
+            return "(#{behaviour["date"]}) "
         end
 
         #{
@@ -170,11 +183,19 @@ class TxBehaviour
             return ""
         end
 
+        #{
+        #    "btype": "backup"
+        #    "period": Float # period in Days
+        #}
+        if behaviour["btype"] == "backup" then
+            return ""
+        end
+
         raise "(error 4fba7460) #{behaviour}"
     end
 
-    # TxBehaviour::behaviourToDescriptionRight(before, behaviour, after)
-    def self.behaviourToDescriptionRight(before, behaviour, after)
+    # TxBehaviour::behaviourToDescriptionRight(behaviour)
+    def self.behaviourToDescriptionRight(behaviour)
         # {
         #     "btype": "listing-position"
         #     "position": Float
@@ -196,8 +217,7 @@ class TxBehaviour
         #    "unixtime": Float
         # }
         if behaviour["btype"] == "do-not-show-until" then
-            s = "(do not show until #{Time.at(behaviour["unixtime"]).to_s})".yellow
-            return "#{before}#{s}#{after}"
+            return " (do not show until #{Time.at(behaviour["unixtime"]).to_s})".yellow
         end
 
         #{
@@ -258,6 +278,14 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "task" then
             return ""
+        end
+
+        #{
+        #    "btype": "backup"
+        #    "period": Float # period in Days
+        #}
+        if behaviour["btype"] == "backup" then
+            return " (every #{behaviour["period"]} days)"
         end
 
         raise "(error c073968d) #{behaviour}"
@@ -357,6 +385,14 @@ class TxBehaviour
             return true
         end
 
+        #{
+        #    "btype": "backup"
+        #    "period": Float # period in Days
+        #}
+        if behaviour["btype"] == "backup" then
+            return true
+        end
+
         raise "(error 288f4204) #{behaviour}"
     end
 
@@ -446,6 +482,14 @@ class TxBehaviour
             return "🔹"
         end
 
+        #{
+        #    "btype": "backup"
+        #    "period": Float # period in Days
+        #}
+        if behaviour["btype"] == "backup" then
+            return "💾"
+        end
+
         raise "(error 865c0eea) #{behaviour}"
     end
 
@@ -464,7 +508,7 @@ class TxBehaviour
         # 0.260 -> 0.280 NxAnniversary
         # 0.280 -> 0.300 NxLambda
         # 0.300 -> 0.320 wave, sticky
-        # 0.400 -> 0.450 NxBackup
+        # 0.400 -> 0.450 backup
         # 0.500 -> 0.600 ondate
         # 0.600 -> 0.800 wave, overlay
         # 0.800 -> 0.880 task
@@ -497,6 +541,14 @@ class TxBehaviour
         if behaviour["btype"] == "NxAwait" then
             dx = TxBehaviour::realLineTo01Increasing(behaviour["creationUnixtime"] - 1759082216)
             return 0.160 + dx.to_f/1000
+        end
+
+        #{
+        #    "btype": "backup"
+        #    "period": Float # period in Days
+        #}
+        if behaviour["btype"] == "backup" then
+            return 0.410
         end
 
         #{
@@ -716,6 +768,20 @@ class TxBehaviour
         if behaviour["btype"] == "wave" then
             behaviour["lastDoneUnixtime"] = Time.new.to_i
             unixtime = TxBehaviourWave::nx46ToNextDisplayUnixtime(behaviour["nx46"], Time.new.to_i)
+            b1 = {
+                "btype" => "do-not-show-until",
+                "unixtime" => unixtime
+            }
+            puts "do not show until #{Time.at(unixtime)}".yellow
+            return [b1, behaviour]
+        end
+
+        #{
+        #    "btype": "backup"
+        #    "period": Float # period in Days
+        #}
+        if behaviour["btype"] == "backup" then
+            unixtime = Time.new.to_i + behaviour["period"]*86400
             b1 = {
                 "btype" => "do-not-show-until",
                 "unixtime" => unixtime

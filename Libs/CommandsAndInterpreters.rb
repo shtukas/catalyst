@@ -191,8 +191,24 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("backup", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            period = LucilleCore::askQuestionAnswerAsString("period (in days): ").to_f
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            behaviour = {
+                "btype" => "backup",
+                "period" => period
+            }
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
         if Interpreting::match("backups", input) then
-            Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
+            Operations::program3ItemsWithGivenBehaviour("backup")
             return
         end
 
@@ -304,12 +320,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
-            return
-        end
-
-        if Interpreting::match("backup", input) then
-            item = NxBackups::interactivelyIssueNewOrNull()
-            puts JSON.pretty_generate(item)
             return
         end
 

@@ -36,3 +36,7 @@ TxBehaviour
     "btype": "task"
     "unixtime": Float
 }
+{
+    "btype": "backup"
+    "period": Float # period in Days
+}
