@@ -130,7 +130,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(description, behaviour, payload)
+                    item = NxPolymorphs::issueNew(description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
                 }).call()
 
@@ -157,7 +157,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(description, behaviour, payload)
+                    item = NxPolymorphs::issueNew(description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
                 }).call()
 
@@ -184,7 +184,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(description, behaviour, payload)
+                    item = NxPolymorphs::issueNew(description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
                 }).call()
 

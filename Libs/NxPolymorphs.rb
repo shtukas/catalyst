@@ -1,14 +1,14 @@
 
 class NxPolymorphs
 
-    # NxPolymorphs::issueNew(description, behaviour, null | payload)
-    def self.issueNew(description, behaviour, payload)
+    # NxPolymorphs::issueNew(description, behaviours, null | payload)
+    def self.issueNew(description, behaviours, payload)
         uuid = SecureRandom.uuid
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "behaviours", [behaviour])
+        Items::setAttribute(uuid, "behaviours", behaviours)
         Items::setAttribute(uuid, "payload-1310", payload)
         Items::setAttribute(uuid, "mikuType", "NxPolymorph")
         Items::itemOrNull(uuid)

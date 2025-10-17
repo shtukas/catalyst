@@ -13,12 +13,6 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-
-        if item["mikuType"] == "NxLambda" then
-            NxLambdas::run(item)
-            return
-        end
-
         UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
     end
 
@@ -60,10 +54,6 @@ class PolyActions
 
         PolyActions::stop(item)
 
-        if item["mikuType"] == "NxLambda" then
-            return
-        end
-
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
             return
@@ -73,11 +63,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 DropBox::done(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::mark_next_celebration_date(item)
             return
         end
 
@@ -104,11 +89,6 @@ class PolyActions
 
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
-        if item["mikuType"] == "NxLambda" then
-            NxLambdas::run(item)
-            return
-        end
-
         if NxBalls::itemIsPaused(item) then
             NxBalls::pursue(item)
             return
@@ -127,11 +107,6 @@ class PolyActions
 
         return if NxBalls::itemIsActive(item)
 
-        if item["mikuType"] == "NxLambda" then
-            NxLambdas::run(item)
-            return
-        end
-
         if item["mikuType"] == "NxPolymorph" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -148,18 +123,6 @@ class PolyActions
     def self.destroy(item)
 
         NxBalls::stop(item)
-
-        if item["mikuType"] == "NxLambda" then
-            return
-        end
-
-        if item["mikuType"] == "NxAnniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
-            end
-            return
-        end
 
         if item["mikuType"] == "NxPolymorph" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then

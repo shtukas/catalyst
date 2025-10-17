@@ -14,7 +14,8 @@ class TxBehaviour
             "ondate",
             "wave",
             "task",
-            "backup"
+            "backup",
+            "anniversary"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
@@ -67,7 +68,7 @@ class TxBehaviour
         #    "lastDoneUnixtime" : Integer
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
-        if behaviour["btype"] == "wave" then
+        if option == "wave" then
             return TxBehaviourWave::interactivelyMakeNewOrNull()
         end
 
@@ -75,7 +76,7 @@ class TxBehaviour
         #    "btype": "task"
         #    "unixtime": Float
         #}
-        if behaviour["btype"] == "task" then
+        if option == "task" then
             return TxBehaviourWave::interactivelyMakeNewOrNull()
         end
 
@@ -83,12 +84,22 @@ class TxBehaviour
         #    "btype": "backup"
         #    "period": Float # period in Days
         #}
-        if behaviour["btype"] == "backup" then
+        if option == "backup" then
             period = LucilleCore::askQuestionAnswerAsString("period (in days): ").to_f
             return {
                 "btype" => "backup",
                 "period" => period
             }
+        end
+
+        #{
+        #    "btype": "anniversary"
+        #    "startdate"        : YYYY-MM-DD
+        #    "repeatType"       : "weekly" | "monthly" | "yearly"
+        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+        #}
+        if option == "anniversary" then
+            return TxBehaviourAnniversary::makeNew()
         end
 
         raise "(error 6b7b3eab)"
@@ -191,6 +202,16 @@ class TxBehaviour
             return ""
         end
 
+        #{
+        #    "btype": "anniversary"
+        #    "startdate"        : YYYY-MM-DD
+        #    "repeatType"       : "weekly" | "monthly" | "yearly"
+        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+        #}
+        if behaviour["btype"] == "anniversary" then
+            return "#{TxBehaviourAnniversary::toString(behaviour)} "
+        end
+
         raise "(error 4fba7460) #{behaviour}"
     end
 
@@ -286,6 +307,16 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "backup" then
             return " (every #{behaviour["period"]} days)"
+        end
+
+        #{
+        #    "btype": "anniversary"
+        #    "startdate"        : YYYY-MM-DD
+        #    "repeatType"       : "weekly" | "monthly" | "yearly"
+        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+        #}
+        if behaviour["btype"] == "anniversary" then
+            return ""
         end
 
         raise "(error c073968d) #{behaviour}"
@@ -393,6 +424,16 @@ class TxBehaviour
             return true
         end
 
+        #{
+        #    "btype": "anniversary"
+        #    "startdate"        : YYYY-MM-DD
+        #    "repeatType"       : "weekly" | "monthly" | "yearly"
+        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+        #}
+        if behaviour["btype"] == "anniversary" then
+            return true
+        end
+
         raise "(error 288f4204) #{behaviour}"
     end
 
@@ -490,6 +531,16 @@ class TxBehaviour
             return "💾"
         end
 
+        #{
+        #    "btype": "anniversary"
+        #    "startdate"        : YYYY-MM-DD
+        #    "repeatType"       : "weekly" | "monthly" | "yearly"
+        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+        #}
+        if behaviour["btype"] == "anniversary" then
+            return "🎂"
+        end
+
         raise "(error 865c0eea) #{behaviour}"
     end
 
@@ -505,8 +556,7 @@ class TxBehaviour
         # 0.010 -> 0.020 wave, interruption
         # 0.100 -> 0.150 calendar-event
         # 0.160 -> 0.160 NxAwait
-        # 0.260 -> 0.280 NxAnniversary
-        # 0.280 -> 0.300 NxLambda
+        # 0.260 -> 0.280 anniversary
         # 0.300 -> 0.320 wave, sticky
         # 0.400 -> 0.450 backup
         # 0.500 -> 0.600 ondate
@@ -616,6 +666,18 @@ class TxBehaviour
         if behaviour["btype"] == "task" then
             dx = TxBehaviour::realLineTo01Increasing(behaviour["unixtime"] - 1759082216)
             return 0.800 + dx.to_f/1000
+        end
+
+        #{
+        #    "btype": "anniversary"
+        #    "startdate"        : YYYY-MM-DD
+        #    "repeatType"       : "weekly" | "monthly" | "yearly"
+        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+        #}
+        if behaviour["btype"] == "anniversary" then
+            unixtime = DateTime.parse("#{behaviour["next_celebration"]}T00:00:00Z").to_time.to_i
+            dx = TxBehaviour::realLineTo01Increasing(unixtime - 1760687343)
+            return 0.270 + dx.to_f/1000
         end
 
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
@@ -787,6 +849,24 @@ class TxBehaviour
                 "unixtime" => unixtime
             }
             puts "do not show until #{Time.at(unixtime)}".yellow
+            return [b1, behaviour]
+        end
+
+        #{
+        #    "btype": "anniversary"
+        #    "startdate"        : YYYY-MM-DD
+        #    "repeatType"       : "weekly" | "monthly" | "yearly"
+        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+        #}
+        if behaviour["btype"] == "anniversary" then
+            next_celebration = TxBehaviourAnniversary::computeNextCelebrationDate(behaviour["startdate"], behaviour["repeatType"])
+            puts "next celebration: #{next_celebration}"
+            behaviour["next_celebration"] = next_celebration
+            b1 = {
+                "btype" => "do-not-show-until",
+                "unixtime" => DateTime.parse("#{next_celebration}T00:00:00Z").to_time.to_i
+            }
+            puts "do not show until #{Time.at(b1["unixtime"])}".yellow
             return [b1, behaviour]
         end
 

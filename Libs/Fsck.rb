@@ -11,9 +11,6 @@ class Fsck
 
         UxPayload::fsck(item["uuid"], item["uxpayload-b4e4"])
 
-        if item["mikuType"] == "NxAnniversary" then
-            return
-        end
         if item["mikuType"] == "NxMonitor" then
             return
         end

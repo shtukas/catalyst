@@ -181,7 +181,7 @@ class CommandsAndInterpreters
             }
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -202,7 +202,7 @@ class CommandsAndInterpreters
                 "period" => period
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -246,7 +246,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -263,7 +263,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -290,7 +290,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -306,7 +306,7 @@ class CommandsAndInterpreters
                 "date" => CommonUtils::interactivelyMakeADate()
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -364,7 +364,7 @@ class CommandsAndInterpreters
                 return
             end
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -379,7 +379,7 @@ class CommandsAndInterpreters
                 "creationUnixtime" => Time.new.to_i
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -390,12 +390,31 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("anniversary", input) then
-            Anniversaries::issueNewAnniversaryOrNullInteractively()
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            behaviour = TxBehaviourAnniversary::makeNew()
+            b1 = {
+                "btype" => "do-not-show-until",
+                "unixtime" => DateTime.parse("#{behaviour["next_celebration"]}T00:00:00Z").to_time.to_i
+            }
+            uuid = SecureRandom.uuid
+            Items::init(uuid)
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(description, [b1, behaviour], payload)
+            puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("anniversaries", input) then
-            Anniversaries::program2()
+            Operations::program3(lambda { 
+                Items::mikuType("NxPolymorph")
+                    .select{|item| NxPolymorphs::itemHasBehaviour(item, "anniversary") }
+                    .sort_by{|item| 
+                        item["behaviours"]
+                            .select{|behaviour| behaviour["btype"] == "anniversary" }
+                            .first["next_celebration"]
+                    }
+            })
             return
         end
 
@@ -411,7 +430,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -428,7 +447,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -608,7 +627,7 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = TxBehaviourWave::interactivelyMakeNewOrNull()
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -636,7 +655,7 @@ class CommandsAndInterpreters
                 "creationUnixtime" => Time.new.to_i
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, behaviour, payload)
+            item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end

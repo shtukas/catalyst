@@ -121,7 +121,6 @@ require_relative "Config.rb"
 
 # ------------------------------------------------------------
 
-require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
@@ -147,7 +146,6 @@ require_relative "Instances.rb"
 require_relative "Items.rb"
 
 require_relative "NxBalls.rb"
-require_relative "NxLambdas.rb"
 require_relative "NxPolymorphs.rb"
 require_relative "NxTimeCommitment.rb"
 require_relative "Nx46.rb"
@@ -165,6 +163,7 @@ require_relative "TmpSkip1.rb"
 require_relative "TxBehaviour.rb"
 require_relative "TxBehaviourWave.rb"
 require_relative "TxBehaviourProject.rb"
+require_relative "TxBehaviourAnniversary.rb"
 
 require_relative "UxPayload.rb"
 

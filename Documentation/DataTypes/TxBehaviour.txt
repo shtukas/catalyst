@@ -40,3 +40,9 @@ TxBehaviour
     "btype": "backup"
     "period": Float # period in Days
 }
+{
+    "btype": "anniversary"
+    "startdate"        : YYYY-MM-DD
+    "repeatType"       : "weekly" | "monthly" | "yearly"
+    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
+}
