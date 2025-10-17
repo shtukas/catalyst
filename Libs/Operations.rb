@@ -61,6 +61,29 @@ class Operations
         BankVault::maintenance()
         puts "Items::maintenance()"
         Items::maintenance()
+
+        count = Items::mikuType("NxPolymorph")
+                    .select{|item| item["behaviours"].any?{|behaviour| behaviour["btype"] == "task" } }
+                    .size
+        puts "task count: #{count}"
+        if count < 50 then
+            iced = Items::mikuType("NxIce")
+            if iced.size == 0 then
+                puts "We do not have any NxIce left, please remove [5b2268ae]"
+                exit
+            end
+            iced
+                .take(100)
+                .each{|item|
+                    behaviour = {
+                        "btype" => "task",
+                        "unixtime" => item["unixtime"] || Time.new.to_i
+                    }
+                    puts "moving #{item["uuid"]} from NxIce to polymorph task"
+                    Items::setAttribute(item["uuid"], "behaviours", [behaviour])
+                    Items::setAttribute(item["uuid"], "mikuType", "NxPolymorph")
+                }
+        end
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
