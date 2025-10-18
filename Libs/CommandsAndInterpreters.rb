@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | select | maintenance | numbers",
+            "misc          : search | commands | fsck | probe-head | sort | maintenance | numbers",
         ].join("\n")
     end
 
@@ -85,16 +85,17 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("select", input) then
-            items = store.items()
+        if Interpreting::match("sort", input) then
+            items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
+            cursor = items.map{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }.min
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|i|
-                position = 0.9 * [0.20].min
-                px17 = {
-                    "type"  => "overriden",
-                    "value" => position,
-                    "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+            selected.reverse.each{|item|
+                cursor = 0.9 * cursor
+                behavior = {
+                    "btype" => "listing-position",
+                    "position" => cursor
                 }
+                Items::setAttribute(item["uuid"], "behaviours", [behavior] + item["behaviours"])
             }
             return
         end
@@ -366,6 +367,18 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(description, [behaviour], payload)
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("morph *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
+            if behaviour.nil? then
+                return
+            end
+            Items::setAttribute(item["uuid"], "behaviours", [behaviour])
             return
         end
 

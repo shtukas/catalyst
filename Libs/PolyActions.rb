@@ -72,6 +72,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPolymorph" then
+            if item["behaviours"].first["btype"] == "listing-position" and item["behaviours"].size >= 2 then
+                item["behaviours"] = item["behaviours"].drop(1)
+            end
             behaviours = TxBehaviour::doneArrayOfBehaviours(item["behaviours"])
             if behaviours.empty? then
                 if LucilleCore::askQuestionAnswerAsBoolean("confirm destroy '#{PolyFunctions::toString(item).green}': ") then

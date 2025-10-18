@@ -77,7 +77,10 @@ class TxBehaviour
         #    "unixtime": Float
         #}
         if option == "task" then
-            return TxBehaviourWave::interactivelyMakeNewOrNull()
+            return {
+                "btype" => "task",
+                "unixtime" => Time.new.to_i
+            }
         end
 
         #{

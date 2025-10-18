@@ -5,7 +5,7 @@ class TxBehaviourWave
 
     # TxBehaviourWave::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        nx46 = Nx46::makeNx46OrNull()
+        nx46 = Nx46::interactivelyMakeNewOrNull()
         return nil if core.nil?
         lastDoneUnixtime = 0
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ?: ")
