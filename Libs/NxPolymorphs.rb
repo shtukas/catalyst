@@ -4,10 +4,8 @@ class NxPolymorphs
     # --------------------------------------
     # Issue
 
-    # NxPolymorphs::issueNew(description, behaviours, null | payload)
-    def self.issueNew(description, behaviours, payload)
-        uuid = SecureRandom.uuid
-        Items::init(uuid)
+    # NxPolymorphs::issueNew(uuid, description, behaviours, payload or null)
+    def self.issueNew(uuid, description, behaviours, payload)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -18,7 +16,7 @@ class NxPolymorphs
     end
 
     # --------------------------------------
-    # Issue
+    # Data
 
     # NxPolymorphs::toString(item)
     def self.toString(item)
@@ -36,6 +34,13 @@ class NxPolymorphs
     def self.behavioursBankAccountNumbers(item)
         return [] if item["mikuType"] != "NxPolymorph"
         item["behaviours"].map{|behaviour| TxBehaviour::bankAccountsNumbers(behaviour) }.flatten
+    end
+
+    # NxPolymorphs::listingFirstPosition()
+    def self.listingFirstPosition()
+        Items::items()
+            .select{|item| item["mikuType"] == "NxPolymorph" }
+            .map{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }.min
     end
 
     # --------------------------------------

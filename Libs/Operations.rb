@@ -164,7 +164,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(description, [behaviour], payload)
+                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
                 }).call()
 
@@ -191,7 +191,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(description, [behaviour], payload)
+                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
                 }).call()
 
@@ -218,7 +218,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(description, [behaviour], payload)
+                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
                 }).call()
 
@@ -241,12 +241,19 @@ class Operations
 
     # Operations::issuePriority(description)
     def self.issuePriority(description)
-        item = nil
-        return if item.nil?
         NxBalls::activeItems().each{|i|
             NxBalls::pause(i)
         }
-        # TODO
+
+        uuid = SecureRandom.uuid
+        behaviour = {
+            "btype" => "listing-position",
+            "position" => NxPolymorphs::listingFirstPosition()
+        }
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+
         if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
             PolyActions::start(item)
         end

@@ -92,7 +92,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("sort", input) then
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
-            cursor = items.map{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }.min
+            cursor = NxPolymorphs::listingFirstPosition()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 cursor = 0.95 * cursor
@@ -159,8 +159,17 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    # TODO
-                    # TODO
+                    description = line
+
+                    uuid = SecureRandom.uuid
+                    behaviour = {
+                        "btype" => "listing-position",
+                        "position" => NxPolymorphs::listingFirstPosition()
+                    }
+                    Items::init(uuid)
+                    payload = nil
+                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], nil)
+
                     last_item = item
                 }
             if last_item then
@@ -182,7 +191,7 @@ class CommandsAndInterpreters
             }
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -203,7 +212,7 @@ class CommandsAndInterpreters
                 "period" => period
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -247,7 +256,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -264,7 +273,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -291,7 +300,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -307,7 +316,7 @@ class CommandsAndInterpreters
                 "date" => CommonUtils::interactivelyMakeADate()
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -365,7 +374,7 @@ class CommandsAndInterpreters
                 return
             end
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -392,7 +401,7 @@ class CommandsAndInterpreters
                 "creationUnixtime" => Time.new.to_i
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -413,7 +422,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [b1, behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [b1, behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -441,7 +450,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -458,7 +467,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -638,7 +647,7 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = TxBehaviourWave::interactivelyMakeNewOrNull()
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -666,7 +675,7 @@ class CommandsAndInterpreters
                 "creationUnixtime" => Time.new.to_i
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)
             return
         end
