@@ -222,7 +222,7 @@ class TxBehaviour
         #    "durationInMinutes": Int
         #}
         if behaviour["btype"] == "DayCalendarItem" then
-            return "[#{behaviour["start-datetime"][11, 5]}] (#{behaviour["durationInMinutes"].to_i.to_s.rjust(3)}) ".red
+            return "[#{behaviour["start-datetime"][11, 5]} -> #{Time.at(behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60).to_s[11, 5]}] (#{behaviour["durationInMinutes"].to_i.to_s.rjust(3)}) ".red
         end
 
         raise "(error 4fba7460) #{behaviour}"
