@@ -434,8 +434,6 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
-            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
-            return if timeCommitment.nil?
             behaviour = {
                 "btype" => "task",
                 "unixtime" => Time.new.to_i

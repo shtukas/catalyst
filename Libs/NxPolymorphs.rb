@@ -65,6 +65,7 @@ class NxPolymorphs
     # NxPolymorphs::doNotShowUntil(item, unixtime)
     def self.doNotShowUntil(item, unixtime)
         item = NxPolymorphs::removeAnyCalendarItem(item)
+        behaviours = item["behaviours"]
         behaviour = {
             "btype" => "do-not-show-until",
             "unixtime" => unixtime
