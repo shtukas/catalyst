@@ -260,4 +260,53 @@ class Operations
     def self.program3ItemsWithGivenBehaviour(btype)
         Operations::program3(lambda { Items::mikuType("NxPolymorph").select{|item| NxPolymorphs::itemHasBehaviour(item, btype) } })
     end
+
+    # Operations::morning()
+    def self.morning()
+        items = FrontPage::itemsForListing()
+                    .select{|item| item["behaviours"].first["btype"] != "task" }
+        selected, unselected = items.partition{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
+        cursor = ([Time.new.to_i] + selected.map{|item| item["behaviours"].first["start-unixtime"] }).max + 1200
+        loop {
+            selected
+                .sort_by{|item| item["behaviours"].first["start-unixtime"] }
+                .each{|item|
+                    puts PolyFunctions::toString(item)
+                }
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", unselected, lambda{ |item| PolyFunctions::toString(item) })
+            break if item.nil?
+            duration = LucilleCore::askQuestionAnswerAsString("duration for '#{PolyFunctions::toString(item)}' in minutes ? ").to_f
+            behaviour = {
+                "btype" => "DayCalendarItem",
+                "start-unixtime" => cursor,
+                "start-datetime" => Time.at(cursor).to_s,
+                "durationInMinutes" => duration
+            }
+            item["behaviours"] = [behaviour] + item["behaviours"]
+            Items::setAttribute(item["uuid"], "behaviours", item["behaviours"])
+            selected << item
+            unselected = unselected.select{|i| i["uuid"] != item["uuid"] }
+            cursor = cursor + duration * 60
+        }
+    end
+
+    # Operations::recalibrate()
+    def self.recalibrate(items)
+        cursor = Time.new.to_i + 1200 # 20 mins
+        items
+            .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
+            .sort_by{|item| item["behaviours"].first["start-unixtime"] }
+            .each{|item|
+                behaviour = item["behaviours"].first
+                behaviour = {
+                    "btype" => "DayCalendarItem",
+                    "start-unixtime" => cursor,
+                    "start-datetime" => Time.at(cursor).to_s,
+                    "durationInMinutes" => behaviour["durationInMinutes"]
+                }
+                Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"].drop(1))
+                cursor = cursor + behaviour["durationInMinutes"]*60
+            }
+            
+    end
 end

@@ -46,3 +46,9 @@ TxBehaviour
     "repeatType"       : "weekly" | "monthly" | "yearly"
     "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
 }
+{
+    "btype": "DayCalendarItem"
+    "start-unixtime": Int
+    "start-datetime": Int
+    "durationInMinutes": Int
+}

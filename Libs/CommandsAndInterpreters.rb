@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | maintenance | numbers",
+            "misc          : search | commands | fsck | probe-head | sort | maintenance | morning | recalibrate",
         ].join("\n")
     end
 
@@ -80,8 +80,13 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("numbers", input) then
-            PriorityLevels::print_numbers()
+        if Interpreting::match("morning", input) then
+            Operations::morning()
+            return
+        end
+
+        if Interpreting::match("recalibrate", input) then
+            Operations::recalibrate(store.items())
             return
         end
 

@@ -107,6 +107,8 @@ class FrontPage
             }
 
         items = FrontPage::itemsForListing()
+        i1, i2 = items.partition{|item| item["behaviours"].first["btype"] != "task" }
+        items = !i1.empty? ? i1 : i2
         items
             .each{|item|
                 next if displayedItems.include?(item["uuid"])
@@ -144,22 +146,18 @@ class FrontPage
         Thread.new {
             loop {
                 (lambda {
-                    NxBalls::all()
-                        .select{|nxball| nxball["type"] == "running" }
-                        .each{|nxball|
-                            item = Items::itemOrNull(nxball["itemuuid"])
-                            next if item.nil?
-                            if item["mikuType"] == "Wave" then
-                                if NxBalls::ballRunningTime(nxball) > 1800 then
-                                    CommonUtils::onScreenNotification("Catalyst", "Wave is over running")
-                                    sleep 2
-                                end
-                                next
-                            end
-                            if NxBalls::ballRunningTime(nxball) > 3600 then
-                                CommonUtils::onScreenNotification("Catalyst", "#{item["mikuType"]} is over running")
-                            end
-                        }
+                    return if NxBalls::all().any?{|nxball| nxball["type"] == "running" }
+                    items = FrontPage::itemsForListing().select{|item| item["behaviours"].first["btype"] != "task" }
+                    return if items.empty?
+                    endunixtime = items
+                            .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
+                            .map{|item| item["behaviours"].first }
+                            .map{|behaviour| behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60 }
+                            .sort
+                            .first
+                    if Time.new.to_i > (endunixtime - 300) then
+                        CommonUtils::onScreenNotification("Catalyst", "check calendar items")
+                    end
                 }).call()
                 sleep 120
             }

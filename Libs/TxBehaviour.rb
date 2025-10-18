@@ -109,7 +109,7 @@ class TxBehaviour
     end
 
     # ---------------------------------------------------------------
-    # Data
+    # Data (1) bahavior to something
 
     # TxBehaviour::behaviourToDescriptionLeft(behaviour)
     def self.behaviourToDescriptionLeft(behaviour)
@@ -213,6 +213,16 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "anniversary" then
             return "#{TxBehaviourAnniversary::toString(behaviour)} "
+        end
+
+        #{
+        #    "btype": "DayCalendarItem"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "DayCalendarItem" then
+            return "[#{behaviour["start-datetime"][11, 5]}] (#{behaviour["durationInMinutes"].to_i.to_s.rjust(3)}) ".red
         end
 
         raise "(error 4fba7460) #{behaviour}"
@@ -319,6 +329,16 @@ class TxBehaviour
         #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
         #}
         if behaviour["btype"] == "anniversary" then
+            return ""
+        end
+
+        #{
+        #    "btype": "DayCalendarItem"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "DayCalendarItem" then
             return ""
         end
 
@@ -437,6 +457,16 @@ class TxBehaviour
             return true
         end
 
+        #{
+        #    "btype": "DayCalendarItem"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "DayCalendarItem" then
+            return true
+        end
+
         raise "(error 288f4204) #{behaviour}"
     end
 
@@ -544,12 +574,17 @@ class TxBehaviour
             return "🎂"
         end
 
-        raise "(error 865c0eea) #{behaviour}"
-    end
+        #{
+        #    "btype": "DayCalendarItem"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "DayCalendarItem" then
+            return "⏱️ "
+        end
 
-    # TxBehaviour::realLineTo01Increasing(x)
-    def self.realLineTo01Increasing(x)
-        (2 + Math.atan(x)).to_f/10
+        raise "(error 865c0eea) #{behaviour}"
     end
 
     # TxBehaviour::behaviourToListingPosition(behaviour)
@@ -557,6 +592,7 @@ class TxBehaviour
         # There should not be negative positions
 
         # 0.010 -> 0.020 wave, interruption
+        # 0.050 -> 0.600 DayCalendarItem
         # 0.100 -> 0.150 calendar-event
         # 0.160 -> 0.160 NxAwait
         # 0.260 -> 0.280 anniversary
@@ -567,6 +603,17 @@ class TxBehaviour
         # 0.800 -> 0.880 task
 
         # 0.350 -> 0.700 polymorph: project
+
+        #{
+        #    "btype": "DayCalendarItem"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "DayCalendarItem" then
+            dx = TxBehaviour::realLineTo01Increasing(behaviour["start-unixtime"] - 1760788063)
+            return 0.050 + dx.to_f/1000
+        end
 
         #{
         #     "btype" => "ondate",
@@ -684,6 +731,14 @@ class TxBehaviour
         end
 
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
+    end
+
+    # ---------------------------------------------------------------
+    # Data (2)
+
+    # TxBehaviour::realLineTo01Increasing(x)
+    def self.realLineTo01Increasing(x)
+        (2 + Math.atan(x)).to_f/10
     end
 
     # TxBehaviour::preDisplayProcessing(behaviour)
@@ -871,6 +926,16 @@ class TxBehaviour
             }
             puts "do not show until #{Time.at(b1["unixtime"])}".yellow
             return [b1, behaviour]
+        end
+
+        #{
+        #    "btype": "DayCalendarItem"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "DayCalendarItem" then
+            return []
         end
 
         raise "I do not know how to perform done for behaviour: #{behaviour}"
