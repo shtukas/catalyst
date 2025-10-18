@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | maintenance | morning | recalibrate",
+            "misc          : search | commands | fsck | sort | maintenance | morning | recalibrate",
         ].join("\n")
     end
 
@@ -135,11 +135,6 @@ class CommandsAndInterpreters
                     puts "recorduuid: #{record["recorduuid"]}; uuid: #{record["id"]}, date: #{record["date"]}, value: #{"%9.2f" % record["value"]}"
                 }
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("probe-head", input) then
-            Operations::probeHead()
             return
         end
 

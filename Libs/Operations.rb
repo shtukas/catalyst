@@ -75,6 +75,8 @@ class Operations
             iced
                 .take(100)
                 .each{|item|
+                    next if !Dx8Units::attemptRepository()
+
                     behaviour = {
                         "btype" => "task",
                         "unixtime" => item["unixtime"] || Time.new.to_i
@@ -82,6 +84,15 @@ class Operations
                     puts "moving #{item["uuid"]} from NxIce to polymorph task"
                     Items::setAttribute(item["uuid"], "behaviours", [behaviour])
                     Items::setAttribute(item["uuid"], "mikuType", "NxPolymorph")
+
+                    if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
+                        unitId = item["uxpayload-b4e4"]["id"]
+                        location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
+                        puts "unit location: #{location}"
+                        payload2 = UxPayload::locationToPayload(item["uuid"], location)
+                        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
+                        LucilleCore::removeFileSystemLocation(location)
+                    end
                 }
         end
     end
@@ -215,21 +226,6 @@ class Operations
             }
     end
 
-    # Operations::probeHead()
-    def self.probeHead()
-        Items::mikuType("NxPolymorph").each{|item|
-            next if item["uxpayload-b4e4"].nil?
-            if item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
-                unitId = item["uxpayload-b4e4"]["id"]
-                location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
-                puts "unit location: #{location}"
-                payload2 = UxPayload::locationToPayload(item["uuid"], location)
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
-                LucilleCore::removeFileSystemLocation(location)
-            end
-        }
-    end
-
     # Operations::postponeToTomorrowOrDestroy(item)
     def self.postponeToTomorrowOrDestroy(item)
         puts PolyFunctions::toString(item).green
@@ -307,6 +303,5 @@ class Operations
                 Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"].drop(1))
                 cursor = cursor + behaviour["durationInMinutes"]*60
             }
-            
     end
 end
