@@ -296,7 +296,7 @@ class Operations
         items = FrontPage::itemsForListing()
                     .select{|item| item["behaviours"].first["btype"] != "task" }
         items, _ = items.partition{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
-        cursor = ([Time.new.to_i] + items.map{|item| item["behaviours"].first["start-unixtime"] }).max
+        cursor = Time.new.to_i
         items
             .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
             .sort_by{|item| item["behaviours"].first["start-unixtime"] }
