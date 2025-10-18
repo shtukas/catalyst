@@ -262,7 +262,7 @@ class Operations
         items = FrontPage::itemsForListing()
                     .select{|item| item["behaviours"].first["btype"] != "task" }
         selected, unselected = items.partition{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
-        cursor = ([Time.new.to_i] + selected.map{|item| item["behaviours"].first["start-unixtime"] }).max + 1200
+        cursor = ([Time.new.to_i] + selected.map{|item| item["behaviours"].first["start-unixtime"] }).max
         loop {
             selected
                 .sort_by{|item| item["behaviours"].first["start-unixtime"] }
@@ -287,8 +287,16 @@ class Operations
     end
 
     # Operations::recalibrate()
-    def self.recalibrate(items)
-        cursor = Time.new.to_i + 1200 # 20 mins
+    def self.recalibrate()
+        if NxBalls::all().size > 0 then
+            puts "You cannot recalibrate when there are active active"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        items = FrontPage::itemsForListing()
+                    .select{|item| item["behaviours"].first["btype"] != "task" }
+        items, _ = items.partition{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
+        cursor = ([Time.new.to_i] + items.map{|item| item["behaviours"].first["start-unixtime"] }).max
         items
             .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
             .sort_by{|item| item["behaviours"].first["start-unixtime"] }

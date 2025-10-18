@@ -23,11 +23,15 @@ class NxPolymorphs
 
     # NxPolymorphs::doNotShowUntil(item, unixtime)
     def self.doNotShowUntil(item, unixtime)
+        behaviours = item["behaviours"]
+        if behaviours.first["btype"] == "DayCalendarItem" then
+            behaviours = behaviours.drop(1)
+        end
         behaviour = {
             "btype" => "do-not-show-until",
             "unixtime" => unixtime
         }
-        behaviours = [behaviour] + item["behaviours"]
+        behaviours = [behaviour] + behaviours
         Items::setAttribute(item["uuid"], "behaviours", behaviours)
     end
 

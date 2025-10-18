@@ -86,7 +86,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("recalibrate", input) then
-            Operations::recalibrate(store.items())
+            Operations::recalibrate()
             return
         end
 
@@ -95,7 +95,7 @@ class CommandsAndInterpreters
             cursor = items.map{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }.min
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                cursor = 0.9 * cursor
+                cursor = 0.95 * cursor
                 behavior = {
                     "btype" => "listing-position",
                     "position" => cursor
