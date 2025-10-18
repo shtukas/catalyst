@@ -1,6 +1,9 @@
 
 class NxPolymorphs
 
+    # --------------------------------------
+    # Issue
+
     # NxPolymorphs::issueNew(description, behaviours, null | payload)
     def self.issueNew(description, behaviours, payload)
         uuid = SecureRandom.uuid
@@ -14,6 +17,9 @@ class NxPolymorphs
         Items::itemOrNull(uuid)
     end
 
+    # --------------------------------------
+    # Issue
+
     # NxPolymorphs::toString(item)
     def self.toString(item)
         behaviour = item["behaviours"].first
@@ -21,24 +27,19 @@ class NxPolymorphs
         "#{icon} #{TxBehaviour::behaviourToDescriptionLeft(behaviour)}#{item["description"]}#{TxBehaviour::behaviourToDescriptionRight(behaviour)}"
     end
 
-    # NxPolymorphs::doNotShowUntil(item, unixtime)
-    def self.doNotShowUntil(item, unixtime)
-        behaviours = item["behaviours"]
-        if behaviours.first["btype"] == "DayCalendarItem" then
-            behaviours = behaviours.drop(1)
-        end
-        behaviour = {
-            "btype" => "do-not-show-until",
-            "unixtime" => unixtime
-        }
-        behaviours = [behaviour] + behaviours
-        Items::setAttribute(item["uuid"], "behaviours", behaviours)
-    end
-
     # NxPolymorphs::itemHasBehaviour(item, btype)
     def self.itemHasBehaviour(item, btype)
         item["behaviours"].any?{|behaviour| behaviour["btype"] == btype }
     end
+
+    # NxPolymorphs::behavioursBankAccountNumbers(item)
+    def self.behavioursBankAccountNumbers(item)
+        return [] if item["mikuType"] != "NxPolymorph"
+        item["behaviours"].map{|behaviour| TxBehaviour::bankAccountsNumbers(behaviour) }.flatten
+    end
+
+    # --------------------------------------
+    # Ops
 
     # NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item)
     def self.identityOrSimilarWithUpdatedBehaviours(item)
@@ -52,9 +53,24 @@ class NxPolymorphs
         item
     end
 
-    # NxPolymorphs::behavioursBankAccountNumbers(item)
-    def self.behavioursBankAccountNumbers(item)
-        return [] if item["mikuType"] != "NxPolymorph"
-        item["behaviours"].map{|behaviour| TxBehaviour::bankAccountsNumbers(behaviour) }.flatten
+    # NxPolymorphs::removeAnyCalendarItem(item) # Item -> Item
+    def self.removeAnyCalendarItem(item)
+        return item if item["mikuType"] != "NxPolymorph"
+        return item if item["behaviours"].first["btype"] != "DayCalendarItem" 
+        item["behaviours"] = item["behaviours"].drop(1)
+        Items::setAttribute(item["uuid"], "behaviours", item["behaviours"])
+        item
     end
+
+    # NxPolymorphs::doNotShowUntil(item, unixtime)
+    def self.doNotShowUntil(item, unixtime)
+        item = NxPolymorphs::removeAnyCalendarItem(item)
+        behaviour = {
+            "btype" => "do-not-show-until",
+            "unixtime" => unixtime
+        }
+        behaviours = [behaviour] + behaviours
+        Items::setAttribute(item["uuid"], "behaviours", behaviours)
+    end
+
 end

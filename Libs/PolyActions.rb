@@ -18,6 +18,7 @@ class PolyActions
 
     # PolyActions::stop(item)
     def self.stop(item)
+        item = NxPolymorphs::removeAnyCalendarItem(item)
         NxBalls::stop(item)
     end
 
