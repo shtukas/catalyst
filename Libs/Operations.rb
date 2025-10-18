@@ -262,7 +262,7 @@ class Operations
         items = FrontPage::itemsForListing()
                     .select{|item| item["behaviours"].first["btype"] != "task" }
         selected, unselected = items.partition{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
-        cursor = ([Time.new.to_i] + selected.map{|item| item["behaviours"].first["start-unixtime"] }).max
+        cursor = ([Time.new.to_i] + selected.map{|item| item["behaviours"].first["start-unixtime"] + item["behaviours"].first["durationInMinutes"]*60 }).max
         loop {
             selected
                 .sort_by{|item| item["behaviours"].first["start-unixtime"] }
@@ -286,8 +286,28 @@ class Operations
         }
     end
 
+    # Operations::calm_first_unixtime_or_null()
+    def self.calm_first_unixtime_or_null()
+        return nil if NxBalls::all().size > 0
+        items = FrontPage::itemsForListing()
+                    .select{|item| item["behaviours"].first["btype"] != "task" }
+                    .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
+        return nil if items.nil?
+        cursor = items.map{|item| item["behaviours"].first["start-unixtime"] }.min
+        cursor
+    end
+
+    # Operations::monitor()
+    def self.monitor()
+        unixtime = Operations::calm_first_unixtime_or_null()
+        return if unixtime.nil?
+        return if (Time.new.to_i - unixtime).abs < 1200
+        Operations::recalibrate()
+    end
+
     # Operations::recalibrate()
     def self.recalibrate()
+        puts "Operations::recalibrate()"
         if NxBalls::all().size > 0 then
             puts "You cannot recalibrate when there are active active"
             LucilleCore::pressEnterToContinue()
@@ -295,10 +315,9 @@ class Operations
         end
         items = FrontPage::itemsForListing()
                     .select{|item| item["behaviours"].first["btype"] != "task" }
-        items, _ = items.partition{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
+                    .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
         cursor = Time.new.to_i
         items
-            .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
             .sort_by{|item| item["behaviours"].first["start-unixtime"] }
             .each{|item|
                 behaviour = item["behaviours"].first
