@@ -148,6 +148,23 @@ class FrontPage
         Thread.new {
             loop {
                 (lambda {
+                    NxBalls::all()
+                        .select{|nxball| nxball["type"] == "running" }
+                        .each{|nxball|
+                            item = Items::itemOrNull(nxball["itemuuid"])
+                            next if item.nil?
+                            if NxBalls::ballRunningTime(nxball) > 3600 then
+                                CommonUtils::onScreenNotification("Catalyst", "item is over running")
+                            end
+                        }
+                }).call()
+                sleep 120
+            }
+        }
+
+        Thread.new {
+            loop {
+                (lambda {
                     return if NxBalls::all().any?{|nxball| nxball["type"] == "running" }
                     items = FrontPage::itemsForListing().select{|item| item["behaviours"].first["btype"] != "task" }
                     return if items.empty?
@@ -158,8 +175,8 @@ class FrontPage
                             .sort
                             .first
                     return if endunixtime.nil?
-                    if Time.new.to_i > (endunixtime - 300) then
-                        CommonUtils::onScreenNotification("Catalyst", "check calendar items")
+                    if Time.new.to_i > (endunixtime - 60) then
+                        CommonUtils::onScreenNotification("Catalyst", "check for calendar overrun")
                     end
                 }).call()
                 sleep 120
