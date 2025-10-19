@@ -11,10 +11,10 @@ class Fsck
 
         UxPayload::fsck(item["uuid"], item["uxpayload-b4e4"])
 
-        if item["mikuType"] == "NxMonitor" then
+        if item["mikuType"] == "NxIce" then
             return
         end
-        if item["mikuType"] == "NxIce" then
+        if item["mikuType"] == "NxPolymorph" then
             return
         end
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
