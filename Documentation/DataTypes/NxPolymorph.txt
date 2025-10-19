@@ -1,9 +1,9 @@
 
 NxPolymorph:
-    - uuid         : String
-    - mikuType     : "NxPolymorph"
-    - unixtime     :
-    - datetime     :
-    - description  : String
-    - behaviours   : Array[TxBehaviour]
-    - payload-1310 : null | UxPayload
+    - uuid        : String
+    - mikuType    : "NxPolymorph"
+    - unixtime    :
+    - datetime    :
+    - description : String
+    - behaviours  : Array[TxBehaviour]
+    - uxpayload-b4e4 : null | UxPayload

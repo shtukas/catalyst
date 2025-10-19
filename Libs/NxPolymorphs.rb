@@ -10,7 +10,7 @@ class NxPolymorphs
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "behaviours", behaviours)
-        Items::setAttribute(uuid, "payload-1310", payload)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "mikuType", "NxPolymorph")
         Items::itemOrNull(uuid)
     end

@@ -157,6 +157,7 @@ class FrontPage
                             .map{|behaviour| behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60 }
                             .sort
                             .first
+                    return if endunixtime.nil?
                     if Time.new.to_i > (endunixtime - 300) then
                         CommonUtils::onScreenNotification("Catalyst", "check calendar items")
                     end
