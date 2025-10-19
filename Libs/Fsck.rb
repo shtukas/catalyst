@@ -45,6 +45,5 @@ class Fsck
                 Fsck::fsckOrError(item)
                 XCache::set(key, "done")
             }
-        LucilleCore::pressEnterToContinue()
     end
 end

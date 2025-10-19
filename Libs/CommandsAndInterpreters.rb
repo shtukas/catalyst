@@ -239,6 +239,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("fsck", input) then
             Fsck::fsckAll()
+            LucilleCore::pressEnterToContinue()
             return
         end
 
