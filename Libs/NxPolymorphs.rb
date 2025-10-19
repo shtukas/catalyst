@@ -12,7 +12,9 @@ class NxPolymorphs
         Items::setAttribute(uuid, "behaviours", behaviours)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "mikuType", "NxPolymorph")
-        Items::itemOrNull(uuid)
+        item = Items::itemOrNull(uuid)
+        Fsck::fsckOrError(item)
+        item
     end
 
     # --------------------------------------

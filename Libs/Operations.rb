@@ -166,6 +166,7 @@ class Operations
                     payload = UxPayload::locationToPayload(uuid, location)
                     item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
+                    Fsck::fsckOrError(item)
                 }).call()
 
                 LucilleCore::removeFileSystemLocation(location)
@@ -193,6 +194,7 @@ class Operations
                     payload = UxPayload::locationToPayload(uuid, location)
                     item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
+                    Fsck::fsckOrError(item)
                 }).call()
 
                 LucilleCore::removeFileSystemLocation(location)
@@ -220,6 +222,7 @@ class Operations
                     payload = UxPayload::locationToPayload(uuid, location)
                     item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
                     puts JSON.pretty_generate(item)
+                    Fsck::fsckOrError(item)
                 }).call()
 
                 LucilleCore::removeFileSystemLocation(location)
