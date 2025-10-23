@@ -116,7 +116,7 @@ class FrontPage
             .each{|item|
                 if item["mikuType"] == "NxPolymorph" and item["behaviours"][0]["btype"] == "task" then
                     taskscount = taskscount + 1
-                    next if taskscount > 3
+                    next if taskscount > 1
                 end
                 next if displayedItems.include?(item["uuid"])
                 store.register(item, FrontPage::canBeDefault(item))
