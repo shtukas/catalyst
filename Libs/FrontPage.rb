@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        lp = " (#{TxBehaviour::behaviourToListingPosition(item["behaviours"].first)})".yellow
+        lp = " (#{TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first)})".yellow
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -50,8 +50,8 @@ class FrontPage
     def self.itemsForListing()
         Items::mikuType("NxPolymorph")
             .map{|item| NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item) }
-            .select{|item| TxBehaviour::isVisibleOnFrontPage(item["behaviours"].first) }
-            .sort_by{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }
+            .select{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+            .sort_by{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
     end
 
     # FrontPage::extraLines(item)

@@ -345,131 +345,6 @@ class TxBehaviour
         raise "(error c073968d) #{behaviour}"
     end
 
-    # TxBehaviour::isVisibleOnFrontPage(behaviour)
-    def self.isVisibleOnFrontPage(behaviour)
-        # {
-        #     "btype": "listing-position"
-        #     "position": Float
-        # }
-        if behaviour["btype"] == "listing-position" then
-            return true
-        end
-
-        # {
-        #     "btype": "NxAwait"
-        #     "creationUnixtime": Float
-        # }
-        if behaviour["btype"] == "NxAwait" then
-            return true
-        end
-
-        # {
-        #    "btype": "do-not-show-until"
-        #    "unixtime": Float
-        # }
-        if behaviour["btype"] == "do-not-show-until" then
-            return Time.new.to_i >= behaviour["unixtime"]
-        end
-
-        #{
-        #     "btype" => "calendar-event",
-        #     "date" => 
-        #}
-        if behaviour["btype"] == "calendar-event" then
-            return CommonUtils::today() >= behaviour["date"]
-        end
-
-        # {
-        #     "btype": "NxAwait"
-        #     "creationUnixtime": Float
-        # }
-        if behaviour["btype"] == "NxAwait" then
-            return true
-        end
-
-        #{
-        #    "btype": "project"
-        #    "timeCommitment": NxTimeCommitment
-        #}
-        #NxTimeCommitment
-        #{
-        #    "type" : "day"
-        #    "uuid" : String
-        #    "hours": float
-        #}
-        #{
-        #    "type" : "week"
-        #    "uuid" : String
-        #    "hours": float
-        #}
-        #{
-        #    "type"  : "unt1l-date-1958"
-        #    "uuid"  : String
-        #    "hours" : float
-        #    "start" : Integer
-        #    "end"   : Integer
-        #}
-        if behaviour["btype"] == "project" then
-            return true
-        end
-
-        #{
-        #     "btype" => "ondate",
-        #     "date" => 
-        #}
-        if behaviour["btype"] == "ondate" then
-            return CommonUtils::today() >= behaviour["date"]
-        end
-
-        #{
-        #    "btype": "wave"
-        #    "nx46": Nx46
-        #    "lastDoneUnixtime" : Integer
-        #    "interruption" : null or boolean, indicates if the item is interruption
-        #}
-        if behaviour["btype"] == "wave" then
-            return true
-        end
-
-        #{
-        #    "btype": "task"
-        #    "unixtime": Float
-        #}
-        if behaviour["btype"] == "task" then
-            return true
-        end
-
-        #{
-        #    "btype": "backup"
-        #    "period": Float # period in Days
-        #}
-        if behaviour["btype"] == "backup" then
-            return true
-        end
-
-        #{
-        #    "btype": "anniversary"
-        #    "startdate"        : YYYY-MM-DD
-        #    "repeatType"       : "weekly" | "monthly" | "yearly"
-        #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
-        #}
-        if behaviour["btype"] == "anniversary" then
-            return true
-        end
-
-        #{
-        #    "btype": "DayCalendarItem"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "DayCalendarItem" then
-            return true
-        end
-
-        raise "(error 288f4204) #{behaviour}"
-    end
-
     # TxBehaviour::behaviourToIcon(behaviour)
     def self.behaviourToIcon(behaviour)
         # {
@@ -617,8 +492,6 @@ class TxBehaviour
         return []
     end
 
-
-
     # ---------------------------------------------------------------
     # Data (2) Listing
 
@@ -627,8 +500,8 @@ class TxBehaviour
         (2 + Math.atan(x)).to_f/10
     end
 
-    # TxBehaviour::behaviourToListingPosition(behaviour)
-    def self.behaviourToListingPosition(behaviour)
+    # TxBehaviour::behaviourToListingPositionOrNull(behaviour)
+    def self.behaviourToListingPositionOrNull(behaviour)
         # There should not be negative positions
 
         # 0.010 -> 0.020 wave, interruption
@@ -661,6 +534,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "ondate" then
+            return nil if CommonUtils::today() < behaviour["date"]
             dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
             creationUnixtime = behaviour["creationUnixtime"] || 1760531105
             epsilon = TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
@@ -697,6 +571,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "calendar-event" then
+            return nil if CommonUtils::today() < behaviour["date"]
             dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
             creationUnixtime = behaviour["creationUnixtime"] || 1760531105
             epsilon = TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
@@ -737,7 +612,8 @@ class TxBehaviour
         end
 
         if behaviour["btype"] == "do-not-show-until" then
-            return 1
+           return nil if Time.new.to_i < behaviour["unixtime"]
+           return 1
         end
 
         #{

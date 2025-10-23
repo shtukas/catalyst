@@ -40,9 +40,12 @@ class NxPolymorphs
 
     # NxPolymorphs::listingFirstPosition()
     def self.listingFirstPosition()
-        Items::items()
+        positions = Items::items()
             .select{|item| item["mikuType"] == "NxPolymorph" }
-            .map{|item| TxBehaviour::behaviourToListingPosition(item["behaviours"].first) }.min
+            .map{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+            .compact
+        return 1 if positions.empty?
+        positions.min
     end
 
     # --------------------------------------
