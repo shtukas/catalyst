@@ -48,12 +48,31 @@ class FrontPage
 
     # FrontPage::itemsForListing()
     def self.itemsForListing()
-        Items::mikuType("NxPolymorph")
+        tasks = (lambda {
+            uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}")
+            if uuids then
+                tasks = JSON.parse(uuids)
+                        .map{|uuid| Items::itemOrNull(uuid) }
+                        .compact
+                        .select{|item| item["behaviours"][0]["btype"] == "task" }
+                XCache::set("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
+                return tasks
+            end
+            tasks = Items::mikuType("NxPolymorph")
+                        .select{|item| item["behaviours"][0]["btype"] == "task" }
+                        .select{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+                        .sort_by{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+                        .take(10)
+            XCache::set("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
+            tasks
+        }).call()
+
+        items = Items::mikuType("NxPolymorph")
+            .select{|item| item["behaviours"][0]["btype"] != "task" }
             .map{|item| NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item) }
-            .map{|item| [item, TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first)] }
-            .select{|w| w[1] }
-            .sort_by{|w| w[1]}
-            .map{|w| w[0]}
+            .select{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+
+        (items + tasks).sort_by{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
     end
 
     # FrontPage::extraLines(item)
@@ -114,10 +133,6 @@ class FrontPage
 
         FrontPage::itemsForListing()
             .each{|item|
-                if item["mikuType"] == "NxPolymorph" and item["behaviours"][0]["btype"] == "task" then
-                    taskscount = taskscount + 1
-                    next if taskscount > 1
-                end
                 next if displayedItems.include?(item["uuid"])
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)
