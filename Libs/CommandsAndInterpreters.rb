@@ -415,7 +415,7 @@ class CommandsAndInterpreters
         if Interpreting::match("anniversary", input) then
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
-            behaviour = TxBehaviourAnniversary::makeNew()
+            behaviour = Anniversary::makeNew()
             b1 = {
                 "btype" => "do-not-show-until",
                 "unixtime" => DateTime.parse("#{behaviour["next_celebration"]}T00:00:00Z").to_time.to_i
@@ -646,7 +646,7 @@ class CommandsAndInterpreters
             return if description == ""
             uuid = SecureRandom.uuid
             Items::init(uuid)
-            behaviour = TxBehaviourWave::interactivelyMakeNewOrNull()
+            behaviour = Wave::interactivelyMakeNewOrNull()
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
             puts JSON.pretty_generate(item)

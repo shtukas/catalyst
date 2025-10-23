@@ -160,9 +160,9 @@ require_relative "Search.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "TxBehaviour.rb"
-require_relative "TxBehaviourWave.rb"
-require_relative "TxBehaviourProject.rb"
-require_relative "TxBehaviourAnniversary.rb"
+require_relative "Wave.rb"
+require_relative "Project.rb"
+require_relative "Anniversary.rb"
 
 require_relative "UxPayload.rb"
 

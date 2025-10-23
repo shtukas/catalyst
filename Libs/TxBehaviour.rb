@@ -69,7 +69,7 @@ class TxBehaviour
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
         if option == "wave" then
-            return TxBehaviourWave::interactivelyMakeNewOrNull()
+            return Wave::interactivelyMakeNewOrNull()
         end
 
         #{
@@ -102,14 +102,14 @@ class TxBehaviour
         #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
         #}
         if option == "anniversary" then
-            return TxBehaviourAnniversary::makeNew()
+            return Anniversary::makeNew()
         end
 
         raise "(error 6b7b3eab)"
     end
 
     # ---------------------------------------------------------------
-    # Data (1) bahavior to something
+    # Data (1)
 
     # TxBehaviour::behaviourToDescriptionLeft(behaviour)
     def self.behaviourToDescriptionLeft(behaviour)
@@ -168,7 +168,7 @@ class TxBehaviour
         #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
-            return "#{TxBehaviourProject::toString(behaviour)} "
+            return "#{Project::toString(behaviour)} "
         end
 
         #{
@@ -186,7 +186,7 @@ class TxBehaviour
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
         if behaviour["btype"] == "wave" then
-            return "#{TxBehaviourWave::behaviourToString(behaviour)} "
+            return "#{Wave::behaviourToString(behaviour)} "
         end
 
         #{
@@ -212,7 +212,7 @@ class TxBehaviour
         #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
         #}
         if behaviour["btype"] == "anniversary" then
-            return "#{TxBehaviourAnniversary::toString(behaviour)} "
+            return "#{Anniversary::toString(behaviour)} "
         end
 
         #{
@@ -587,22 +587,63 @@ class TxBehaviour
         raise "(error 865c0eea) #{behaviour}"
     end
 
+    # TxBehaviour::bankAccountsNumbers(behaviour)
+    def self.bankAccountsNumbers(behaviour)
+        #{
+        #    "btype": "project"
+        #    "timeCommitment": NxTimeCommitment
+        #}
+        #NxTimeCommitment
+        #{
+        #    "type" : "day"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type" : "week"
+        #    "uuid" : String
+        #    "hours": float
+        #}
+        #{
+        #    "type"  : "unt1l-date-1958"
+        #    "uuid"  : String
+        #    "hours" : float
+        #    "start" : Integer
+        #    "end"   : Integer
+        #}
+        if behaviour["btype"] == "project" then
+            return [behaviour["timeCommitment"]["uuid"]]
+        end
+        return []
+    end
+
+
+
+    # ---------------------------------------------------------------
+    # Data (2) Listing
+
+    # TxBehaviour::realLineTo01Increasing(x)
+    def self.realLineTo01Increasing(x)
+        (2 + Math.atan(x)).to_f/10
+    end
+
     # TxBehaviour::behaviourToListingPosition(behaviour)
     def self.behaviourToListingPosition(behaviour)
         # There should not be negative positions
 
         # 0.010 -> 0.020 wave, interruption
         # 0.050 -> 0.600 DayCalendarItem
+        # 0.070 -> 0.080 project before 9am
         # 0.100 -> 0.150 calendar-event
         # 0.160 -> 0.160 NxAwait
         # 0.260 -> 0.280 anniversary
         # 0.300 -> 0.320 wave, sticky
+        # 0.330 -> 0.340 project before 2pm
+        # 0.350 -> 0.360 wave, overlay
         # 0.400 -> 0.450 backup
         # 0.500 -> 0.600 ondate
-        # 0.600 -> 0.800 wave, overlay
         # 0.800 -> 0.880 task
-
-        # 0.350 -> 0.700 polymorph: project
+        # 0.900 -> 0.910 project
 
         #{
         #    "btype": "DayCalendarItem"
@@ -685,7 +726,14 @@ class TxBehaviour
         #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
-            return 0.350 + TxBehaviourProject::ratio(behaviour)*(0.700 - 0.350)
+            return 1 if Project::ratio(behaviour) >= 1
+            if Time.new.hour < 9 then
+                return 0.070 + Project::ratio(behaviour).to_f/1000
+            end
+            if Time.new.hour < 14 then
+                return 0.330 + Project::ratio(behaviour).to_f/1000
+            end
+            return 0.900 + Project::ratio(behaviour).to_f/1000
         end
 
         if behaviour["btype"] == "do-not-show-until" then
@@ -706,7 +754,7 @@ class TxBehaviour
             if behaviour["nx46"]["type"]["sticky"] then
                 return 0.310 + epsilon
             end
-            return 0.700 + epsilon
+            return 0.350 + epsilon
         end
 
         #{
@@ -734,12 +782,7 @@ class TxBehaviour
     end
 
     # ---------------------------------------------------------------
-    # Data (2)
-
-    # TxBehaviour::realLineTo01Increasing(x)
-    def self.realLineTo01Increasing(x)
-        (2 + Math.atan(x)).to_f/10
-    end
+    # Ops
 
     # TxBehaviour::preDisplayProcessing(behaviour)
     def self.preDisplayProcessing(behaviour) # Array[TxBehaviour]
@@ -752,39 +795,6 @@ class TxBehaviour
         end
         [behaviour]
     end
-
-    # TxBehaviour::bankAccountsNumbers(behaviour)
-    def self.bankAccountsNumbers(behaviour)
-        #{
-        #    "btype": "project"
-        #    "timeCommitment": NxTimeCommitment
-        #}
-        #NxTimeCommitment
-        #{
-        #    "type" : "day"
-        #    "uuid" : String
-        #    "hours": float
-        #}
-        #{
-        #    "type" : "week"
-        #    "uuid" : String
-        #    "hours": float
-        #}
-        #{
-        #    "type"  : "unt1l-date-1958"
-        #    "uuid"  : String
-        #    "hours" : float
-        #    "start" : Integer
-        #    "end"   : Integer
-        #}
-        if behaviour["btype"] == "project" then
-            return [behaviour["timeCommitment"]["uuid"]]
-        end
-        return []
-    end
-
-    # ---------------------------------------------------------------
-    # Ops
 
     # TxBehaviour::postponeToTomorrowOrNil(behaviour) # TxBehaviour -> null or Array[TxBehaviour]
     def self.postponeToTomorrowOrNil(behaviour)
@@ -887,7 +897,7 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "wave" then
             behaviour["lastDoneUnixtime"] = Time.new.to_i
-            unixtime = TxBehaviourWave::nx46ToNextDisplayUnixtime(behaviour["nx46"], Time.new.to_i)
+            unixtime = Wave::nx46ToNextDisplayUnixtime(behaviour["nx46"], Time.new.to_i)
             b1 = {
                 "btype" => "do-not-show-until",
                 "unixtime" => unixtime
@@ -917,7 +927,7 @@ class TxBehaviour
         #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
         #}
         if behaviour["btype"] == "anniversary" then
-            next_celebration = TxBehaviourAnniversary::computeNextCelebrationDate(behaviour["startdate"], behaviour["repeatType"])
+            next_celebration = Anniversary::computeNextCelebrationDate(behaviour["startdate"], behaviour["repeatType"])
             puts "next celebration: #{next_celebration}"
             behaviour["next_celebration"] = next_celebration
             b1 = {

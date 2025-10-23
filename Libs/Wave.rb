@@ -1,9 +1,9 @@
 
 # encoding: UTF-8
 
-class TxBehaviourWave
+class Wave
 
-    # TxBehaviourWave::interactivelyMakeNewOrNull()
+    # Wave::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
         nx46 = Nx46::interactivelyMakeNewOrNull()
         return nil if nx46.nil?
@@ -17,7 +17,7 @@ class TxBehaviourWave
         }
     end
 
-    # TxBehaviourWave::nx46ToNextDisplayUnixtime(nx46: Nx46, cursor: Unixtime)
+    # Wave::nx46ToNextDisplayUnixtime(nx46: Nx46, cursor: Unixtime)
     def self.nx46ToNextDisplayUnixtime(nx46, cursor)
         if nx46["type"] == 'sticky' then
             cursor = cursor + 3600
@@ -50,7 +50,7 @@ class TxBehaviourWave
         raise "(error: afe44910-57c2-4be5-8e1f-2c2fb80ae61a) nx46: #{JSON.pretty_generate(nx46)}"
     end
 
-    # TxBehaviourWave::nx46ToString(nx46)
+    # Wave::nx46ToString(nx46)
     def self.nx46ToString(nx46)
         if nx46["type"] == 'sticky' then
             return "(sticky, from: #{nx46["value"]})"
@@ -58,13 +58,13 @@ class TxBehaviourWave
         "(#{nx46["type"]}: #{nx46["value"]})"
     end
 
-    # TxBehaviourWave::intsWithPrefix(behaviour)
+    # Wave::intsWithPrefix(behaviour)
     def self.intsWithPrefix(behaviour)
         behaviour["interruption"] ? " [interruption]".red : ""
     end
 
-    # TxBehaviourWave::behaviourToString(behaviour)
+    # Wave::behaviourToString(behaviour)
     def self.behaviourToString(behaviour)
-        "#{TxBehaviourWave::nx46ToString(behaviour["nx46"]).yellow}#{TxBehaviourWave::intsWithPrefix(behaviour)}"
+        "#{Wave::nx46ToString(behaviour["nx46"]).yellow}#{Wave::intsWithPrefix(behaviour)}"
     end
 end

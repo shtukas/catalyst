@@ -1,12 +1,12 @@
 
 # encoding: UTF-8
 
-class TxBehaviourAnniversary
+class Anniversary
 
     # ----------------------------------------------------------------------------------
     # Time Manipulations
 
-    # TxBehaviourAnniversary::dateIsCorrect(date)
+    # Anniversary::dateIsCorrect(date)
     def self.dateIsCorrect(date)
         begin
             Date.parse(date)
@@ -16,7 +16,7 @@ class TxBehaviourAnniversary
         end
     end
 
-    # TxBehaviourAnniversary::datePlusNMonthAnniversaryStyle(date: String, shiftInMonths: Integer)
+    # Anniversary::datePlusNMonthAnniversaryStyle(date: String, shiftInMonths: Integer)
     def self.datePlusNMonthAnniversaryStyle(date, shiftInMonths)
         dateElements = [date[0, 4].to_i, date[5, 2].to_i+shiftInMonths, date[8, 2].to_i]
 
@@ -27,25 +27,25 @@ class TxBehaviourAnniversary
 
         date = "#{dateElements[0]}-#{dateElements[1].to_s.rjust(2, "0")}-#{dateElements[2].to_s.rjust(2, "0")}"
 
-        while !TxBehaviourAnniversary::dateIsCorrect(date) do
+        while !Anniversary::dateIsCorrect(date) do
             date = "#{date[0, 4]}-#{date[5, 2]}-#{(date[8, 2].to_i-1).to_s.rjust(2, "0")}"
         end
         date
     end
 
-    # TxBehaviourAnniversary::datePlusNYearAnniversaryStyle(date: String, shiftInYears: Integer)
+    # Anniversary::datePlusNYearAnniversaryStyle(date: String, shiftInYears: Integer)
     def self.datePlusNYearAnniversaryStyle(date, shiftInYears)
         dateElements = [date[0, 4].to_i+shiftInYears, date[5, 2].to_i, date[8, 2].to_i]
 
         date = "#{dateElements[0]}-#{dateElements[1].to_s.rjust(2, "0")}-#{dateElements[2].to_s.rjust(2, "0")}"
 
-        while !TxBehaviourAnniversary::dateIsCorrect(date) do
+        while !Anniversary::dateIsCorrect(date) do
             date = "#{date[0, 4]}-#{date[5, 2]}-#{(date[8, 2].to_i-1).to_s.rjust(2, "0")}"
         end
         date
     end
 
-    # TxBehaviourAnniversary::computeNextCelebrationDate(startdate: String, repeatType: String) # date
+    # Anniversary::computeNextCelebrationDate(startdate: String, repeatType: String) # date
     def self.computeNextCelebrationDate(startdate, repeatType)
         date = Date.parse(startdate)
         today = Date.today()
@@ -59,7 +59,7 @@ class TxBehaviourAnniversary
             counter = 0 
             loop {
                 counter += 1
-                xdate = TxBehaviourAnniversary::datePlusNMonthAnniversaryStyle(date.to_s, counter)
+                xdate = Anniversary::datePlusNMonthAnniversaryStyle(date.to_s, counter)
                 if today < Date.parse(xdate) then
                     return xdate
                 end
@@ -69,7 +69,7 @@ class TxBehaviourAnniversary
             counter = 0 
             loop {
                 counter += 1
-                xdate = TxBehaviourAnniversary::datePlusNYearAnniversaryStyle(date.to_s, counter)
+                xdate = Anniversary::datePlusNYearAnniversaryStyle(date.to_s, counter)
                 if today < Date.parse(xdate) then
                     return xdate
                 end
@@ -77,7 +77,7 @@ class TxBehaviourAnniversary
         end
     end
 
-    # TxBehaviourAnniversary::difference_between_dates_in_specified_unit(date1, date2, unit)
+    # Anniversary::difference_between_dates_in_specified_unit(date1, date2, unit)
     def self.difference_between_dates_in_specified_unit(date1, date2, unit)
         # unit is a repeat type: "weekly" | "monthly" | "yearly"
 
@@ -96,7 +96,7 @@ class TxBehaviourAnniversary
         if unit == "monthly" then
             counter = 0
             loop {
-                if TxBehaviourAnniversary::datePlusNMonthAnniversaryStyle(date1, counter) >= date2 then
+                if Anniversary::datePlusNMonthAnniversaryStyle(date1, counter) >= date2 then
                     return counter
                 end
                 counter += 1
@@ -106,7 +106,7 @@ class TxBehaviourAnniversary
         if unit == "yearly" then
             counter = 0
             loop {
-                if TxBehaviourAnniversary::datePlusNYearAnniversaryStyle(date1, counter) >= date2 then
+                if Anniversary::datePlusNYearAnniversaryStyle(date1, counter) >= date2 then
                     return counter
                 end
                 counter += 1
@@ -117,11 +117,11 @@ class TxBehaviourAnniversary
     # ----------------------------------------------------------------------------------
     # toString
 
-    # TxBehaviourAnniversary::makeNew()
+    # Anniversary::makeNew()
     def self.makeNew()
         startdate = LucilleCore::askQuestionAnswerAsString("startdate (YYYY-MM-DD): ")
         repeatType = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("type", ["weekly", "monthly", "yearly"])
-        next_celebration = TxBehaviourAnniversary::computeNextCelebrationDate(startdate, repeatType)
+        next_celebration = Anniversary::computeNextCelebrationDate(startdate, repeatType)
         {
             "btype" => "anniversary",
             "startdate" => startdate,
@@ -130,9 +130,9 @@ class TxBehaviourAnniversary
         }
     end
 
-    # TxBehaviourAnniversary::toString(behaviour)
+    # Anniversary::toString(behaviour)
     def self.toString(behaviour)
-        difference = TxBehaviourAnniversary::difference_between_dates_in_specified_unit(behaviour["startdate"], behaviour["next_celebration"], behaviour["repeatType"])
+        difference = Anniversary::difference_between_dates_in_specified_unit(behaviour["startdate"], behaviour["next_celebration"], behaviour["repeatType"])
         "[#{behaviour["startdate"]}, #{behaviour["next_celebration"]}, #{difference.to_s.rjust(4)}, #{behaviour["repeatType"].ljust(7)}]"
     end
 

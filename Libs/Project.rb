@@ -1,9 +1,9 @@
 
 # encoding: UTF-8
 
-class TxBehaviourProject
+class Project
 
-    # TxBehaviourProject::ratio(behaviour)
+    # Project::ratio(behaviour)
     def self.ratio(behaviour)
         #{
         #    "btype": "project"
@@ -60,7 +60,7 @@ class TxBehaviourProject
         raise "(error 39498e23) #{behaviour}"
     end
 
-    # TxBehaviourProject::toString(behaviour)
+    # Project::toString(behaviour)
     def self.toString(behaviour)
         if behaviour["btype"] != "project" then
             raise "(error 28ad66c3) #{behaviour}"
