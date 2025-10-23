@@ -182,36 +182,36 @@ create table index4 (
 );
 =end
 
-class BankVault
+class Bank
 
     # ------------------------------------------------------
     # Basic IO management
 
-    # BankVault::directory()
+    # Bank::directory()
     def self.directory()
         "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/databases/index4-banking"
     end
 
-    # BankVault::filepaths()
+    # Bank::filepaths()
     def self.filepaths()
-        LucilleCore::locationsAtFolder(BankVault::directory())
+        LucilleCore::locationsAtFolder(Bank::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
             .select{|filepath| !File.basename(filepath).include?("sync-conflict") }
     end
 
-    # BankVault::ensureContentAddressing(filepath)
+    # Bank::ensureContentAddressing(filepath)
     def self.ensureContentAddressing(filepath)
         filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
-        filepath2 = "#{BankVault::directory()}/#{filename2}"
+        filepath2 = "#{Bank::directory()}/#{filename2}"
         return filepath if filepath == filepath2
         FileUtils.mv(filepath, filepath2)
         filepath2
     end
 
-    # BankVault::initiateDatabaseFile() -> filepath
+    # Bank::initiateDatabaseFile() -> filepath
     def self.initiateDatabaseFile()
         filename = "#{SecureRandom.hex}.sqlite3"
-        filepath = "#{BankVault::directory()}/#{filename}"
+        filepath = "#{Bank::directory()}/#{filename}"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -226,10 +226,10 @@ class BankVault
         )", [])
         db.commit
         db.close
-        BankVault::ensureContentAddressing(filepath)
+        Bank::ensureContentAddressing(filepath)
     end
 
-    # BankVault::extractEntryOrNullFromFilepath(filepath, recorduuid)
+    # Bank::extractEntryOrNullFromFilepath(filepath, recorduuid)
     def self.extractEntryOrNullFromFilepath(filepath, recorduuid)
         entry = nil
         db = SQLite3::Database.new(filepath)
@@ -249,7 +249,7 @@ class BankVault
         entry
     end
 
-    # BankVault::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
+    # Bank::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
     def self.insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -262,7 +262,7 @@ class BankVault
         db.close
     end
 
-    # BankVault::extractEntriesFromFile(filepath)
+    # Bank::extractEntriesFromFile(filepath)
     def self.extractEntriesFromFile(filepath)
         entries = []
         db = SQLite3::Database.new(filepath)
@@ -282,33 +282,33 @@ class BankVault
         entries
     end
 
-    # BankVault::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
+    # Bank::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
     def self.mergeTwoDatabaseFiles(filepath1, filepath2)
         # The logic here is to read the items from filepath2 and 
         # possibly add them to filepath1, if either:
         #   - there was no equivalent in filepath1
         #   - it's a newer record than the one in filepath1
-        BankVault::extractEntriesFromFile(filepath2).each{|entry2|
+        Bank::extractEntriesFromFile(filepath2).each{|entry2|
             shouldInject = false
-            entry1 = BankVault::extractEntryOrNullFromFilepath(filepath1, entry2["recorduuid"])
+            entry1 = Bank::extractEntryOrNullFromFilepath(filepath1, entry2["recorduuid"])
             if entry1.nil? then
                 # filepath1 doesn't have that record from filepath2
-                BankVault::insertUpdateEntryAtFilepath(filepath1, entry2["recorduuid"], entry2["id"], entry2["unixtime"], entry2["date"], entry2["value"])
+                Bank::insertUpdateEntryAtFilepath(filepath1, entry2["recorduuid"], entry2["id"], entry2["unixtime"], entry2["date"], entry2["value"])
             end
         }
         # Then when we are done, we delete filepath2
         FileUtils::rm(filepath2)
-        BankVault::ensureContentAddressing(filepath1)
+        Bank::ensureContentAddressing(filepath1)
     end
 
-    # BankVault::getDatabaseFilepath()
+    # Bank::getDatabaseFilepath()
     def self.getDatabaseFilepath()
-        filepaths = BankVault::filepaths()
+        filepaths = Bank::filepaths()
 
         # This case should not really happen (anymore), so if the condition 
         # is true, let's error noisily.
         if filepaths.size == 0 then
-            # return BankVault::initiateDatabaseFile()
+            # return Bank::initiateDatabaseFile()
             raise "(error: c83229f3)"
         end
 
@@ -321,25 +321,25 @@ class BankVault
             # The logic here is to read the items from filepath2 and 
             # possibly add them to filepath1.
             # We get an updated filepath1 because of content addressing.
-            filepath1 = BankVault::mergeTwoDatabaseFiles(filepath1, filepath)
+            filepath1 = Bank::mergeTwoDatabaseFiles(filepath1, filepath)
         }
         filepath1
     end
 
-    # BankVault::insertUpdateEntry(recorduuid, id, unixtime, date, value)
+    # Bank::insertUpdateEntry(recorduuid, id, unixtime, date, value)
     def self.insertUpdateEntry(recorduuid, id, unixtime, date, value)
-        puts "BankVault::insertUpdateEntry: #{[id, unixtime, date, value].join(', ')}".yellow
-        filepath = BankVault::getDatabaseFilepath()
-        BankVault::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
+        puts "Bank::insertUpdateEntry: #{[id, unixtime, date, value].join(', ')}".yellow
+        filepath = Bank::getDatabaseFilepath()
+        Bank::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
     end
 
     # ------------------------------------------------------
     # Interface
 
-    # BankVault::getValue(id)
+    # Bank::getValue(id)
     def self.getValue(id)
         value = 0
-        db = SQLite3::Database.new(BankVault::getDatabaseFilepath())
+        db = SQLite3::Database.new(Bank::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -350,10 +350,10 @@ class BankVault
         value
     end
 
-    # BankVault::getValueAtDate(id, date)
+    # Bank::getValueAtDate(id, date)
     def self.getValueAtDate(id, date)
         value = 0
-        db = SQLite3::Database.new(BankVault::getDatabaseFilepath())
+        db = SQLite3::Database.new(Bank::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -364,30 +364,30 @@ class BankVault
         value
     end
 
-    # BankVault::insertValue(id, date, value)
+    # Bank::insertValue(id, date, value)
     def self.insertValue(id, date, value)
         recorduuid = SecureRandom.uuid
         unixtime = Time.new.to_i
-        BankVault::insertUpdateEntry(recorduuid, id, unixtime, date, value)
+        Bank::insertUpdateEntry(recorduuid, id, unixtime, date, value)
         BankDataRTCache::decacheValue(id)
     end
 
-    # BankVault::getRecordsAll()
+    # Bank::getRecordsAll()
     def self.getRecordsAll()
-        BankVault::extractEntriesFromFile(BankVault::getDatabaseFilepath())
+        Bank::extractEntriesFromFile(Bank::getDatabaseFilepath())
     end
 
-    # BankVault::getRecords(uuid)
+    # Bank::getRecords(uuid)
     def self.getRecords(uuid)
-        BankVault::getRecordsAll().select{|record|
+        Bank::getRecordsAll().select{|record|
             record["id"] == uuid
         }
     end
 
-    # BankVault::maintenance()
+    # Bank::maintenance()
     def self.maintenance()
         horizon = Time.new.to_i - 86400*90
-        filepath = BankVault::getDatabaseFilepath()
+        filepath = Bank::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -395,28 +395,28 @@ class BankVault
         db.execute("delete from index4 where unixtime<?", [horizon])
         db.execute("vacuum", [])
         db.close
-        BankVault::ensureContentAddressing(filepath)
+        Bank::ensureContentAddressing(filepath)
     end
 end
 
-class BankData
+class BankDerivedData
 
-    # BankData::averageHoursPerDayOverThePastNDays(uuid, n)
+    # BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n)
     # n = 0 corresponds to today
     def self.averageHoursPerDayOverThePastNDays(uuid, n)
         range = (0..n)
-        totalInSeconds = range.map{|indx| BankVault::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) }.inject(0, :+)
+        totalInSeconds = range.map{|indx| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) }.inject(0, :+)
         totalInHours = totalInSeconds.to_f/3600
         average = totalInHours.to_f/(n+1)
         average
     end
 
-    # BankData::recoveredAverageHoursPerDay(uuid)
+    # BankDerivedData::recoveredAverageHoursPerDay(uuid)
     def self.recoveredAverageHoursPerDay(uuid)
         value = BankDataRTCache::recoveredAverageHoursPerDayFromCacheOrNull(uuid)
         return value if value
-        puts "BankData::recoveredAverageHoursPerDay: computing uuid #{uuid} from zero".yellow
-        value = (0..6).map{|n| BankData::averageHoursPerDayOverThePastNDays(uuid, n) }.max
+        puts "BankDerivedData::recoveredAverageHoursPerDay: computing uuid #{uuid} from zero".yellow
+        value = (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n) }.max
         BankDataRTCache::insertValueInCache(uuid, value)
         value
     end

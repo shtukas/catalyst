@@ -57,8 +57,8 @@ class Operations
 
     # Operations::globalMaintenance()
     def self.globalMaintenance()
-        puts "BankVault::maintenance()"
-        BankVault::maintenance()
+        puts "Bank::maintenance()"
+        Bank::maintenance()
         puts "Items::maintenance()"
         Items::maintenance()
 

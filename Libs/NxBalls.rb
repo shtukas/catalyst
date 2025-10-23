@@ -193,7 +193,7 @@ class NxBalls
     # NxBalls::commitToBank(description, accountNumber, timespanInSeconds)
     def self.commitToBank(description, accountNumber, timespanInSeconds)
         puts "adding #{timespanInSeconds} seconds to account: (#{description}, #{accountNumber})"
-        BankVault::insertValue(accountNumber, CommonUtils::today(), timespanInSeconds)
+        Bank::insertValue(accountNumber, CommonUtils::today(), timespanInSeconds)
     end
 
     # NxBalls::start(item)

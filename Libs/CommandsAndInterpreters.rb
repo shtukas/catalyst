@@ -129,7 +129,7 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            BankVault::getRecords(item["uuid"])
+            Bank::getRecords(item["uuid"])
                 .sort_by{|record| record["date"] }
                 .each{|record|
                     puts "recorduuid: #{record["recorduuid"]}; uuid: #{record["id"]}, date: #{record["date"]}, value: #{"%9.2f" % record["value"]}"

@@ -489,6 +489,9 @@ class TxBehaviour
         if behaviour["btype"] == "project" then
             return [behaviour["timeCommitment"]["uuid"]]
         end
+        if behaviour["btype"] == "task" then
+            return ["task-account-8e7fa41a"]
+        end
         return []
     end
 
@@ -638,6 +641,7 @@ class TxBehaviour
         #    "unixtime": Float
         #}
         if behaviour["btype"] == "task" then
+            return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 2
             dx = TxBehaviour::realLineTo01Increasing(behaviour["unixtime"] - 1759082216)
             return 0.800 + dx.to_f/1000
         end

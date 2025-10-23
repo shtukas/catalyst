@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        lp = "" # " (#{TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first)})".yellow
+        lp = " (#{TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first)})".yellow
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -50,8 +50,10 @@ class FrontPage
     def self.itemsForListing()
         Items::mikuType("NxPolymorph")
             .map{|item| NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item) }
-            .select{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
-            .sort_by{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+            .map{|item| [item, TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first)] }
+            .select{|w| w[1] }
+            .sort_by{|w| w[1]}
+            .map{|w| w[0]}
     end
 
     # FrontPage::extraLines(item)
@@ -108,11 +110,14 @@ class FrontPage
                     }
             }
 
-        items = FrontPage::itemsForListing()
-        i1, i2 = items.partition{|item| item["behaviours"].first["btype"] != "task" }
-        items = !i1.empty? ? i1 : i2
-        items
+        taskscount = 0
+
+        FrontPage::itemsForListing()
             .each{|item|
+                if item["mikuType"] == "NxPolymorph" and item["behaviours"][0]["btype"] == "task" then
+                    taskscount = taskscount + 1
+                    next if taskscount > 3
+                end
                 next if displayedItems.include?(item["uuid"])
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)

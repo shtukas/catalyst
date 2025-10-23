@@ -36,15 +36,15 @@ class Project
         timeCommitment = behaviour["timeCommitment"]
 
         if timeCommitment["type"] == "day" then
-            return BankVault::getValueAtDate(timeCommitment["uuid"], CommonUtils::today()).to_f/(timeCommitment["hours"]*3600)
+            return Bank::getValueAtDate(timeCommitment["uuid"], CommonUtils::today()).to_f/(timeCommitment["hours"]*3600)
         end
 
         if timeCommitment["type"] == "week" then
             t2 = CommonUtils::datesSinceLastMonday()
-                    .map{|date| BankVault::getValueAtDate(behaviour["uuid"], date) }
+                    .map{|date| Bank::getValueAtDate(behaviour["uuid"], date) }
                     .sum
             b2 = t2.to_f/timeCommitment["hours"]
-            b3 = BankData::recoveredAverageHoursPerDay(timeCommitment["uuid"]).to_f/(0.2*timeCommitment["hours"])
+            b3 = BankDerivedData::recoveredAverageHoursPerDay(timeCommitment["uuid"]).to_f/(0.2*timeCommitment["hours"])
             return [b2, b3].max
         end
 
@@ -53,7 +53,7 @@ class Project
             currentTimespan = Time.new.to_i - timeCommitment["start"]
             timeRatio = currentTimespan.to_f/totalTimespan
             idealDoneInHours = timeRatio * timeCommitment["hours"]
-            actualDoneInHours = BankVault::getValue(timeCommitment["uuid"]).to_f/3600
+            actualDoneInHours = Bank::getValue(timeCommitment["uuid"]).to_f/3600
             return actualDoneInHours.to_f/idealDoneInHours
         end
 
