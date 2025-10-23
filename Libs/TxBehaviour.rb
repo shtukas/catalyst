@@ -285,7 +285,7 @@ class TxBehaviour
         #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
-            return ""
+            return " (#{Project::ratio(behaviour).round(3)})".yellow
         end
 
         #{
@@ -601,7 +601,7 @@ class TxBehaviour
         #    "end"   : Integer
         #}
         if behaviour["btype"] == "project" then
-            return 1 if Project::ratio(behaviour) >= 1
+            return nil if Project::ratio(behaviour) >= 1
             if Time.new.hour < 9 then
                 return 0.070 + Project::ratio(behaviour).to_f/1000
             end
@@ -613,7 +613,7 @@ class TxBehaviour
 
         if behaviour["btype"] == "do-not-show-until" then
            return nil if Time.new.to_i < behaviour["unixtime"]
-           return 1
+           return 0
         end
 
         #{
