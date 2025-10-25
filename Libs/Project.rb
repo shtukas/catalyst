@@ -51,6 +51,7 @@ class Project
         if timeCommitment["type"] == "unt1l-date-1958" then
             totalTimespan = timeCommitment["end"] - timeCommitment["start"]
             currentTimespan = Time.new.to_i - timeCommitment["start"]
+            return 0 if currentTimespan > totalTimespan
             timeRatio = currentTimespan.to_f/totalTimespan
             idealDoneInHours = timeRatio * timeCommitment["hours"]
             actualDoneInHours = Bank::getValue(timeCommitment["uuid"]).to_f/3600
