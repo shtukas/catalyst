@@ -7,7 +7,7 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
-        if item["mikuType"] == "NxPolymorph" and item["behaviours"][0]["btype"] == "project" then
+        if item["mikuType"] == "NxPolymorph" and item["behaviours"].any?{|behaviour| behaviour["btype"] == "project" } then
             if LucilleCore::askQuestionAnswerAsBoolean("Do you want to put a timer on this? ") then
                 executionTimer = {
                     "btype" => "ExecutionTimer",
