@@ -232,7 +232,7 @@ class TxBehaviour
         #    "durationInMinutes": Int
         #}
         if behaviour["btype"] == "ExecutionTimer" then
-            return "(execution timer: completes at #{(Time.new + behaviour["durationInMinutes"]*60).to_s}) ".yellow
+            return "(execution timer: completes at #{Time.at(behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60).to_s}) ".yellow
         end
 
         raise "(error 4fba7460) #{behaviour}"

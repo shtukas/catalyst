@@ -196,7 +196,7 @@ class UxPayload
         end
     end
 
-    # UxPayload::edit(itemuuid, payload)
+    # UxPayload::edit(itemuuid, payload) -> nil or new payload
     def self.edit(itemuuid, payload)
         if payload["type"] == "text" then
             return {
@@ -205,12 +205,21 @@ class UxPayload
             }
         end
         if payload["type"] == "todo-text-file-by-name-fragment" then
-            name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
-            return nil if name1 == ""
-            return {
-                "type" => "todo-text-file-by-name-fragment",
-                "name" => name1
-            }
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit the text fragment itself", "access the text file"])
+            return nil if option.nil?
+            if option == "edit the text fragment itself" then
+                name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
+                return nil if name1 == ""
+                return {
+                    "type" => "todo-text-file-by-name-fragment",
+                    "name" => name1
+                }
+            end
+            if option == "access the text file" then
+                UxPayload::access(uuid, payload)
+                return nil
+            end
+            raise "(error: f1ee6b3d)"
         end
         if payload["type"] == "aion-point" then
             UxPayload::access(itemuuid, payload)

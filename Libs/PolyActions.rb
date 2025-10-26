@@ -50,22 +50,6 @@ class PolyActions
             return
         end
 
-        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "todo-text-file-by-name-fragment" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["done catalyst element and keep file", "done top element in file"])
-            return if option.nil?
-            if option == "done catalyst element and keep file" then 
-                # we just continue
-            end
-            if option == "done top element in file" then 
-                name1 = item["uxpayload-b4e4"]["name"]
-                location = CommonUtils::locateGalaxyFileByNameFragment(name1)
-                text = IO.read(location).strip
-                text = SectionsType0141::applyNextTransformationToText(text)
-                File.open(location, "w"){|f| f.print(text) }
-                return
-            end
-        end
-
         PolyActions::stop(item)
 
         if item["mikuType"] == "DesktopTx1" then
