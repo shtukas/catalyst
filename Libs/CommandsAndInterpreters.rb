@@ -358,6 +358,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondate", input) then
+            date = CommonUtils::interactivelyMakeADate()
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             uuid = SecureRandom.uuid
@@ -365,7 +366,7 @@ class CommandsAndInterpreters
             behaviour = {
                 "btype" => "ondate",
                 "creationUnixtime" => Time.new.to_f,
-                "date" => CommonUtils::interactivelyMakeADate()
+                "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
