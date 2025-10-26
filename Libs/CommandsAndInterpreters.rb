@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | position *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | sort | maintenance | morning | recalibrate",
+            "misc          : search | commands | fsck | sort | maintenance",
         ].join("\n")
     end
 
@@ -80,25 +80,31 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("morning", input) then
-            Operations::morning()
-            return
-        end
-
-        if Interpreting::match("recalibrate", input) then
-            Operations::recalibrate()
+        if Interpreting::match("sort after *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            listord = listord.to_i
+            items1 = store.items().take(listord+1)
+            items2 = store.items().drop(listord+1)
+            items2 = items2.select{|item| item["mikuType"] == "NxPolymorph" }
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items2, lambda{|i| PolyFunctions::toString(i) })
+            return if selected.empty?
+            (items1 + selected).reverse.each{|item|
+                behavior = {
+                    "btype" => "listing-position",
+                    "position" => NxPolymorphs::listingFirstPosition()*0.99
+                }
+                Items::setAttribute(item["uuid"], "behaviours", [behavior] + item["behaviours"])
+            }
             return
         end
 
         if Interpreting::match("sort", input) then
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
-            cursor = NxPolymorphs::listingFirstPosition()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                cursor = 0.95 * cursor
                 behavior = {
                     "btype" => "listing-position",
-                    "position" => cursor
+                    "position" => NxPolymorphs::listingFirstPosition()*0.99
                 }
                 Items::setAttribute(item["uuid"], "behaviours", [behavior] + item["behaviours"])
             }

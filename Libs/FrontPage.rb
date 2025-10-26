@@ -102,8 +102,6 @@ class FrontPage
             XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
         end
 
-        Operations::monitor()
-
         t1 = Time.new.to_f
 
         # Main listing

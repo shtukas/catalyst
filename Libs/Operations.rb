@@ -272,35 +272,6 @@ class Operations
         Operations::program3(l)
     end
 
-    # Operations::morning()
-    def self.morning()
-        items = FrontPage::itemsForListing()
-                    .select{|item| item["behaviours"].first["btype"] != "task" }
-        selected, unselected = items.partition{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
-        cursor = ([Time.new.to_i] + selected.map{|item| item["behaviours"].first["start-unixtime"] + item["behaviours"].first["durationInMinutes"]*60 }).max
-        loop {
-            selected
-                .sort_by{|item| item["behaviours"].first["start-unixtime"] }
-                .each{|item|
-                    puts PolyFunctions::toString(item)
-                }
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", unselected, lambda{ |item| PolyFunctions::toString(item) })
-            break if item.nil?
-            duration = LucilleCore::askQuestionAnswerAsString("duration for '#{PolyFunctions::toString(item)}' in minutes ? ").to_f
-            behaviour = {
-                "btype" => "DayCalendarItem",
-                "start-unixtime" => cursor,
-                "start-datetime" => Time.at(cursor).to_s,
-                "durationInMinutes" => duration
-            }
-            item["behaviours"] = [behaviour] + item["behaviours"]
-            Items::setAttribute(item["uuid"], "behaviours", item["behaviours"])
-            selected << item
-            unselected = unselected.select{|i| i["uuid"] != item["uuid"] }
-            cursor = cursor + duration * 60
-        }
-    end
-
     # Operations::calm_first_unixtime_or_null()
     def self.calm_first_unixtime_or_null()
         return nil if NxBalls::all().size > 0
@@ -310,40 +281,5 @@ class Operations
         return nil if items.nil?
         cursor = items.map{|item| item["behaviours"].first["start-unixtime"] }.min
         cursor
-    end
-
-    # Operations::monitor()
-    def self.monitor()
-        unixtime = Operations::calm_first_unixtime_or_null()
-        return if unixtime.nil?
-        return if (Time.new.to_i - unixtime).abs < 1200
-        Operations::recalibrate()
-    end
-
-    # Operations::recalibrate()
-    def self.recalibrate()
-        puts "Operations::recalibrate()"
-        if NxBalls::all().size > 0 then
-            puts "You cannot recalibrate when there are active active"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        items = FrontPage::itemsForListing()
-                    .select{|item| item["behaviours"].first["btype"] != "task" }
-                    .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
-        cursor = Time.new.to_i
-        items
-            .sort_by{|item| item["behaviours"].first["start-unixtime"] }
-            .each{|item|
-                behaviour = item["behaviours"].first
-                behaviour = {
-                    "btype" => "DayCalendarItem",
-                    "start-unixtime" => cursor,
-                    "start-datetime" => Time.at(cursor).to_s,
-                    "durationInMinutes" => behaviour["durationInMinutes"]
-                }
-                Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"].drop(1))
-                cursor = cursor + behaviour["durationInMinutes"]*60
-            }
     end
 end
