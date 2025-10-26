@@ -48,6 +48,11 @@ class NxPolymorphs
         positions.min
     end
 
+    # NxPolymorphs::listingPositionOrNull(item)
+    def self.listingPositionOrNull(item)
+        TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"][0])
+    end
+
     # --------------------------------------
     # Ops
 

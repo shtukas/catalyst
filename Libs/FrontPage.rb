@@ -182,27 +182,6 @@ class FrontPage
 
         Thread.new {
             loop {
-                (lambda {
-                    return if NxBalls::all().any?{|nxball| nxball["type"] == "running" }
-                    items = FrontPage::itemsForListing().select{|item| item["behaviours"].first["btype"] != "task" }
-                    return if items.empty?
-                    endunixtime = items
-                            .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
-                            .map{|item| item["behaviours"].first }
-                            .map{|behaviour| behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60 }
-                            .sort
-                            .first
-                    return if endunixtime.nil?
-                    if Time.new.to_i > (endunixtime - 60) then
-                        CommonUtils::onScreenNotification("Catalyst", "check for calendar overrun")
-                    end
-                }).call()
-                sleep 120
-            }
-        }
-
-        Thread.new {
-            loop {
                 sleep 300
                 LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/items-destroyed")
                     .select{|filepath| filepath[-4, 4] == ".txt" }

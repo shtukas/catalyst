@@ -5,8 +5,8 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | position *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph | insert (a line at position)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph | insert after *",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | sort | maintenance",
@@ -80,16 +80,32 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("insert", input) then
+        if Interpreting::match("relocate * after *", input) then
+            _, listord1, _, listord2 = Interpreting::tokenizer(input)
+            listord1 = listord1.to_i
+            listord2 = listord2.to_i
+            item = store.get(listord1)
+            return if item.nil?
+            newposition = (lambda {
+                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| NxPolymorphs::listingPositionOrNull(item) }
+                (pos1+pos2)/2
+            }).call()
+            behaviour = {
+                "btype" => "listing-position",
+                "position" => newposition
+            }
+            Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+            return
+        end
+
+        if Interpreting::match("insert after *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            listord = listord.to_i
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             position = (lambda {
-                position = LucilleCore::askQuestionAnswerAsString("position? (n1 | n2 n2): ")
-                if position.include?(" ") then
-                    pos1, pos2 = position.split(" ").map{|pos| pos.to_f }
-                    return (pos1+pos2)/2
-                end
-                return position.to_f
+                pos1, pos2 = store.items().drop(listord).take(2).map{|item| NxPolymorphs::listingPositionOrNull(item) }
+                (pos1+pos2)/2
             }).call()
             uuid = SecureRandom.uuid
             behaviour = {
