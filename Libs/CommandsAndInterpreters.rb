@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | position *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph | insert (a line at position)",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | sort | maintenance",
@@ -80,6 +80,29 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("insert", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            position = (lambda {
+                position = LucilleCore::askQuestionAnswerAsString("position? (n1 | n2 n2): ")
+                if position.include?(" ") then
+                    pos1, pos2 = position.split(" ").map{|pos| pos.to_f }
+                    return (pos1+pos2)/2
+                end
+                return position.to_f
+            }).call()
+            uuid = SecureRandom.uuid
+            behaviour = {
+                "btype" => "listing-position",
+                "position" => position
+            }
+            Items::init(uuid)
+            payload = UxPayload::makeNewOrNull(uuid)
+            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
         if Interpreting::match("sort after *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             listord = listord.to_i
@@ -89,11 +112,11 @@ class CommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items2, lambda{|i| PolyFunctions::toString(i) })
             return if selected.empty?
             (items1 + selected).reverse.each{|item|
-                behavior = {
+                behaviour = {
                     "btype" => "listing-position",
                     "position" => NxPolymorphs::listingFirstPosition()*0.99
                 }
-                Items::setAttribute(item["uuid"], "behaviours", [behavior] + item["behaviours"])
+                Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
             }
             return
         end
@@ -102,11 +125,11 @@ class CommandsAndInterpreters
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                behavior = {
+                behaviour = {
                     "btype" => "listing-position",
                     "position" => NxPolymorphs::listingFirstPosition()*0.99
                 }
-                Items::setAttribute(item["uuid"], "behaviours", [behavior] + item["behaviours"])
+                Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
             }
             return
         end
