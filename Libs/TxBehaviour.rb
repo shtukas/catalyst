@@ -225,6 +225,16 @@ class TxBehaviour
             return "[#{behaviour["start-datetime"][11, 5]} -> #{Time.at(behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60).to_s[11, 5]}] (#{behaviour["durationInMinutes"].to_i.to_s.rjust(3)}) ".red
         end
 
+        #{
+        #    "btype": "ExecutionTimer"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "ExecutionTimer" then
+            return "(execution timer: completes at #{(Time.new + behaviour["durationInMinutes"]*60).to_s}) ".yellow
+        end
+
         raise "(error 4fba7460) #{behaviour}"
     end
 
@@ -342,6 +352,16 @@ class TxBehaviour
             return ""
         end
 
+        #{
+        #    "btype": "ExecutionTimer"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "ExecutionTimer" then
+            return ""
+        end
+
         raise "(error c073968d) #{behaviour}"
     end
 
@@ -456,6 +476,16 @@ class TxBehaviour
         #    "durationInMinutes": Int
         #}
         if behaviour["btype"] == "DayCalendarItem" then
+            return "⏱️ "
+        end
+
+        #{
+        #    "btype": "ExecutionTimer"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #}
+        if behaviour["btype"] == "ExecutionTimer" then
             return "⏱️ "
         end
 
@@ -658,6 +688,17 @@ class TxBehaviour
             return 0.270 + dx.to_f/1000
         end
 
+        #{
+        #    "btype": "ExecutionTimer"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #    "position": Float
+        #}
+        if behaviour["btype"] == "ExecutionTimer" then
+            return behaviour["position"]
+        end
+
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
     end
 
@@ -825,6 +866,17 @@ class TxBehaviour
         #    "durationInMinutes": Int
         #}
         if behaviour["btype"] == "DayCalendarItem" then
+            return []
+        end
+
+        #{
+        #    "btype": "ExecutionTimer"
+        #    "start-unixtime": Int
+        #    "start-datetime": Int
+        #    "durationInMinutes": Int
+        #    "position": Float
+        #}
+        if behaviour["btype"] == "ExecutionTimer" then
             return []
         end
 

@@ -52,3 +52,10 @@ TxBehaviour
     "start-datetime": Int
     "durationInMinutes": Int
 }
+{
+    "btype": "ExecutionTimer"
+    "start-unixtime": Int
+    "start-datetime": Int
+    "durationInMinutes": Int
+    "position": Float
+}

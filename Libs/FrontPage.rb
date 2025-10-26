@@ -182,6 +182,26 @@ class FrontPage
 
         Thread.new {
             loop {
+                (lambda {
+                    NxBalls::all()
+                        .select{|nxball| nxball["type"] == "running" }
+                        .each{|nxball|
+                            item = Items::itemOrNull(nxball["itemuuid"])
+                            next if item.nil?
+                            next if item["mikuType"] != "NxPolymorph"
+                            behaviour = item["behaviours"][0]
+                            next if behaviour["btype"] != "ExecutionTimer"
+                            if behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60 < Time.new.to_i then
+                                CommonUtils::onScreenNotification("Catalyst", "over running execution timer")
+                            end
+                        }
+                }).call()
+                sleep 120
+            }
+        }
+
+        Thread.new {
+            loop {
                 sleep 300
                 LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/items-destroyed")
                     .select{|filepath| filepath[-4, 4] == ".txt" }
