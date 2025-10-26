@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph | insert after *",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | sort | maintenance",
+            "misc          : search | commands | fsck | sort | sort after * | maintenance",
         ].join("\n")
     end
 
@@ -122,15 +122,21 @@ class CommandsAndInterpreters
         if Interpreting::match("sort after *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             listord = listord.to_i
-            items1 = store.items().take(listord+1)
+
+            baseposition1 = store.items().take(listord+1).map{|item| NxPolymorphs::listingPositionOrNull(item) }.max
+            cursor = store.items().take(listord+2).map{|item| NxPolymorphs::listingPositionOrNull(item) }.max
+
             items2 = store.items().drop(listord+1)
             items2 = items2.select{|item| item["mikuType"] == "NxPolymorph" }
+
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items2, lambda{|i| PolyFunctions::toString(i) })
             return if selected.empty?
-            (items1 + selected).reverse.each{|item|
+
+            selected.reverse.each{|item|
+                cursor = baseposition1 + 0.99 * (cursor - baseposition1)
                 behaviour = {
                     "btype" => "listing-position",
-                    "position" => NxPolymorphs::listingFirstPosition()*0.99
+                    "position" => cursor
                 }
                 Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
             }
