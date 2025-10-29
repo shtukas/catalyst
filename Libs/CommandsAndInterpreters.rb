@@ -87,7 +87,7 @@ class CommandsAndInterpreters
             item = store.get(listord1)
             return if item.nil?
             newposition = (lambda {
-                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| NxPolymorphs::listingPositionOrNull(item) }
+                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
                 (pos1+pos2)/2
             }).call()
             behaviour = {
@@ -104,7 +104,7 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             position = (lambda {
-                pos1, pos2 = store.items().drop(listord).take(2).map{|item| NxPolymorphs::listingPositionOrNull(item) }
+                pos1, pos2 = store.items().drop(listord).take(2).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
                 (pos1+pos2)/2
             }).call()
             uuid = SecureRandom.uuid
@@ -123,8 +123,8 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             listord = listord.to_i
 
-            baseposition1 = store.items().take(listord+1).map{|item| NxPolymorphs::listingPositionOrNull(item) }.max
-            cursor = store.items().take(listord+2).map{|item| NxPolymorphs::listingPositionOrNull(item) }.max
+            baseposition1 = store.items().take(listord+1).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }.max
+            cursor = store.items().take(listord+2).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }.max
 
             items2 = store.items().drop(listord+1)
             items2 = items2.select{|item| item["mikuType"] == "NxPolymorph" }

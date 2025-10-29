@@ -1,6 +1,12 @@
 
 TxBehaviour
 {
+    "btype": "listing-position"
+    "position": Float
+}
+
+TxBehaviour
+{
     "btype": "NxAwait"
     "creationUnixtime": Float
 }
@@ -53,11 +59,5 @@ TxBehaviour
     "start-unixtime": Int
     "start-datetime": Int
     "durationInMinutes": Int
-    "position": Float
-}
-
-TxBehaviour
-{
-    "btype": "listing-position"
     "position": Float
 }

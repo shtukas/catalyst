@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        lp = " (#{TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first)})".yellow
+        lp = " (#{NxPolymorphs::decideItemListingPositionOrNull(item)})".yellow
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -54,25 +54,24 @@ class FrontPage
                 tasks = JSON.parse(uuids)
                         .map{|uuid| Items::itemOrNull(uuid) }
                         .compact
-                        .select{|item| item["behaviours"][0]["btype"] == "task" }
+                        .select{|item| item["behaviours"].any?{ |behaviour| behaviour["btype"] == "task" } }
                 XCache::set("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
                 return tasks
             end
             tasks = Items::mikuType("NxPolymorph")
-                        .select{|item| item["behaviours"][0]["btype"] == "task" }
-                        .select{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
-                        .sort_by{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+                        .select{|item| item["behaviours"].any?{ |behaviour| behaviour["btype"] == "task" } }
+                        .sort_by{|item| item["unixtime"] }
                         .take(10)
             XCache::set("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
             tasks
         }).call()
 
         items = Items::mikuType("NxPolymorph")
-            .select{|item| item["behaviours"][0]["btype"] != "task" }
+            .reject{|item| item["behaviours"].any?{ |behaviour| behaviour["btype"] == "task" } }
             .map{|item| NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item) }
-            .select{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+            .select{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
 
-        (items + tasks).sort_by{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
+        (items + tasks).sort_by{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
     end
 
     # FrontPage::extraLines(item)

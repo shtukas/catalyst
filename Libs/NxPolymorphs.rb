@@ -42,15 +42,40 @@ class NxPolymorphs
     def self.listingFirstPosition()
         positions = Items::items()
             .select{|item| item["mikuType"] == "NxPolymorph" }
-            .map{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"].first) }
-            .compact
+            .select{|item| item["behaviours"][0]["btype"] == "listing-position" }
+            .map{|item| item["behaviours"][0]["position"] }
         return 1 if positions.empty?
         positions.min
     end
 
-    # NxPolymorphs::listingPositionOrNull(item)
-    def self.listingPositionOrNull(item)
-        TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"][0])
+    # NxPolymorphs::listingNthPosition(n)
+    def self.listingNthPosition(n)
+        positions = Items::items()
+            .select{|item| item["mikuType"] == "NxPolymorph" }
+            .select{|item| item["behaviours"][0]["btype"] == "listing-position" }
+            .map{|item| item["behaviours"][0]["position"] }
+            .sort
+        if positions.size > n then
+            positions.drop(n).first
+        end
+        positions.max + 1
+    end
+
+    # NxPolymorphs::decideItemListingPositionOrNull(item)
+    def self.decideItemListingPositionOrNull(item)
+        behaviours = item["behaviours"]
+        if behaviours[0]["btype"] == "listing-position" then
+            return behaviours[0]["position"]
+        end
+        behaviour = item["behaviours"].drop_while{|behaviour| behaviour["btype"] == "listing-position" }.first
+        position = TxBehaviour::decideBehaviourListingPositionOrNull(behaviour)
+        return nil if position.nil?
+        behaviour = {
+            "btype" => "listing-position",
+            "position" => position
+        }
+        Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+        position
     end
 
     # NxPolymorphs::uniqueListingOrFirstNonListingBehaviour(item)
@@ -87,5 +112,4 @@ class NxPolymorphs
         behaviours = [behaviour] + behaviours
         Items::setAttribute(item["uuid"], "behaviours", behaviours)
     end
-
 end

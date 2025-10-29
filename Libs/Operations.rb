@@ -267,7 +267,7 @@ class Operations
         l = lambda { 
             Items::mikuType("NxPolymorph")
                 .select{|item| NxPolymorphs::itemHasBehaviour(item, btype) }
-                .sort_by{|item| TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"][0]) || 1 }
+                .sort_by{|item| NxPolymorphs::decideItemListingPositionOrNull(item) || 1 }
         }
         Operations::program3(l)
     end

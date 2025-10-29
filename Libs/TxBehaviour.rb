@@ -533,23 +533,13 @@ class TxBehaviour
         (2 + Math.atan(x)).to_f/10
     end
 
-    # TxBehaviour::behaviourToListingPositionOrNull(behaviour)
-    def self.behaviourToListingPositionOrNull(behaviour)
-        # There should not be negative positions
+    # TxBehaviour::positionIn(x1, x2)
+    def self.positionIn(x1, x2)
+        x1 + rand(x2-x1)
+    end
 
-        # 0.010 -> 0.020 wave, interruption
-        # 0.050 -> 0.600 DayCalendarItem
-        # 0.070 -> 0.080 project before 9am
-        # 0.100 -> 0.150 calendar-event
-        # 0.160 -> 0.160 NxAwait
-        # 0.260 -> 0.280 anniversary
-        # 0.300 -> 0.320 wave, sticky
-        # 0.330 -> 0.340 project before 2pm
-        # 0.350 -> 0.360 wave, overlay
-        # 0.400 -> 0.450 backup
-        # 0.500 -> 0.600 ondate
-        # 0.800 -> 0.880 task
-        # 0.900 -> 0.910 project
+    # TxBehaviour::decideBehaviourListingPositionOrNull(behaviour)
+    def self.decideBehaviourListingPositionOrNull(behaviour)
 
         #{
         #    "btype": "DayCalendarItem"
@@ -558,8 +548,7 @@ class TxBehaviour
         #    "durationInMinutes": Int
         #}
         if behaviour["btype"] == "DayCalendarItem" then
-            dx = TxBehaviour::realLineTo01Increasing(behaviour["start-unixtime"] - 1760788063)
-            return 0.050 + dx.to_f/1000
+            return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
         end
 
         #{
@@ -568,10 +557,7 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "ondate" then
             return nil if CommonUtils::today() < behaviour["date"]
-            dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
-            creationUnixtime = behaviour["creationUnixtime"] || 1760531105
-            epsilon = TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
-            return 0.51 + TxBehaviour::realLineTo01Increasing(dayNumber + epsilon).to_f/100
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         # {
@@ -587,8 +573,7 @@ class TxBehaviour
         #    "creationUnixtime": Float
         #}
         if behaviour["btype"] == "NxAwait" then
-            dx = TxBehaviour::realLineTo01Increasing(behaviour["creationUnixtime"] - 1759082216)
-            return 0.160 + dx.to_f/1000
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         #{
@@ -596,7 +581,7 @@ class TxBehaviour
         #    "period": Float # period in Days
         #}
         if behaviour["btype"] == "backup" then
-            return 0.410
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         #{
@@ -604,11 +589,7 @@ class TxBehaviour
         #     "date" => 
         #}
         if behaviour["btype"] == "calendar-event" then
-            return nil if CommonUtils::today() < behaviour["date"]
-            dayNumber = (DateTime.parse("#{behaviour["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
-            creationUnixtime = behaviour["creationUnixtime"] || 1760531105
-            epsilon = TxBehaviour::realLineTo01Increasing(creationUnixtime - 1760531105).to_f/10
-            return 0.100 + TxBehaviour::realLineTo01Increasing(dayNumber + epsilon).to_f/100
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         #{
@@ -635,18 +616,12 @@ class TxBehaviour
         #}
         if behaviour["btype"] == "project" then
             return nil if Project::ratio(behaviour) >= 1
-            if Time.new.hour < 9 then
-                return 0.070 + Project::ratio(behaviour).to_f/1000
-            end
-            if Time.new.hour < 14 then
-                return 0.330 + Project::ratio(behaviour).to_f/1000
-            end
-            return 0.900 + Project::ratio(behaviour).to_f/1000
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         if behaviour["btype"] == "do-not-show-until" then
            return nil if Time.new.to_i < behaviour["unixtime"]
-           return 0
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         #{
@@ -656,14 +631,10 @@ class TxBehaviour
         #    "interruption" : null or boolean, indicates if the item is interruption
         #}
         if behaviour["btype"] == "wave" then
-            epsilon = TxBehaviour::realLineTo01Increasing(behaviour["lastDoneUnixtime"] - 1760531105).to_f/1000
             if behaviour["interruption"] then
-                return 0.015 + epsilon
+                return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
             end
-            if behaviour["nx46"]["type"]["sticky"] then
-                return 0.310 + epsilon
-            end
-            return 0.350 + epsilon
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         #{
@@ -671,9 +642,8 @@ class TxBehaviour
         #    "unixtime": Float
         #}
         if behaviour["btype"] == "task" then
-            return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 2
-            dx = TxBehaviour::realLineTo01Increasing(behaviour["unixtime"] - 1759082216)
-            return 0.800 + dx.to_f/1000
+            return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 1
+            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
         end
 
         #{
@@ -683,9 +653,7 @@ class TxBehaviour
         #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
         #}
         if behaviour["btype"] == "anniversary" then
-            unixtime = DateTime.parse("#{behaviour["next_celebration"]}T00:00:00Z").to_time.to_i
-            dx = TxBehaviour::realLineTo01Increasing(unixtime - 1760687343)
-            return 0.270 + dx.to_f/1000
+            return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
         end
 
         #{
@@ -696,7 +664,7 @@ class TxBehaviour
         #    "position": Float
         #}
         if behaviour["btype"] == "ExecutionTimer" then
-            return behaviour["position"]
+            return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
         end
 
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
