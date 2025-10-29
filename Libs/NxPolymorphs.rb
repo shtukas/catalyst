@@ -22,7 +22,7 @@ class NxPolymorphs
 
     # NxPolymorphs::toString(item)
     def self.toString(item)
-        behaviour = item["behaviours"].first
+        behaviour = NxPolymorphs::uniqueListingOrFirstNonListingBehaviour(item)
         icon = TxBehaviour::behaviourToIcon(behaviour)
         "#{icon} #{TxBehaviour::behaviourToDescriptionLeft(behaviour)}#{item["description"]}#{TxBehaviour::behaviourToDescriptionRight(behaviour)}"
     end
@@ -51,6 +51,15 @@ class NxPolymorphs
     # NxPolymorphs::listingPositionOrNull(item)
     def self.listingPositionOrNull(item)
         TxBehaviour::behaviourToListingPositionOrNull(item["behaviours"][0])
+    end
+
+    # NxPolymorphs::uniqueListingOrFirstNonListingBehaviour(item)
+    def self.uniqueListingOrFirstNonListingBehaviour(item)
+        bs = item["behaviours"].drop_while{|behaviour| behaviour["btype"] == "listing-position" }
+        if bs.size > 0 then
+            return bs.first
+        end
+        item["behaviours"].first
     end
 
     # --------------------------------------
