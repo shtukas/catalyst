@@ -81,9 +81,9 @@ class CommandsAndInterpreters
             return if item.nil?
             behaviours = item["behaviours"]
             return if behaviours.size == 1
-            return if behaviours[0]["btype"] != "listing-position"
+            behaviours = behaviours.take(behaviours.size-1).select{|behaviour| behaviour["btype"] != "listing-position" } + behaviours.reverse.take(1)
             puts "> delisting #{PolyFunctions::toString(item).green}"
-            Items::setAttribute(item["uuid"], "behaviours", behaviours.drop(1))
+            Items::setAttribute(item["uuid"], "behaviours", behaviours)
             return
         end
 

@@ -205,49 +205,59 @@ class TxBehaviour
         (2 + Math.atan(x)).to_f/10
     end
 
-    # TxBehaviour::positionIn(x1, x2)
-    def self.positionIn(x1, x2)
-        x1 + rand(x2-x1)
+    # TxBehaviour::positionIn(area)
+    def self.positionIn(area)
+        if area == "zone1" then
+            x1 = NxPolymorphs::listingNthPosition(5)
+            x2 = NxPolymorphs::listingNthPosition(10)
+            return x1 + rand(x2-x1)
+        end
+        if area == "zone2" then
+            x1 = NxPolymorphs::listingNthPosition(10)
+            x2 = NxPolymorphs::listingNthPosition(20)
+            return x1 + rand(x2-x1)
+        end
+        raise "(error: 2131)"
     end
 
     # TxBehaviour::decideBehaviourListingPositionOrNull(behaviour)
     def self.decideBehaviourListingPositionOrNull(behaviour)
         if behaviour["btype"] == "ondate" then
             return nil if CommonUtils::today() < behaviour["date"]
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "listing-position" then
             return behaviour["position"]
         end
         if behaviour["btype"] == "NxAwait" then
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "backup" then
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "calendar-event" then
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "project" then
             return nil if Project::ratio(behaviour) >= 1
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "do-not-show-until" then
            return nil if Time.new.to_i < behaviour["unixtime"]
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "wave" then
             if behaviour["interruption"] then
-                return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
+                return TxBehaviour::positionIn("zone1")
             end
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "task" then
             return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 1
-            return TxBehaviour::positionIn(NxPolymorphs::listingNthPosition(10), NxPolymorphs::listingNthPosition(20))
+            return TxBehaviour::positionIn("zone2")
         end
         if behaviour["btype"] == "anniversary" then
-            return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
+            return TxBehaviour::positionIn("zone1")
         end
         raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
     end

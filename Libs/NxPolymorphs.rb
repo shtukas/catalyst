@@ -56,9 +56,18 @@ class NxPolymorphs
             .map{|item| item["behaviours"][0]["position"] }
             .sort
         if positions.size > n then
-            positions.drop(n).first
+            return positions.drop(n).first
         end
         positions.max + 1
+    end
+
+    # NxPolymorphs::readItemListingPositionOrNull(item)
+    def self.readItemListingPositionOrNull(item)
+        behaviours = item["behaviours"]
+        if behaviours[0]["btype"] == "listing-position" then
+            return behaviours[0]["position"]
+        end
+        nil
     end
 
     # NxPolymorphs::decideItemListingPositionOrNull(item)
@@ -67,14 +76,14 @@ class NxPolymorphs
         if behaviours[0]["btype"] == "listing-position" then
             return behaviours[0]["position"]
         end
-        behaviour = item["behaviours"].drop_while{|behaviour| behaviour["btype"] == "listing-position" }.first
-        position = TxBehaviour::decideBehaviourListingPositionOrNull(behaviour)
+        behaviours = item["behaviours"].drop_while{|behaviour| behaviour["btype"] == "listing-position" }
+        position = TxBehaviour::decideBehaviourListingPositionOrNull(behaviours.first)
         return nil if position.nil?
         behaviour = {
             "btype" => "listing-position",
             "position" => position
         }
-        Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+        Items::setAttribute(item["uuid"], "behaviours", [behaviour] + behaviours)
         position
     end
 
