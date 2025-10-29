@@ -215,26 +215,6 @@ class TxBehaviour
             return "#{Anniversary::toString(behaviour)} "
         end
 
-        #{
-        #    "btype": "DayCalendarItem"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "DayCalendarItem" then
-            return "[#{behaviour["start-datetime"][11, 5]} -> #{Time.at(behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60).to_s[11, 5]}] (#{behaviour["durationInMinutes"].to_i.to_s.rjust(3)}) ".red
-        end
-
-        #{
-        #    "btype": "ExecutionTimer"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "ExecutionTimer" then
-            return "(execution timer: completes at #{Time.at(behaviour["start-unixtime"] + behaviour["durationInMinutes"]*60).to_s}) ".yellow
-        end
-
         raise "(error 4fba7460) #{behaviour}"
     end
 
@@ -339,26 +319,6 @@ class TxBehaviour
         #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
         #}
         if behaviour["btype"] == "anniversary" then
-            return ""
-        end
-
-        #{
-        #    "btype": "DayCalendarItem"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "DayCalendarItem" then
-            return ""
-        end
-
-        #{
-        #    "btype": "ExecutionTimer"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "ExecutionTimer" then
             return ""
         end
 
@@ -469,26 +429,6 @@ class TxBehaviour
             return "🎂"
         end
 
-        #{
-        #    "btype": "DayCalendarItem"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "DayCalendarItem" then
-            return "⏱️ "
-        end
-
-        #{
-        #    "btype": "ExecutionTimer"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "ExecutionTimer" then
-            return "⏱️ "
-        end
-
         raise "(error 865c0eea) #{behaviour}"
     end
 
@@ -540,16 +480,6 @@ class TxBehaviour
 
     # TxBehaviour::decideBehaviourListingPositionOrNull(behaviour)
     def self.decideBehaviourListingPositionOrNull(behaviour)
-
-        #{
-        #    "btype": "DayCalendarItem"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "DayCalendarItem" then
-            return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
-        end
 
         #{
         #     "btype" => "ondate",
@@ -653,17 +583,6 @@ class TxBehaviour
         #    "next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
         #}
         if behaviour["btype"] == "anniversary" then
-            return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
-        end
-
-        #{
-        #    "btype": "ExecutionTimer"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #    "position": Float
-        #}
-        if behaviour["btype"] == "ExecutionTimer" then
             return TxBehaviour::positionIn(NxPolymorphs::listingFirstPosition(), NxPolymorphs::listingNthPosition(10))
         end
 
@@ -825,27 +744,6 @@ class TxBehaviour
             }
             puts "do not show until #{Time.at(b1["unixtime"])}".yellow
             return [b1, behaviour]
-        end
-
-        #{
-        #    "btype": "DayCalendarItem"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #}
-        if behaviour["btype"] == "DayCalendarItem" then
-            return []
-        end
-
-        #{
-        #    "btype": "ExecutionTimer"
-        #    "start-unixtime": Int
-        #    "start-datetime": Int
-        #    "durationInMinutes": Int
-        #    "position": Float
-        #}
-        if behaviour["btype"] == "ExecutionTimer" then
-            return []
         end
 
         raise "I do not know how to perform done for behaviour: #{behaviour}"
