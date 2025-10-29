@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after * | delist *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph | insert after *",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | events | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -72,6 +72,18 @@ class CommandsAndInterpreters
             behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
             return if behaviour.nil?
             Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+            return
+        end
+
+        if Interpreting::match("delist *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            behaviours = item["behaviours"]
+            return if behaviours.size == 1
+            return if behaviours[0]["btype"] != "listing-position"
+            puts "> delisting #{PolyFunctions::toString(item).green}"
+            Items::setAttribute(item["uuid"], "behaviours", behaviours.drop(1))
             return
         end
 
@@ -237,7 +249,6 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             behaviour = {
                  "btype" => "calendar-event",
-                 "creationUnixtime" => Time.new.to_f,
                  "date" => CommonUtils::interactivelyMakeADate()
             }
             Items::init(uuid)
@@ -304,7 +315,6 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = {
                 "btype" => "ondate",
-                "creationUnixtime" => Time.new.to_f,
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
@@ -321,7 +331,6 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = {
                 "btype" => "ondate",
-                "creationUnixtime" => Time.new.to_f,
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
@@ -348,7 +357,6 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = {
                 "btype" => "ondate",
-                "creationUnixtime" => Time.new.to_f,
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
@@ -365,7 +373,6 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = {
                 "btype" => "ondate",
-                "creationUnixtime" => Time.new.to_f,
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
@@ -450,8 +457,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             behaviour = {
-                "btype" => "NxAwait",
-                "creationUnixtime" => Time.new.to_i
+                "btype" => "NxAwait"
             }
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
@@ -724,8 +730,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             behaviour = {
-                "btype" => "NxAwait",
-                "creationUnixtime" => Time.new.to_i
+                "btype" => "NxAwait"
             }
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)

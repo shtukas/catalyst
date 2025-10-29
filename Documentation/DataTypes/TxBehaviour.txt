@@ -8,7 +8,6 @@ TxBehaviour
 TxBehaviour
 {
     "btype": "NxAwait"
-    "creationUnixtime": Float
 }
 {
     "btype": "do-not-show-until"
@@ -16,12 +15,10 @@ TxBehaviour
 }
 {
     "btype": "ondate"
-    "creationUnixtime": Float
     "date": YYYY-MM-DD
 }
 {
     "btype": "calendar-event"
-    "creationUnixtime": Float
     "date": YYYY-MM-DD
 }
 {
