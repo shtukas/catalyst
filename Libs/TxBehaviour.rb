@@ -850,12 +850,4 @@ class TxBehaviour
 
         raise "I do not know how to perform done for behaviour: #{behaviour}"
     end
-
-    # TxBehaviour::doneArrayOfBehaviours(behaviours: Array[TxBehaviour]) -> Array[TxBehaviour]
-    def self.doneArrayOfBehaviours(behaviours)
-        behaviours
-            .map{|behaviour| TxBehaviour::done(behaviour) }
-            .flatten
-            .compact
-    end
 end

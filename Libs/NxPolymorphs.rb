@@ -112,4 +112,18 @@ class NxPolymorphs
         behaviours = [behaviour] + behaviours
         Items::setAttribute(item["uuid"], "behaviours", behaviours)
     end
+
+    # NxPolymorphs::done(item)
+    def self.done(item)
+        behaviours = item["behaviours"]
+        behaviours = TxBehaviour::done(behaviours.first) + behaviours.drop(1)
+        if behaviours.empty? then
+            if LucilleCore::askQuestionAnswerAsBoolean("confirm destroy '#{PolyFunctions::toString(item).green}': ") then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        else
+            Items::setAttribute(item["uuid"], "behaviours", behaviours)
+        end
+    end
 end
