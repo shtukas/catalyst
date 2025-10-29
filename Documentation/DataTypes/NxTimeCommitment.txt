@@ -17,3 +17,7 @@ NxTimeCommitment
     "start" : Unixtime
     "end"   : Unixtime
 }
+{
+    "type" : "presence"
+    "uuid" : String
+}

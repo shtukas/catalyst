@@ -58,6 +58,10 @@ class Project
             return actualDoneInHours.to_f/idealDoneInHours
         end
 
+        if timeCommitment["type"] == "presence" then
+            return 0
+        end
+
         raise "(error 39498e23) #{behaviour}"
     end
 
@@ -79,6 +83,10 @@ class Project
 
         if timeCommitment["type"] == "unt1l-date-1958" then
             return "(until-date: #{Time.at(timeCommitment["end"]).to_s[0, 10]}, #{timeCommitment["hours"]} hours)"
+        end
+
+        if timeCommitment["type"] == "presence" then
+            return "(presence)"
         end
     end
 end

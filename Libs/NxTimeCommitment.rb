@@ -8,7 +8,8 @@ class NxTimeCommitment
         options = [
             "day",
             "week",
-            "until date"
+            "until date",
+            "presence"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
@@ -39,6 +40,13 @@ class NxTimeCommitment
                  "hours" => hours,
                  "start" => Time.new.to_i,
                  "end"   => CommonUtils::interactivelyMakeUnixtimeUsingDateCode()
+            }
+        end
+
+        if option == "presence" then
+            return {
+                 "type" => "presence",
+                 "uuid" => SecureRandom.uuid
             }
         end
 

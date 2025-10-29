@@ -68,18 +68,8 @@ class NxPolymorphs
         item
     end
 
-    # NxPolymorphs::removeAnyCalendarItem(item) # Item -> Item
-    def self.removeAnyCalendarItem(item)
-        return item if item["mikuType"] != "NxPolymorph"
-        return item if item["behaviours"].first["btype"] != "DayCalendarItem" 
-        item["behaviours"] = item["behaviours"].drop(1)
-        Items::setAttribute(item["uuid"], "behaviours", item["behaviours"])
-        item
-    end
-
     # NxPolymorphs::doNotShowUntil(item, unixtime)
     def self.doNotShowUntil(item, unixtime)
-        item = NxPolymorphs::removeAnyCalendarItem(item)
         behaviours = item["behaviours"]
         behaviour = {
             "btype" => "do-not-show-until",

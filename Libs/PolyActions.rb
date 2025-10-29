@@ -7,19 +7,6 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
-        if item["mikuType"] == "NxPolymorph" and item["behaviours"].any?{|behaviour| behaviour["btype"] == "project" } then
-            if LucilleCore::askQuestionAnswerAsBoolean("Do you want to put a timer on this? ") then
-                executionTimer = {
-                    "btype" => "ExecutionTimer",
-                    "start-unixtime" => Time.new.to_i,
-                    "start-datetime" => Time.new.to_s,
-                    "durationInMinutes" => LucilleCore::askQuestionAnswerAsString("Duration in minutes: ").to_f,
-                    "position" => NxPolymorphs::listingPositionOrNull(item) || 0
-                }
-                Items::setAttribute(item["uuid"], "behaviours", [executionTimer] + item["behaviours"])
-                item = Items::itemOrNull(item["uuid"])
-            end
-        end
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
@@ -31,7 +18,6 @@ class PolyActions
 
     # PolyActions::stop(item)
     def self.stop(item)
-        item = NxPolymorphs::removeAnyCalendarItem(item)
         NxBalls::stop(item)
     end
 

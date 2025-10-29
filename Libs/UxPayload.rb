@@ -103,17 +103,22 @@ class UxPayload
     def self.access(uuid, payload)
         return if payload.nil?
         if payload["type"] == "text" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file (also does edit)"])
             return if option.nil?
             if option == "in terminal" then
                 puts payload["text"].strip
                 LucilleCore::pressEnterToContinue()
             end
-            if option == "in file" then
+            if option == "in file (also does edit)" then
                 filepath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{SecureRandom.hex(5)}.txt"
                 File.open(filepath, "w"){|f| f.puts(payload["text"]) }
                 system("open '#{filepath}'")
                 LucilleCore::pressEnterToContinue()
+                payload = {
+                    "type" => "text",
+                    "text" => IO.read(filepath)
+                }
+                Items::setAttribute(uuid, "uxpayload-b4e4", payload)
             end
             return
         end

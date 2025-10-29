@@ -271,15 +271,4 @@ class Operations
         }
         Operations::program3(l)
     end
-
-    # Operations::calm_first_unixtime_or_null()
-    def self.calm_first_unixtime_or_null()
-        return nil if NxBalls::all().size > 0
-        items = FrontPage::itemsForListing()
-                    .select{|item| item["behaviours"].first["btype"] != "task" }
-                    .select{|item| item["behaviours"].first["btype"] == "DayCalendarItem" }
-        return nil if items.nil?
-        cursor = items.map{|item| item["behaviours"].first["start-unixtime"] }.min
-        cursor
-    end
 end
