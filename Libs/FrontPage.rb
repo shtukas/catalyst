@@ -61,7 +61,7 @@ class FrontPage
             tasks = Items::mikuType("NxPolymorph")
                         .select{|item| item["behaviours"].any?{ |behaviour| behaviour["btype"] == "task" } }
                         .sort_by{|item| item["unixtime"] }
-                        .take(10)
+            tasks = tasks.take(10) + tasks.reverse.take(10)
             XCache::set("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
             tasks
         }).call()
