@@ -251,7 +251,7 @@ class Operations
         uuid = SecureRandom.uuid
         behaviour = {
             "btype" => "listing-position",
-            "position" => NxPolymorphs::listingFirstPosition()
+            "position" => 0.9*NxPolymorphs::listingFirstPosition()
         }
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)

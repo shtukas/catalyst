@@ -145,7 +145,7 @@ class CommandsAndInterpreters
             return if selected.empty?
 
             selected.reverse.each{|item|
-                cursor = baseposition1 + 0.99 * (cursor - baseposition1)
+                cursor = baseposition1 + 0.9 * (cursor - baseposition1)
                 behaviour = {
                     "btype" => "listing-position",
                     "position" => cursor
@@ -161,7 +161,7 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 behaviour = {
                     "btype" => "listing-position",
-                    "position" => NxPolymorphs::listingFirstPosition()*0.99
+                    "position" => 0.9 * NxPolymorphs::listingFirstPosition()
                 }
                 Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
             }
