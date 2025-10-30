@@ -112,8 +112,7 @@ class TxBehaviour
         if behaviour["btype"] == "anniversary" then
             return "#{Anniversary::toString(behaviour)} "
         end
-
-        raise "(error 4fba7460) #{behaviour}"
+        ""
     end
 
     # TxBehaviour::behaviourToDescriptionRight(behaviour)
@@ -148,7 +147,7 @@ class TxBehaviour
         if behaviour["btype"] == "anniversary" then
             return ""
         end
-        raise "(error c073968d) #{behaviour}"
+        ""
     end
 
     # TxBehaviour::behaviourToIcon(behaviour)
@@ -183,7 +182,7 @@ class TxBehaviour
         if behaviour["btype"] == "anniversary" then
             return "🎂"
         end
-        raise "(error 865c0eea) #{behaviour}"
+        "[icon]"
     end
 
     # TxBehaviour::bankAccountsNumbers(behaviour)
