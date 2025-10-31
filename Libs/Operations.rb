@@ -271,4 +271,39 @@ class Operations
         }
         Operations::program3(l)
     end
+
+    # Operations::morning()
+    def self.morning()
+        ondates = (lambda {
+            items = Items::mikuType("NxPolymorph")
+                .select{|item| item["behaviours"].first["btype"] == "ondate" }
+                .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() }
+                .sort_by{|item| item["behaviours"].first["date"] }
+            return [] if items.empty?
+            items, _ = LucilleCore::selectZeroOrMore("ondates", [], items, lambda {|item| PolyFunctions::toString(item) })
+            items
+        }).call()
+
+        waves = (lambda {
+            items = Items::mikuType("NxPolymorph")
+                .select{|item| item["behaviours"].first["btype"] == "wave" }
+            return [] if items.empty?
+            items, _ = LucilleCore::selectZeroOrMore("waves",[], items, lambda {|item| PolyFunctions::toString(item) })
+            items
+        }).call()
+
+        items = ondates + waves
+        if !items.empty? then
+            selected, nonselected = LucilleCore::selectZeroOrMore("items",[],items,lambda {|item| PolyFunctions::toString(item) })
+            items = selected + nonselected
+        end
+
+        (items).reverse.each{|item|
+            behaviour = {
+                "btype" => "listing-position",
+                "position" => 0.9 * NxPolymorphs::listingFirstPosition()
+            }
+            Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+        }
+    end
 end
