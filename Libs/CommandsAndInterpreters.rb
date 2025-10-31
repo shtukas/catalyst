@@ -384,8 +384,7 @@ class CommandsAndInterpreters
         if Interpreting::match("ondates", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxPolymorph")
-                    .select{|item| item["behaviours"].first["btype"] == "ondate" } 
-                    .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() }
+                    .select{|item| item["behaviours"].first["btype"] == "ondate" }
                     .sort_by{|item| item["behaviours"].first["date"] }
             })
             return
