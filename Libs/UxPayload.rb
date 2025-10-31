@@ -348,7 +348,7 @@ class UxPayload
     def self.payloadProgram(item)
         payload = nil
         if item["uxpayload-b4e4"] then
-            options = ["access", "edit", "make new (default)"]
+            options = ["access", "edit", "make new (default)", "delete existing payload"]
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             if option == "access" then
                 payload = UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
@@ -358,6 +358,9 @@ class UxPayload
             end
             if option.nil? or option == "make new (default)" then
                 payload = UxPayload::makeNewOrNull(item["uuid"])
+            end
+            if option == "delete existing payload" then
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
             end
         else
             payload = UxPayload::makeNewOrNull(item["uuid"])
