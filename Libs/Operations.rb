@@ -298,12 +298,33 @@ class Operations
             items = selected + nonselected
         end
 
-        (items).reverse.each{|item|
+        items.reverse.each{|item|
             behaviour = {
                 "btype" => "listing-position",
                 "position" => 0.9 * NxPolymorphs::listingFirstPosition()
             }
             Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
         }
+    end
+
+    # Operations::runningItemOverruningMessage(item)
+    def self.runningItemOverruningMessage(item)
+        if !NxBalls::itemIsRunning(item) then
+            raise "(error: 9cae7b7c-7b5d) item: #{item}"
+        end
+        nxball = NxBalls::getNxBallOrNull(item)
+        if nxball.nil? then
+            raise "(error: 9cae7b7c-7b5d) How did this happen ? 🤔"
+        end
+        return nil if item["mikuType"] != "NxPolymorph"
+        if item["behaviours"][0]["btype"] == "project" then
+            runningTime = NxBalls::ballRunningTime(nxball)
+            return (Project::ratio(behaviour, runningTimespan = 0) >= 1) ? "project is over running" : nil
+        end
+        if item["behaviours"][0]["btype"] == "task" then
+            runningTime = NxBalls::ballRunningTime(nxball)
+            return (runningTime >= 3600) ? "task is over running" : nil
+        end
+        nil
     end
 end

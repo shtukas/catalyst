@@ -401,22 +401,22 @@ end
 
 class BankDerivedData
 
-    # BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n)
+    # BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan = 0)
     # n = 0 corresponds to today
-    def self.averageHoursPerDayOverThePastNDays(uuid, n)
+    def self.averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan = 0)
         range = (0..n)
-        totalInSeconds = range.map{|indx| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) }.inject(0, :+)
+        totalInSeconds = range.map{|indx| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) + (indx==0 ? runningTimespan : 0) }.inject(0, :+)
         totalInHours = totalInSeconds.to_f/3600
         average = totalInHours.to_f/(n+1)
         average
     end
 
-    # BankDerivedData::recoveredAverageHoursPerDay(uuid)
-    def self.recoveredAverageHoursPerDay(uuid)
+    # BankDerivedData::recoveredAverageHoursPerDay(uuid, runningTimespan = 0)
+    def self.recoveredAverageHoursPerDay(uuid, runningTimespan = 0)
         value = BankDataRTCache::recoveredAverageHoursPerDayFromCacheOrNull(uuid)
         return value if value
         puts "BankDerivedData::recoveredAverageHoursPerDay: computing uuid #{uuid} from zero".yellow
-        value = (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n) }.max
+        value = (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan) }.max
         BankDataRTCache::insertValueInCache(uuid, value)
         value
     end

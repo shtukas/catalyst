@@ -8,7 +8,6 @@ class NxTimeCommitment
         options = [
             "day",
             "week",
-            "until date",
             "presence"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
@@ -29,17 +28,6 @@ class NxTimeCommitment
                  "type" => "week",
                  "uuid" => SecureRandom.uuid,
                  "hours" => hours
-            }
-        end
-
-        if option == "until date" then
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            return {
-                 "type"  => "unt1l-date-1958",
-                 "uuid"  => SecureRandom.uuid,
-                 "hours" => hours,
-                 "start" => Time.new.to_i,
-                 "end"   => CommonUtils::interactivelyMakeUnixtimeUsingDateCode()
             }
         end
 

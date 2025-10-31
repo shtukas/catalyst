@@ -168,8 +168,8 @@ class FrontPage
                         .each{|nxball|
                             item = Items::itemOrNull(nxball["itemuuid"])
                             next if item.nil?
-                            if NxBalls::ballRunningTime(nxball) > 3600 then
-                                CommonUtils::onScreenNotification("Catalyst", "item is over running")
+                            if message = Operations::runningItemOverruningMessage(item) then
+                                CommonUtils::onScreenNotification("Catalyst", message)
                             end
                         }
                 }).call()

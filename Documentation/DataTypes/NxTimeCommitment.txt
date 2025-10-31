@@ -11,13 +11,6 @@ NxTimeCommitment
     "hours": float
 }
 {
-    "type"  : "unt1l-date-1958"
-    "uuid"  : String
-    "hours" : float
-    "start" : Unixtime
-    "end"   : Unixtime
-}
-{
     "type" : "presence"
     "uuid" : String
 }
