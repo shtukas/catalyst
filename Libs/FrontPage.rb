@@ -87,8 +87,7 @@ class FrontPage
     # FrontPage::displayListing()
     def self.displayListing()
         store = ItemStore.new()
-        printer = lambda{|line| puts line }
-        printer.call("")
+        puts ""
 
         sheight = CommonUtils::screenHeight()
         swidth = CommonUtils::screenWidth()
@@ -112,13 +111,13 @@ class FrontPage
                 displayeduuids << item["uuid"]
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)
-                printer.call(line)
+                puts line
                 sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 3
                 FrontPage::extraLines(item)
                     .map{|line| "         #{line}" }
                     .each{|line|
-                        printer.call(line)
+                        puts line
                         sheight = sheight - (line.size/swidth + 1)
                         break if sheight <= 3
                     }
@@ -133,12 +132,12 @@ class FrontPage
                 next if displayeduuids.include?(item["uuid"])
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)
-                printer.call(line.green)
+                puts line.green
                 sheight = sheight - (line.size/swidth + 1)
                 FrontPage::extraLines(item)
                     .map{|line| "         #{line}" }
                     .each{|line|
-                        printer.call(line)
+                        puts line
                         sheight = sheight - (line.size/swidth + 1)
                     }
             }
@@ -153,7 +152,62 @@ class FrontPage
         if input == "exit" then
             return
         end
+        if input == "stream" then
+            FrontPage::stream(initialCodeTrace)
+            return
+        end
+
         CommandsAndInterpreters::interpreter(input, store)
+    end
+
+    # FrontPage::stream(initialCodeTrace)
+    def self.stream(initialCodeTrace)
+        loop {
+            FrontPage::preliminaries(initialCodeTrace)
+            store = ItemStore.new()
+            puts ""
+
+            # Main listing
+
+            displayeduuids = []
+
+            FrontPage::itemsForListing()
+                .take(1)
+                .each{|item|
+                    displayeduuids << item["uuid"]
+                    store.register(item, FrontPage::canBeDefault(item))
+                    line = FrontPage::toString2(store, item)
+                    puts line
+                    FrontPage::extraLines(item)
+                        .map{|line| "         #{line}" }
+                        .each{|line|
+                            puts line
+                        }
+                }
+
+            activePackets = NxBalls::activePackets()
+            activePackets
+                .sort_by{|packet| packet["startunixtime"] }
+                .reverse
+                .map{|packet| packet["item"] }
+                .each{|item|
+                    next if displayeduuids.include?(item["uuid"])
+                    store.register(item, FrontPage::canBeDefault(item))
+                    line = FrontPage::toString2(store, item)
+                    puts line.green
+                    FrontPage::extraLines(item)
+                        .map{|line| "         #{line}" }
+                        .each{|line|
+                            puts line
+                        }
+                }
+
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            if input == "exit" then
+                return
+            end
+            CommandsAndInterpreters::interpreter(input, store)
+        }
     end
 
     # FrontPage::main()
@@ -191,6 +245,8 @@ class FrontPage
                     }
             }
         }
+
+        FrontPage::stream(initialCodeTrace)
 
         loop {
             FrontPage::preliminaries(initialCodeTrace)
