@@ -84,8 +84,8 @@ class FrontPage
         []
     end
 
-    # FrontPage::displayListing()
-    def self.displayListing()
+    # FrontPage::displayListing(initialCodeTrace)
+    def self.displayListing(initialCodeTrace)
         store = ItemStore.new()
         puts ""
 
@@ -250,7 +250,7 @@ class FrontPage
 
         loop {
             FrontPage::preliminaries(initialCodeTrace)
-            FrontPage::displayListing()
+            FrontPage::displayListing(initialCodeTrace)
         }
     end
 end
