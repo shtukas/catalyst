@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        lp = item["mikuType"] == "NxPolymorph" ? " (#{NxPolymorphs::readItemListingPositionOrNull(item)})".yellow : ""
+        lp = item["mikuType"] == "NxPolymorph" ? " (#{item["listing-position-2141"]})".yellow : ""
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -49,29 +49,38 @@ class FrontPage
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         tasks = (lambda {
-            uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}")
+            uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b63b:#{CommonUtils::today()}")
             if uuids then
                 tasks = JSON.parse(uuids)
                         .map{|uuid| Items::itemOrNull(uuid) }
                         .compact
-                        .select{|item| item["behaviours"].any?{ |behaviour| behaviour["btype"] == "task" } }
-                XCache::set("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
+                        .select{|item| item["bx42"]["btype"] == "task" }
+                XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
                 return tasks
             end
             tasks = Items::mikuType("NxPolymorph")
-                        .select{|item| item["behaviours"].any?{ |behaviour| behaviour["btype"] == "task" } }
+                        .select{|item| item["bx42"]["btype"] == "task" }
                         .sort_by{|item| item["unixtime"] }
             tasks = tasks.take(10) + tasks.reverse.take(10)
-            XCache::set("20672dab-79cb-44e8-80d0-418cadd8b62b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
+            XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
             tasks
         }).call()
 
         items = Items::mikuType("NxPolymorph")
-            .reject{|item| item["behaviours"].any?{ |behaviour| behaviour["btype"] == "task" } }
-            .map{|item| NxPolymorphs::identityOrSimilarWithUpdatedBehaviours(item) }
+            .reject{|item| item["bx42"]["btype"] == "task" }
             .select{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
 
-        (items + tasks).sort_by{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
+        (items + tasks)
+            .select{|item| item["do-not-show-until-51"].nil? or item["do-not-show-until-51"] < Time.new.utc.iso8601 }
+            .map{|item|
+                {
+                    "item" => item,
+                    "position" => NxPolymorphs::decideItemListingPositionOrNull(item)
+                }
+            }
+            .select{|packet| packet["position"] }
+            .sort_by{|packet| packet["position"] }
+            .map{|packet| packet["item"] }
     end
 
     # FrontPage::extraLines(item)
@@ -152,62 +161,8 @@ class FrontPage
         if input == "exit" then
             return
         end
-        if input == "stream" then
-            FrontPage::stream(initialCodeTrace)
-            return
-        end
 
         CommandsAndInterpreters::interpreter(input, store)
-    end
-
-    # FrontPage::stream(initialCodeTrace)
-    def self.stream(initialCodeTrace)
-        loop {
-            FrontPage::preliminaries(initialCodeTrace)
-            store = ItemStore.new()
-            puts ""
-
-            # Main listing
-
-            displayeduuids = []
-
-            FrontPage::itemsForListing()
-                .take(1)
-                .each{|item|
-                    displayeduuids << item["uuid"]
-                    store.register(item, FrontPage::canBeDefault(item))
-                    line = FrontPage::toString2(store, item)
-                    puts line
-                    FrontPage::extraLines(item)
-                        .map{|line| "         #{line}" }
-                        .each{|line|
-                            puts line
-                        }
-                }
-
-            activePackets = NxBalls::activePackets()
-            activePackets
-                .sort_by{|packet| packet["startunixtime"] }
-                .reverse
-                .map{|packet| packet["item"] }
-                .each{|item|
-                    next if displayeduuids.include?(item["uuid"])
-                    store.register(item, FrontPage::canBeDefault(item))
-                    line = FrontPage::toString2(store, item)
-                    puts line.green
-                    FrontPage::extraLines(item)
-                        .map{|line| "         #{line}" }
-                        .each{|line|
-                            puts line
-                        }
-                }
-
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            if input == "exit" then
-                return
-            end
-            CommandsAndInterpreters::interpreter(input, store)
-        }
     end
 
     # FrontPage::main()
@@ -245,8 +200,6 @@ class FrontPage
                     }
             }
         }
-
-        FrontPage::stream(initialCodeTrace)
 
         loop {
             FrontPage::preliminaries(initialCodeTrace)

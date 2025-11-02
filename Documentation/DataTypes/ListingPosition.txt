@@ -1,10 +1,10 @@
-
 TxBehaviour
 {
-    "btype": "noble"
+    "btype": "NxAwait"
 }
 {
-    "btype": "NxAwait"
+    "btype": "do-not-show-until"
+    "unixtime": Float
 }
 {
     "btype": "ondate"

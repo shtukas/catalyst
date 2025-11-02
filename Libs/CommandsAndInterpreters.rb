@@ -6,8 +6,8 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after * | delist *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | event | await | in progress | polymorph | insert after *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | events | awaits",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | insert after *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | sort | sort after * | maintenance | morning",
         ].join("\n")
@@ -71,7 +71,7 @@ class CommandsAndInterpreters
             return if item.nil?
             behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
             return if behaviour.nil?
-            Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+            Items::setAttribute(item["uuid"], "bx42", behaviour)
             return
         end
 
@@ -79,11 +79,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            behaviours = item["behaviours"]
-            return if behaviours.size == 1
-            behaviours = behaviours.take(behaviours.size-1).select{|behaviour| behaviour["btype"] != "listing-position" } + behaviours.reverse.take(1)
-            puts "> delisting #{PolyFunctions::toString(item).green}"
-            Items::setAttribute(item["uuid"], "behaviours", behaviours)
+            Items::setAttribute(item["uuid"], "listing-position-2141", nil)
             return
         end
 
@@ -102,11 +98,7 @@ class CommandsAndInterpreters
                 pos1, pos2 = store.items().drop(listord2).take(2).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
                 (pos1+pos2)/2
             }).call()
-            behaviour = {
-                "btype" => "listing-position",
-                "position" => newposition
-            }
-            Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+            Items::setAttribute(item["uuid"], "listing-position-2141", newposition)
             return
         end
 
@@ -121,12 +113,12 @@ class CommandsAndInterpreters
             }).call()
             uuid = SecureRandom.uuid
             behaviour = {
-                "btype" => "listing-position",
-                "position" => position
+                "btype" => "noble"
             }
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            Items::setAttribute(item["uuid"], "listing-position-2141", position)
             puts JSON.pretty_generate(item)
             return
         end
@@ -146,11 +138,7 @@ class CommandsAndInterpreters
 
             selected.reverse.each{|item|
                 cursor = baseposition1 + 0.9 * (cursor - baseposition1)
-                behaviour = {
-                    "btype" => "listing-position",
-                    "position" => cursor
-                }
-                Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+                Items::setAttribute(item["uuid"], "listing-position-2141", cursor)
             }
             return
         end
@@ -159,11 +147,7 @@ class CommandsAndInterpreters
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                behaviour = {
-                    "btype" => "listing-position",
-                    "position" => 0.9 * NxPolymorphs::listingFirstPosition()
-                }
-                Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+                Items::setAttribute(item["uuid"], "listing-position-2141", 0.9 * NxPolymorphs::listingFirstPosition())
             }
             return
         end
@@ -231,12 +215,12 @@ class CommandsAndInterpreters
 
                     uuid = SecureRandom.uuid
                     behaviour = {
-                        "btype" => "listing-position",
-                        "position" => NxPolymorphs::listingFirstPosition()
+                        "btype" => "noble"
                     }
                     Items::init(uuid)
                     payload = nil
-                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], nil)
+                    item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
+                    Items::setAttribute(item["uuid"], "listing-position-2141", NxPolymorphs::listingFirstPosition())
 
                     last_item = item
                 }
@@ -245,26 +229,6 @@ class CommandsAndInterpreters
                     PolyActions::start(last_item)
                 end
             end
-            return
-        end
-
-        if Interpreting::match("event", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            behaviour = {
-                 "btype" => "calendar-event",
-                 "date" => CommonUtils::interactivelyMakeADate()
-            }
-            Items::init(uuid)
-            payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("events", input) then
-            Operations::program3ItemsWithGivenBehaviour("calendar-event")
             return
         end
 
@@ -279,7 +243,7 @@ class CommandsAndInterpreters
                 "period" => period
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -323,7 +287,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -339,7 +303,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -347,9 +311,9 @@ class CommandsAndInterpreters
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxPolymorph")
-                    .select{|item| item["behaviours"].first["btype"] == "ondate" } 
-                    .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() }
-                    .sort_by{|item| item["behaviours"].first["date"] }
+                    .select{|item| item["bx42"]["btype"] == "ondate" } 
+                    .select{|item| item["bx42"]["date"] <= CommonUtils::today() }
+                    .sort_by{|item| item["bx42"]["date"] }
             })
             return
         end
@@ -365,7 +329,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -381,7 +345,7 @@ class CommandsAndInterpreters
                 "date" => date
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -389,8 +353,8 @@ class CommandsAndInterpreters
         if Interpreting::match("ondates", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxPolymorph")
-                    .select{|item| item["behaviours"].first["btype"] == "ondate" }
-                    .sort_by{|item| item["behaviours"].first["date"] }
+                    .select{|item| item["bx42"]["btype"] == "ondate" }
+                    .sort_by{|item| item["bx42"]["date"] }
             })
             return
         end
@@ -438,7 +402,7 @@ class CommandsAndInterpreters
                 return
             end
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -448,10 +412,8 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
-            if behaviour.nil? then
-                return
-            end
-            Items::setAttribute(item["uuid"], "behaviours", [behaviour])
+            return if behaviour.nil?
+            Items::setAttribute(item["uuid"], "bx42", behaviour)
             return
         end
 
@@ -464,7 +426,7 @@ class CommandsAndInterpreters
                 "btype" => "NxAwait"
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -493,12 +455,8 @@ class CommandsAndInterpreters
         if Interpreting::match("anniversaries", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxPolymorph")
-                    .select{|item| NxPolymorphs::itemHasBehaviour(item, "anniversary") }
-                    .sort_by{|item| 
-                        item["behaviours"]
-                            .select{|behaviour| behaviour["btype"] == "anniversary" }
-                            .first["next_celebration"]
-                    }
+                    .select{|item| item["bx42"]["btype"] == "anniversary" }
+                    .sort_by{|item| item["bx42"]["next_celebration"] }
             })
             return
         end
@@ -513,7 +471,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -530,7 +488,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -710,7 +668,7 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = Wave::interactivelyMakeNewOrNull()
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end
@@ -718,12 +676,8 @@ class CommandsAndInterpreters
         if input == "waves" then
             Operations::program3(lambda { 
                 Items::mikuType("NxPolymorph")
-                    .select{|item| NxPolymorphs::itemHasBehaviour(item, "wave") }
-                    .sort_by{|item| 
-                        item["behaviours"]
-                            .select{|behaviour| behaviour["btype"] == "wave" }
-                            .first["lastDoneUnixtime"]
-                    }
+                    .select{|item| item["bx42"]["btype"] == "wave" }
+                    .sort_by{|item| item["bx42"]["lastDoneUnixtime"] }
             })
             return
         end
@@ -737,7 +691,7 @@ class CommandsAndInterpreters
                 "btype" => "NxAwait"
             }
             payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
         end

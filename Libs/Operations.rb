@@ -63,7 +63,7 @@ class Operations
         Items::maintenance()
 
         count = Items::mikuType("NxPolymorph")
-                    .select{|item| item["behaviours"].any?{|behaviour| behaviour["btype"] == "task" } }
+                    .select{|item| item["bx42"] == "task" }
                     .size
         puts "task count: #{count}"
         if count < 50 then
@@ -76,15 +76,13 @@ class Operations
                 .take(100)
                 .each{|item|
                     next if !Dx8Units::attemptRepository()
-
                     behaviour = {
                         "btype" => "task",
                         "unixtime" => item["unixtime"] || Time.new.to_i
                     }
                     puts "moving #{item["uuid"]} from NxIce to polymorph task"
-                    Items::setAttribute(item["uuid"], "behaviours", [behaviour])
+                    Items::setAttribute(item["uuid"], "bx42", behaviour)
                     Items::setAttribute(item["uuid"], "mikuType", "NxPolymorph")
-
                     if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
                         unitId = item["uxpayload-b4e4"]["id"]
                         location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
@@ -164,7 +162,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+                    item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
                     puts JSON.pretty_generate(item)
                     Fsck::fsckOrError(item)
                 }).call()
@@ -192,7 +190,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+                    item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
                     puts JSON.pretty_generate(item)
                     Fsck::fsckOrError(item)
                 }).call()
@@ -220,7 +218,7 @@ class Operations
                         "date" => date
                     }
                     payload = UxPayload::locationToPayload(uuid, location)
-                    item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
+                    item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
                     puts JSON.pretty_generate(item)
                     Fsck::fsckOrError(item)
                 }).call()
@@ -247,16 +245,14 @@ class Operations
         NxBalls::activeItems().each{|i|
             NxBalls::pause(i)
         }
-
         uuid = SecureRandom.uuid
         behaviour = {
-            "btype" => "listing-position",
-            "position" => 0.9*NxPolymorphs::listingFirstPosition()
+            "btype" => "noble"
         }
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
-        item = NxPolymorphs::issueNew(uuid, description, [behaviour], payload)
-
+        item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+        Items::setAttribute(item["uuid"], "listing-position-2141", 0.9 * NxPolymorphs::listingFirstPosition())
         if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
             PolyActions::start(item)
         end
@@ -266,28 +262,19 @@ class Operations
     def self.program3ItemsWithGivenBehaviour(btype)
         l = lambda { 
             Items::mikuType("NxPolymorph")
-                .select{|item| NxPolymorphs::itemHasBehaviour(item, btype) }
+                .select{|item| item["bx42"]["btype"] == btype }
                 .sort_by{|item| NxPolymorphs::decideItemListingPositionOrNull(item) || 1 }
         }
         Operations::program3(l)
-    end
-
-    # Operations::activePrimaryBehaviourOrNull(item, btype)
-    def self.activePrimaryBehaviourOrNull(item, btype)
-        return nil if item["behaviours"].size == 1
-        return nil if item["behaviours"][0]["btype"] != "listing-position"
-        return nil if item["behaviours"][0]["btype"] == "do-not-show-until"
-        return item["behaviours"][1] if item["behaviours"][1]["btype"] == btype
-        nil
     end
 
     # Operations::morning()
     def self.morning()
         ondates = (lambda {
             items = Items::mikuType("NxPolymorph")
-                .select{|item| Operations::activePrimaryBehaviourOrNull(item, "ondate") }
-                .select{|item| item["behaviours"][1]["date"] <= CommonUtils::today() }
-                .sort_by{|item| item["behaviours"][1]["date"] }
+                .select{|item| item["bx42"]["btype"] == "ondate" }
+                .select{|item| item["bx42"]["date"] <= CommonUtils::today() }
+                .sort_by{|item| item["bx42"]["date"] }
             return [] if items.empty?
             items, _ = LucilleCore::selectZeroOrMore("ondates", [], items, lambda {|item| PolyFunctions::toString(item) })
             items
@@ -295,7 +282,7 @@ class Operations
 
         waves = (lambda {
             items = Items::mikuType("NxPolymorph")
-                .select{|item| Operations::activePrimaryBehaviourOrNull(item, "wave") }
+                .select{|item| item["bx42"]["btype"] == "wave" }
             return [] if items.empty?
             items, _ = LucilleCore::selectZeroOrMore("waves",[], items, lambda {|item| PolyFunctions::toString(item) })
             items
@@ -303,7 +290,7 @@ class Operations
 
         projects = (lambda {
             items = Items::mikuType("NxPolymorph")
-                .select{|item| Operations::activePrimaryBehaviourOrNull(item, "project") }
+                .select{|item| item["bx42"]["btype"] == "project" }
             return [] if items.empty?
             items, _ = LucilleCore::selectZeroOrMore("projects",[], items, lambda {|item| PolyFunctions::toString(item) })
             items
@@ -316,11 +303,7 @@ class Operations
         end
 
         items.reverse.each{|item|
-            behaviour = {
-                "btype" => "listing-position",
-                "position" => 0.9 * NxPolymorphs::listingFirstPosition()
-            }
-            Items::setAttribute(item["uuid"], "behaviours", [behaviour] + item["behaviours"])
+            Items::setAttribute(item["uuid"], "listing-position-2141", 0.9 * NxPolymorphs::listingFirstPosition())
         }
     end
 
@@ -334,12 +317,11 @@ class Operations
             raise "(error: 9cae7b7c-7b5d) How did this happen ? 🤔"
         end
         return nil if item["mikuType"] != "NxPolymorph"
-        behaviour = NxPolymorphs::getTheFirstNonListingPositionBehaviourOrNull(item)
-        if behaviour["btype"] == "project" then
+        if item["bx42"]["btype"] == "project" then
             runningTimespan = NxBalls::ballRunningTime(nxball)
-            return (Project::ratio(behaviour, runningTimespan) >= 1) ? "project is over running" : nil
+            return (Project::ratio(item["bx42"], runningTimespan) >= 1) ? "project is over running" : nil
         end
-        if behaviour["btype"] == "task" then
+        if item["bx42"]["btype"] == "task" then
             runningTimespan = NxBalls::ballRunningTime(nxball)
             return (runningTimespan >= 3600) ? "task is over running" : nil
         end
