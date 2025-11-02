@@ -147,7 +147,7 @@ class TxBehaviour
     def self.positionIn(i1, i2)
         x1 = NxPolymorphs::listingNthPosition(i1)
         x2 = NxPolymorphs::listingNthPosition(i2)
-        return x1 + rand(x2-x1)
+        return x1 + rand * (x2-x1)
     end
 
     # TxBehaviour::decideListingPositionOrNull(behaviour, runningTimespan)

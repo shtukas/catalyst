@@ -45,9 +45,11 @@ class NxPolymorphs
     def self.listingNthPosition(n)
         positions = Items::items()
             .select{|item| item["mikuType"] == "NxPolymorph" }
+            .select{|item| FrontPage::isVisible(item) }
             .map{|item| item["listing-position-2141"] }
             .compact
             .sort
+        return 1 if positions.empty?
         if positions.size > n then
             return positions.drop(n).first
         end

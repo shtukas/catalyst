@@ -79,6 +79,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            puts "delisting #{PolyFunctions::toString(item)}"
             Items::setAttribute(item["uuid"], "listing-position-2141", nil)
             return
         end
@@ -95,7 +96,7 @@ class CommandsAndInterpreters
             item = store.get(listord1)
             return if item.nil?
             newposition = (lambda {
-                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
+                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| item["listing-position-2141"] }
                 (pos1+pos2)/2
             }).call()
             Items::setAttribute(item["uuid"], "listing-position-2141", newposition)
@@ -108,7 +109,7 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             position = (lambda {
-                pos1, pos2 = store.items().drop(listord).take(2).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
+                pos1, pos2 = store.items().drop(listord).take(2).map{|item| item["listing-position-2141"] }
                 (pos1+pos2)/2
             }).call()
             uuid = SecureRandom.uuid
@@ -127,8 +128,8 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             listord = listord.to_i
 
-            baseposition1 = store.items().take(listord+1).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }.max
-            cursor = store.items().take(listord+2).map{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }.max
+            baseposition1 = store.items().take(listord+1).map{|item| item["listing-position-2141"] }.max
+            cursor = store.items().take(listord+2).map{|item| item["listing-position-2141"] }.max
 
             items2 = store.items().drop(listord+1)
             items2 = items2.select{|item| item["mikuType"] == "NxPolymorph" }

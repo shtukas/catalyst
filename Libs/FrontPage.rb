@@ -46,6 +46,11 @@ class FrontPage
         Operations::dispatchPickUp()
     end
 
+    # FrontPage::isVisible(item)
+    def self.isVisible(item)
+        item["do-not-show-until-51"].nil? or item["do-not-show-until-51"] < Time.new.utc.iso8601 
+    end
+
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         tasks = (lambda {
@@ -67,11 +72,10 @@ class FrontPage
         }).call()
 
         items = Items::mikuType("NxPolymorph")
-            .reject{|item| item["bx42"]["btype"] == "task" }
-            .select{|item| NxPolymorphs::decideItemListingPositionOrNull(item) }
+            .select{|item| item["bx42"]["btype"] != "task" }
 
         (items + tasks)
-            .select{|item| item["do-not-show-until-51"].nil? or item["do-not-show-until-51"] < Time.new.utc.iso8601 }
+            .select{|item| FrontPage::isVisible(item) }
             .map{|item|
                 {
                     "item" => item,
