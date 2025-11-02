@@ -3,8 +3,8 @@
 
 class Project
 
-    # Project::ratio(behaviour, runningTimespan = 0)
-    def self.ratio(behaviour, runningTimespan = 0)
+    # Project::ratio(behaviour, runningTimespan)
+    def self.ratio(behaviour, runningTimespan)
         #{
         #    "btype": "project"
         #    "timeCommitment": NxTimeCommitment
@@ -35,7 +35,7 @@ class Project
 
         if timeCommitment["type"] == "week" then
             t2 = CommonUtils::datesSinceLastMonday()
-                    .map{|date| Bank::getValueAtDate(behaviour["uuid"], date) }
+                    .map{|date| Bank::getValueAtDate(behaviour["timeCommitment"]["uuid"], date) }
                     .sum
             b2 = (t2+runningTimespan).to_f/(timeCommitment["hours"]*3600)
             b3 = BankDerivedData::recoveredAverageHoursPerDay(timeCommitment["uuid"], runningTimespan).to_f/(0.2*timeCommitment["hours"])
@@ -46,11 +46,11 @@ class Project
             return (runningTimespan < 3600) ? 0 : 1
         end
 
-        raise "(error 39498e23) #{behaviour}"
+        raise "(error: 90c405b2-3bb3)"
     end
 
-    # Project::toString(behaviour)
-    def self.toString(behaviour)
+    # Project::toDescription(behaviour)
+    def self.toDescription(behaviour)
         if behaviour["btype"] != "project" then
             raise "(error 28ad66c3) #{behaviour}"
         end
@@ -68,5 +68,7 @@ class Project
         if timeCommitment["type"] == "presence" then
             return "(presence)"
         end
+
+        ""
     end
 end

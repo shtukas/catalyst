@@ -413,11 +413,6 @@ class BankDerivedData
 
     # BankDerivedData::recoveredAverageHoursPerDay(uuid, runningTimespan = 0)
     def self.recoveredAverageHoursPerDay(uuid, runningTimespan = 0)
-        value = BankDataRTCache::recoveredAverageHoursPerDayFromCacheOrNull(uuid)
-        return value if value
-        puts "BankDerivedData::recoveredAverageHoursPerDay: computing uuid #{uuid} from zero".yellow
-        value = (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan) }.max
-        BankDataRTCache::insertValueInCache(uuid, value)
-        value
+        (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan) }.max
     end
 end

@@ -24,7 +24,14 @@ class NxPolymorphs
     def self.toString(item)
         behaviour = NxPolymorphs::uniqueListingOrFirstNonListingBehaviour(item)
         icon = TxBehaviour::behaviourToIcon(behaviour)
-        "#{icon} #{TxBehaviour::behaviourToDescriptionLeft(behaviour)}#{item["description"]}#{TxBehaviour::behaviourToDescriptionRight(behaviour)}"
+
+        runningTimespan = (lambda{
+            nxball = NxBalls::getNxBallOrNull(item)
+            return 0 if nxball.nil?
+            NxBalls::ballRunningTime(nxball)
+        }).call()
+
+        "#{icon} #{TxBehaviour::behaviourToDescriptionLeft(behaviour)}#{item["description"]}#{TxBehaviour::behaviourToDescriptionRight(behaviour, runningTimespan)}"
     end
 
     # NxPolymorphs::itemHasBehaviour(item, btype)
@@ -77,7 +84,12 @@ class NxPolymorphs
             return behaviours[0]["position"]
         end
         behaviours = item["behaviours"].drop_while{|behaviour| behaviour["btype"] == "listing-position" }
-        position = TxBehaviour::decideBehaviourListingPositionOrNull(behaviours.first)
+        runningTimespan = (lambda{
+            nxball = NxBalls::getNxBallOrNull(item)
+            return 0 if nxball.nil?
+            NxBalls::ballRunningTime(nxball)
+        }).call()
+        position = TxBehaviour::decideBehaviourListingPositionOrNull(behaviours.first, runningTimespan)
         return nil if position.nil?
         behaviour = {
             "btype" => "listing-position",
@@ -132,5 +144,11 @@ class NxPolymorphs
         else
             Items::setAttribute(item["uuid"], "behaviours", behaviours)
         end
+    end
+
+    # NxPolymorphs::getTheFirstNonListingPositionBehaviourOrNull(item)
+    def self.getTheFirstNonListingPositionBehaviourOrNull(item)
+        return nil if item["mikuType"] != "NxPolymorph"
+        item["behaviours"].select{|behaviour| behaviour["btype"] != 'listing-position' }.first
     end
 end

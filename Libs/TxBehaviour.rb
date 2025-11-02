@@ -95,7 +95,7 @@ class TxBehaviour
             return "(#{behaviour["date"]}) "
         end
         if behaviour["btype"] == "project" then
-            return "#{Project::toString(behaviour)} "
+            return ""
         end
         if behaviour["btype"] == "ondate" then
             return "(#{behaviour["date"]}) "
@@ -115,8 +115,8 @@ class TxBehaviour
         ""
     end
 
-    # TxBehaviour::behaviourToDescriptionRight(behaviour)
-    def self.behaviourToDescriptionRight(behaviour)
+    # TxBehaviour::behaviourToDescriptionRight(behaviour, runningTimespan)
+    def self.behaviourToDescriptionRight(behaviour, runningTimespan)
         if behaviour["btype"] == "listing-position" then
             return ""
         end
@@ -130,7 +130,7 @@ class TxBehaviour
             return ""
         end
         if behaviour["btype"] == "project" then
-            return " (#{Project::ratio(behaviour).round(3)})".yellow
+            return " #{Project::toDescription(behaviour)} (#{Project::ratio(behaviour, runningTimespan).round(3)})".yellow
         end
         if behaviour["btype"] == "ondate" then
             return ""
@@ -224,8 +224,8 @@ class TxBehaviour
         raise "(error: 2131)"
     end
 
-    # TxBehaviour::decideBehaviourListingPositionOrNull(behaviour)
-    def self.decideBehaviourListingPositionOrNull(behaviour)
+    # TxBehaviour::decideBehaviourListingPositionOrNull(behaviour, runningTimespan)
+    def self.decideBehaviourListingPositionOrNull(behaviour, runningTimespan)
         if behaviour["btype"] == "ondate" then
             return nil if CommonUtils::today() < behaviour["date"]
             return TxBehaviour::positionIn("zone3")
@@ -243,7 +243,7 @@ class TxBehaviour
             return TxBehaviour::positionIn("zone3")
         end
         if behaviour["btype"] == "project" then
-            return nil if Project::ratio(behaviour) >= 1
+            return nil if Project::ratio(behaviour, runningTimespan) >= 1
             return TxBehaviour::positionIn("zone3")
         end
         if behaviour["btype"] == "do-not-show-until" then
