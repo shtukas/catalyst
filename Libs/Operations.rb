@@ -272,13 +272,22 @@ class Operations
         Operations::program3(l)
     end
 
+    # Operations::activePrimaryBehaviourOrNull(item, btype)
+    def self.activePrimaryBehaviourOrNull(item, btype)
+        return nil if item["behaviours"].size == 1
+        return nil if item["behaviours"][0]["btype"] != "listing-position"
+        return nil if item["behaviours"][0]["btype"] == "do-not-show-until"
+        return item["behaviours"][1] if item["behaviours"][1]["btype"] == btype
+        nil
+    end
+
     # Operations::morning()
     def self.morning()
         ondates = (lambda {
             items = Items::mikuType("NxPolymorph")
-                .select{|item| item["behaviours"].first["btype"] == "ondate" }
-                .select{|item| item["behaviours"].first["date"] <= CommonUtils::today() }
-                .sort_by{|item| item["behaviours"].first["date"] }
+                .select{|item| Operations::activePrimaryBehaviourOrNull(item, "ondate") }
+                .select{|item| item["behaviours"][1]["date"] <= CommonUtils::today() }
+                .sort_by{|item| item["behaviours"][1]["date"] }
             return [] if items.empty?
             items, _ = LucilleCore::selectZeroOrMore("ondates", [], items, lambda {|item| PolyFunctions::toString(item) })
             items
@@ -286,13 +295,21 @@ class Operations
 
         waves = (lambda {
             items = Items::mikuType("NxPolymorph")
-                .select{|item| item["behaviours"].first["btype"] == "wave" }
+                .select{|item| Operations::activePrimaryBehaviourOrNull(item, "wave") }
             return [] if items.empty?
             items, _ = LucilleCore::selectZeroOrMore("waves",[], items, lambda {|item| PolyFunctions::toString(item) })
             items
         }).call()
 
-        items = ondates + waves
+        projects = (lambda {
+            items = Items::mikuType("NxPolymorph")
+                .select{|item| Operations::activePrimaryBehaviourOrNull(item, "project") }
+            return [] if items.empty?
+            items, _ = LucilleCore::selectZeroOrMore("projects",[], items, lambda {|item| PolyFunctions::toString(item) })
+            items
+        }).call()
+
+        items = ondates + waves + projects
         if !items.empty? then
             selected, nonselected = LucilleCore::selectZeroOrMore("items",[],items,lambda {|item| PolyFunctions::toString(item) })
             items = selected + nonselected
