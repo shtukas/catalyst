@@ -134,6 +134,13 @@ class NxPolymorphs
         Items::setAttribute(item["uuid"], "behaviours", behaviours)
     end
 
+    # NxPolymorphs::stop(item)
+    def self.stop(item)
+        behaviours = item["behaviours"].map{|behaviour| TxBehaviour::stop(behaviour) }.flatten
+        Items::setAttribute(item["uuid"], "behaviours", behaviours)
+        Items::itemOrNull(item["uuid"])
+    end
+
     # NxPolymorphs::done(item)
     def self.done(item)
         behaviours = item["behaviours"].map{|behaviour| TxBehaviour::done(behaviour) }.flatten

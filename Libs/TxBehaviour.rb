@@ -298,6 +298,14 @@ class TxBehaviour
         raise "(error: 0a89fff3)"
     end
 
+    # TxBehaviour::stop(behaviour: TxBehaviour) -> Array[TxBehaviour]
+    def self.stop(behaviour)
+        if behaviour["btype"] == "listing-position" then
+            return []
+        end
+        [behaviour]
+    end
+
     # TxBehaviour::done(behaviour: TxBehaviour) -> Array[TxBehaviour]
     def self.done(behaviour)
         if behaviour["btype"] == "listing-position" then

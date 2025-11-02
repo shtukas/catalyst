@@ -18,6 +18,9 @@ class PolyActions
 
     # PolyActions::stop(item)
     def self.stop(item)
+        if item["mikuType"] == "NxPolymorph" then
+            item = NxPolymorphs::stop(item)
+        end
         NxBalls::stop(item)
     end
 
