@@ -209,11 +209,10 @@ class TxBehaviour
         options = ["postpone to tomorrow (default)", "destroy"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option.nil? or option == "postpone to tomorrow (default)" then
-            b1 = {
-                "btype" => "do-not-show-until",
-                "unixtime" => CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+            return {
+                "behaviour" => behaviour,
+                "do-not-show-until" => CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             }
-            return [b1, behaviour]
         end
         if option == "destroy" then
             return nil
