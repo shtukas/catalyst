@@ -128,7 +128,7 @@ class FrontPage
                 sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 3
                 FrontPage::extraLines(item)
-                    .map{|line| "         #{line}" }
+                    .map{|line| line }
                     .each{|line|
                         puts line
                         sheight = sheight - (line.size/swidth + 1)
@@ -148,7 +148,7 @@ class FrontPage
                 puts line.green
                 sheight = sheight - (line.size/swidth + 1)
                 FrontPage::extraLines(item)
-                    .map{|line| "         #{line}" }
+                    .map{|line| line }
                     .each{|line|
                         puts line
                         sheight = sheight - (line.size/swidth + 1)
