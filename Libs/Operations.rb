@@ -283,6 +283,7 @@ class Operations
         waves = (lambda {
             items = Items::mikuType("NxPolymorph")
                 .select{|item| item["bx42"]["btype"] == "wave" }
+                .select{|item| FrontPage::isVisible(item) }
             return [] if items.empty?
             items, _ = LucilleCore::selectZeroOrMore("waves",[], items, lambda {|item| PolyFunctions::toString(item) })
             items
@@ -291,6 +292,7 @@ class Operations
         projects = (lambda {
             items = Items::mikuType("NxPolymorph")
                 .select{|item| item["bx42"]["btype"] == "project" }
+                .select{|item| FrontPage::isVisible(item) }
             return [] if items.empty?
             items, _ = LucilleCore::selectZeroOrMore("projects",[], items, lambda {|item| PolyFunctions::toString(item) })
             items
