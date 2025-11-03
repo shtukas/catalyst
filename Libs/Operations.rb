@@ -63,7 +63,7 @@ class Operations
         Items::maintenance()
 
         count = Items::mikuType("NxPolymorph")
-                    .select{|item| item["bx42"] == "task" }
+                    .select{|item| item["bx42"]["btype"] == "task" }
                     .size
         puts "task count: #{count}"
         if count < 50 then
