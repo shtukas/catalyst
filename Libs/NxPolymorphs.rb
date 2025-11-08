@@ -56,10 +56,10 @@ class NxPolymorphs
         positions.max + 1
     end
 
-    # NxPolymorphs::decideItemListingPositionOrNull(item)
+    # NxPolymorphs::decideItemListingPositionOrNull(item) # [position: null or float, item]
     def self.decideItemListingPositionOrNull(item)
         if item["listing-position-2141"] then
-            return item["listing-position-2141"]
+            return [item["listing-position-2141"], item]
         end
         runningTimespan = (lambda{
             nxball = NxBalls::getNxBallOrNull(item)
@@ -67,9 +67,10 @@ class NxPolymorphs
             NxBalls::ballRunningTime(nxball)
         }).call()
         position = TxBehaviour::decideListingPositionOrNull(item["bx42"], runningTimespan)
-        return nil if position.nil?
-        Items::setAttribute(item["uuid"], "listing-position-2141", position)
-        position
+        return [nil, item] if position.nil?
+        NxPolymorphs::setListingPosition(item, position)
+        item = Items::itemOrNull(item["uuid"])
+        [position, item]
     end
 
     # --------------------------------------
@@ -82,7 +83,7 @@ class NxPolymorphs
 
     # NxPolymorphs::stop(item)
     def self.stop(item)
-        Items::setAttribute(item["uuid"], "listing-position-2141", nil)
+        NxPolymorphs::delist(item)
         Items::itemOrNull(item["uuid"])
     end
 
@@ -90,7 +91,7 @@ class NxPolymorphs
     def self.done(item)
         packet = TxBehaviour::done(item["bx42"]) # null or { "behaviour" => behaviour, "do-not-show-until" => unixtime }
         if packet then
-            Items::setAttribute(item["uuid"], "listing-position-2141", nil)
+            NxPolymorphs::delist(item)
             Items::setAttribute(item["uuid"], "do-not-show-until-51", Time.at(packet["do-not-show-until"]).utc.iso8601)
             Items::setAttribute(item["uuid"], "bx42", packet["behaviour"])
         else
@@ -98,5 +99,17 @@ class NxPolymorphs
                 Items::deleteItem(item["uuid"])
             end
         end
+    end
+
+    # NxPolymorphs::setListingPosition(item, position)
+    def self.setListingPosition(item, position)
+        Items::setAttribute(item["uuid"], "listing-position-2141", position)
+        Items::setAttribute(item["uuid"], "listing-unixtime", Time.new.to_i)
+    end
+
+    # NxPolymorphs::delist(item)
+    def self.delist(item)
+        Items::setAttribute(item["uuid"], "listing-position-2141", nil)
+        Items::setAttribute(item["uuid"], "listing-unixtime", Time.new.to_i)
     end
 end

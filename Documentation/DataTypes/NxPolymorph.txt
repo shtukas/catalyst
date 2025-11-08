@@ -6,6 +6,7 @@ NxPolymorph:
     - datetime    :
     - description : String
     - listing-position-2141 : null or Float
+    - listing-unixtime      : Float
     - bx42                  : TxBehaviour
     - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
     - uxpayload-b4e4        : null | UxPayload

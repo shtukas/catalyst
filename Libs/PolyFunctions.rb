@@ -14,12 +14,13 @@ class PolyFunctions
         }
 
         if item["mikuType"] == "NxPolymorph" then
-            TxBehaviour::bankAccountsNumbers(item["bx42"]).map{|number|
-                {
-                    "description" => "(behaviour: #{number})",
-                    "number"      => number
+            accounts = accounts + TxBehaviour::bankAccountsNumbers(item["bx42"])
+                .map{|number|
+                    {
+                        "description" => "(behaviour: #{number})",
+                        "number"      => number
+                    }
                 }
-            }
         end
 
         accounts.reduce([]){|as, account|

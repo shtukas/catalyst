@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        lp = item["mikuType"] == "NxPolymorph" ? " (#{item["listing-position-2141"]})".yellow : ""
+        lp = item["mikuType"] == "NxPolymorph" ? " (#{item["listing-position-2141"]}; #{item["listing-unixtime"]})".yellow : ""
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -77,9 +77,10 @@ class FrontPage
         (items + tasks)
             .select{|item| FrontPage::isVisible(item) }
             .map{|item|
+                position, item = NxPolymorphs::decideItemListingPositionOrNull(item)
                 {
                     "item" => item,
-                    "position" => NxPolymorphs::decideItemListingPositionOrNull(item)
+                    "position" => position
                 }
             }
             .select{|packet| packet["position"] }

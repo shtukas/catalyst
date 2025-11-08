@@ -80,7 +80,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
-            Items::setAttribute(item["uuid"], "listing-position-2141", nil)
+            NxPolymorphs::delist(item)
             return
         end
 
@@ -99,7 +99,7 @@ class CommandsAndInterpreters
                 pos1, pos2 = store.items().drop(listord2).take(2).map{|item| item["listing-position-2141"] }
                 (pos1+pos2)/2
             }).call()
-            Items::setAttribute(item["uuid"], "listing-position-2141", newposition)
+            NxPolymorphs::setListingPosition(item, newposition)
             return
         end
 
@@ -119,7 +119,7 @@ class CommandsAndInterpreters
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-            Items::setAttribute(item["uuid"], "listing-position-2141", position)
+            NxPolymorphs::setListingPosition(item, position)
             puts JSON.pretty_generate(item)
             return
         end
@@ -139,7 +139,7 @@ class CommandsAndInterpreters
 
             selected.reverse.each{|item|
                 cursor = baseposition1 + 0.9 * (cursor - baseposition1)
-                Items::setAttribute(item["uuid"], "listing-position-2141", cursor)
+                NxPolymorphs::setListingPosition(item, cursor)
             }
             return
         end
@@ -148,7 +148,7 @@ class CommandsAndInterpreters
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                Items::setAttribute(item["uuid"], "listing-position-2141", 0.9 * NxPolymorphs::listingFirstPosition())
+                NxPolymorphs::setListingPosition(item, 0.9 * NxPolymorphs::listingFirstPosition())
             }
             return
         end
@@ -221,8 +221,7 @@ class CommandsAndInterpreters
                     Items::init(uuid)
                     payload = nil
                     item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
-                    Items::setAttribute(item["uuid"], "listing-position-2141", NxPolymorphs::listingFirstPosition())
-
+                    NxPolymorphs::setListingPosition(item, 0.9 * NxPolymorphs::listingFirstPosition())
                     last_item = item
                 }
             if last_item then
