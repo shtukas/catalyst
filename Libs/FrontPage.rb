@@ -20,8 +20,16 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        lp = item["mikuType"] == "NxPolymorph" ? " (#{item["listing-position-2141"]}; #{item["listing-unixtime"]})".yellow : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp}"
+        lp = (lambda {|item|
+            return "" if item["mikuType"] != "NxPolymorph"
+            if item["listing-unixtime"].nil? then
+                return " (#{item["listing-position-2141"]})"
+            end
+            timespan = (Time.new.to_i - item["listing-unixtime"]).to_f/86400
+            " (#{item["listing-position-2141"]}; #{timespan.round(2)})"
+
+        }).call(item)
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp.yellow}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
