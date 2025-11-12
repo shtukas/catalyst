@@ -35,11 +35,11 @@ class Nx41
         if behaviour["btype"] == "project" then
             ratio = Project::ratio(behaviour, runningTimespan)
             return nil if ratio >= 1
-            return ratio
+            return 0.100 + 0.9 * ratio
         end
         if behaviour["btype"] == "wave" then
             if behaviour["interruption"] then
-                return 0.100
+                return 0.099
             end
             return 0.400
         end
