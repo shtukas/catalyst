@@ -5,6 +5,11 @@ Nx41
     "position": Float
 }
 {
+    "type"    : "task-fixed" # carried by tasks
+    "unixtime": Integer
+    "position": Float
+}
+{
     "type"    : "computed"
     "unixtime": Integer
     "position": Float

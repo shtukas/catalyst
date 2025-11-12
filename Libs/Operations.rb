@@ -69,7 +69,7 @@ class Operations
         if count < 50 then
             iced = Items::mikuType("NxIce")
             if iced.size == 0 then
-                puts "We do not have any NxIce left, please remove [5b2268ae]"
+                puts "[5b2268ae] We do not have any NxIce left, please remove"
                 exit
             end
             iced
@@ -83,6 +83,13 @@ class Operations
                     puts "moving #{item["uuid"]} from NxIce to polymorph task"
                     Items::setAttribute(item["uuid"], "bx42", behaviour)
                     Items::setAttribute(item["uuid"], "mikuType", "NxPolymorph")
+                    nx41 = {
+                        "type"     => "task-fixed",
+                        "unixtime" => Time.new.to_i,
+                        "position" => Tasks::lastTaskPosition() + rand # tradition
+                    }
+                    puts JSON.pretty_generate(nx41)
+                    Items::setAttribute(item["uuid"], "nx41", nx41)
                     if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
                         unitId = item["uxpayload-b4e4"]["id"]
                         location = Dx8Units::acquireUnitFolderPathOrNull(unitId)

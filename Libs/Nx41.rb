@@ -5,6 +5,7 @@ class Nx41
     def self.listingFirstPosition()
         positions = Items::items()
             .select{|item| item["mikuType"] == "NxPolymorph" }
+            .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
             .compact
         return 1 if positions.empty?
@@ -14,8 +15,8 @@ class Nx41
     # Nx41::listingNthPosition(n)
     def self.listingNthPosition(n)
         positions = Items::items()
-            .select{|item| item["mikuType"] == "NxPolymorph" }
             .select{|item| FrontPage::isVisible(item) }
+            .select{|item| item["mikuType"] == "NxPolymorph" }
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
             .compact

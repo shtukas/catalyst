@@ -57,6 +57,9 @@ class FrontPage
 
     # FrontPage::itemsForListing()
     def self.itemsForListing()
+        items = Items::mikuType("NxPolymorph")
+            .select{|item| item["bx42"]["btype"] != "task" }
+
         tasks = (lambda {
             uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}")
             if uuids then
@@ -74,9 +77,6 @@ class FrontPage
             XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
             tasks
         }).call()
-
-        items = Items::mikuType("NxPolymorph")
-            .select{|item| item["bx42"]["btype"] != "task" }
 
         (items + tasks)
             .select{|item| FrontPage::isVisible(item) }

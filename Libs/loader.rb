@@ -122,6 +122,7 @@ require_relative "Config.rb"
 # ------------------------------------------------------------
 
 require_relative "Atlas.rb"
+require_relative "Anniversary.rb"
 
 require_relative "Bank.rb"
 
@@ -153,6 +154,7 @@ require_relative "Nx41.rb"
 
 require_relative "Operations.rb"
 
+require_relative "Project.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 
@@ -161,13 +163,13 @@ require_relative "Search.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "TxBehaviour.rb"
-require_relative "Wave.rb"
-require_relative "Project.rb"
-require_relative "Anniversary.rb"
+require_relative "Tasks.rb"
 
 require_relative "UxPayload.rb"
 
 require_relative "ValueCache.rb"
+
+require_relative "Wave.rb"
 
 require_relative "XCacheExensions.rb"
 
