@@ -149,6 +149,7 @@ require_relative "NxBalls.rb"
 require_relative "NxPolymorphs.rb"
 require_relative "NxTimeCommitment.rb"
 require_relative "Nx46.rb"
+require_relative "Nx41.rb"
 
 require_relative "Operations.rb"
 

@@ -148,7 +148,7 @@ class CommandsAndInterpreters
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                NxPolymorphs::setListingPosition(item, 0.9 * NxPolymorphs::listingFirstPosition())
+                NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
             }
             return
         end
@@ -221,7 +221,7 @@ class CommandsAndInterpreters
                     Items::init(uuid)
                     payload = nil
                     item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
-                    NxPolymorphs::setListingPosition(item, 0.9 * NxPolymorphs::listingFirstPosition())
+                    NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
                     last_item = item
                 }
             if last_item then

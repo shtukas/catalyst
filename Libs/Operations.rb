@@ -252,7 +252,7 @@ class Operations
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-        NxPolymorphs::setListingPosition(item, 0.9 * NxPolymorphs::listingFirstPosition())
+        NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
         if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
             PolyActions::start(item)
         end
@@ -263,7 +263,7 @@ class Operations
         l = lambda { 
             Items::mikuType("NxPolymorph")
                 .select{|item| item["bx42"]["btype"] == btype }
-                .sort_by{|item| NxPolymorphs::decideItemListingPositionOrNull(item)[0] || 1 }
+                .sort_by{|item| Nx41::decideItemListingPositionOrNull(item)[0] || 1 }
         }
         Operations::program3(l)
     end
@@ -305,7 +305,7 @@ class Operations
         end
 
         items.reverse.each{|item|
-            NxPolymorphs::setListingPosition(item, 0.9 * NxPolymorphs::listingFirstPosition())
+            NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
         }
     end
 
