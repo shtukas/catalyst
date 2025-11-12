@@ -94,7 +94,7 @@ class TxBehaviour
 
     # TxBehaviour::behaviourToIcon(behaviour)
     def self.behaviourToIcon(behaviour)
-        if behaviour["btype"] == "noble" then
+        if behaviour["btype"] == "positioned-priority" then
             return "🖋️ "
         end
         if behaviour["btype"] == "NxAwait" then
@@ -133,60 +133,6 @@ class TxBehaviour
             return ["task-account-8e7fa41a"]
         end
         return []
-    end
-
-    # ---------------------------------------------------------------
-    # Data (2) Listing
-
-    # TxBehaviour::realLineTo01Increasing(x)
-    def self.realLineTo01Increasing(x)
-        (2 + Math.atan(x)).to_f/10
-    end
-
-    # TxBehaviour::positionIn(i1, i2)
-    def self.positionIn(i1, i2)
-        x1 = Nx41::listingNthPosition(i1)
-        x2 = Nx41::listingNthPosition(i2)
-        return x1 + rand * (x2-x1)
-    end
-
-    # TxBehaviour::decideListingPositionOrNull(behaviour, runningTimespan)
-    def self.decideListingPositionOrNull(behaviour, runningTimespan)
-        if behaviour["btype"] == "ondate" then
-            return nil if CommonUtils::today() < behaviour["date"]
-            return TxBehaviour::positionIn(2, 5)
-        end
-        if behaviour["btype"] == "noble" then
-            raise "(error: 5489613f) this case should not happen"
-        end
-        if behaviour["btype"] == "NxAwait" then
-            return TxBehaviour::positionIn(10, 20)
-        end
-        if behaviour["btype"] == "backup" then
-            return TxBehaviour::positionIn(10, 20)
-        end
-        if behaviour["btype"] == "project" then
-            return nil if Project::ratio(behaviour, runningTimespan) >= 1
-            return TxBehaviour::positionIn(5, 10)
-        end
-        if behaviour["btype"] == "do-not-show-until" then
-           return nil if Time.new.to_i < behaviour["unixtime"]
-            return TxBehaviour::positionIn(10, 20)
-        end
-        if behaviour["btype"] == "wave" then
-            if behaviour["interruption"] then
-                return TxBehaviour::positionIn(1, 2)
-            end
-            return TxBehaviour::positionIn(10, 20)
-        end
-        if behaviour["btype"] == "task" then
-            return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 1
-            return TxBehaviour::positionIn(10, 20)
-        end
-        if behaviour["btype"] == "anniversary" then
-            return TxBehaviour::positionIn(2, 5)
-        end
-        raise "(error d8e9d7a7) I do not know how to compute listing position for behaviour: #{behaviour}"
     end
 
     # ---------------------------------------------------------------

@@ -1,36 +1,64 @@
 
 class Nx41
 
-    # Nx41::listingFirstPosition()
-    def self.listingFirstPosition()
-        positions = Items::items()
-            .select{|item| item["mikuType"] == "NxPolymorph" }
-            .select{|item| item["nx41"] }
-            .map{|item| item["nx41"]["position"] }
-            .compact
-        return 1 if positions.empty?
-        positions.min
+    # ---------------------------------------------------------------
+    # Functions & Data
+
+    # Nx41::realLineTo01Increasing(x)
+    def self.realLineTo01Increasing(x)
+        (2 + Math.atan(x)).to_f/10
     end
 
-    # Nx41::listingNthPosition(n)
-    def self.listingNthPosition(n)
+    # Nx41::firstListingPositionForSortingSpecialPositioning()
+    def self.firstListingPositionForSortingSpecialPositioning()
         positions = Items::items()
-            .select{|item| FrontPage::isVisible(item) }
-            .select{|item| item["mikuType"] == "NxPolymorph" }
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
-            .compact
-            .sort
-        return 1 if positions.empty?
-        if positions.size > n then
-            return positions.drop(n).first
+        ([1] + positions).min
+    end
+
+    # Nx41::decideRatioListingOrNull(behaviour, runningTimespan)
+    def self.decideRatioListingOrNull(behaviour, runningTimespan)
+        if behaviour["btype"] == "positioned-priority" then
+            raise "(error: 5489613f) this case should not happen"
         end
-        positions.max + 1
+        if behaviour["btype"] == "ondate" then
+            return nil if CommonUtils::today() < behaviour["date"]
+            return 0.200
+        end
+        if behaviour["btype"] == "NxAwait" then
+            return 0.250
+        end
+        if behaviour["btype"] == "backup" then
+            return 0.300
+        end
+        if behaviour["btype"] == "project" then
+            ratio = Project::ratio(behaviour, runningTimespan)
+            return nil if ratio >= 1
+            return ratio
+        end
+        if behaviour["btype"] == "wave" then
+            if behaviour["interruption"] then
+                return 0.100
+            end
+            return 0.400
+        end
+        if behaviour["btype"] == "task" then
+            return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 1
+            return 0.500
+        end
+        if behaviour["btype"] == "anniversary" then
+            return 0.150
+        end
+        raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
     end
 
     # Nx41::decideItemListingPositionOrNull(item) # [position: null or float, item]
     def self.decideItemListingPositionOrNull(item)
-        if item["nx41"] then
+        if item["nx41"] and item["nx41"]["unixtime"].nil? then
+            return [item["nx41"]["position"], item]
+        end
+        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
             return [item["nx41"]["position"], item]
         end
         runningTimespan = (lambda{
@@ -38,10 +66,13 @@ class Nx41
             return 0 if nxball.nil?
             NxBalls::ballRunningTime(nxball)
         }).call()
-        position = TxBehaviour::decideListingPositionOrNull(item["bx42"], runningTimespan)
-        return [nil, item] if position.nil?
+        ratio = Nx41::decideRatioListingOrNull(item["bx42"], runningTimespan)
+        if ratio.nil? then
+            Nx41::delist(item)
+            return [nil, item]
+        end
+        position = 1 + ratio
         Nx41::setNx41(item, {
-            "type"     => "computed",
             "unixtime" => Time.new.to_i,
             "position" => position
         })
@@ -49,7 +80,10 @@ class Nx41
         [position, item]
     end
 
-    # Nx41::setNx41(item, nx41)
+    # ---------------------------------------------------------------
+    # Functions & Data
+
+    # Nx41::setNx41(item, nx41 or null)
     def self.setNx41(item, nx41)
         Items::setAttribute(item["uuid"], "nx41", nx41)
     end

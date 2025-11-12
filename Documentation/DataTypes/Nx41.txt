@@ -1,16 +1,5 @@
 Nx41
 {
-    "type"    : "fixed-at-the-top"
-    "unixtime": integer
-    "position": Float
-}
-{
-    "type"    : "task-fixed" # carried by tasks
-    "unixtime": Integer
-    "position": Float
-}
-{
-    "type"    : "computed"
-    "unixtime": Integer
+    "unixtime": integer # if null, positioning does not expire
     "position": Float
 }

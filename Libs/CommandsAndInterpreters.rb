@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after * | delist *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | insert after *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | sort | sort after * | maintenance | morning",
@@ -100,35 +100,9 @@ class CommandsAndInterpreters
                 (pos1+pos2)/2
             }).call()
             Nx41::setNx41(item, {
-                "type"     => "computed",
                 "unixtime" => Time.new.to_i,
                 "position" => newposition
             })
-            return
-        end
-
-        if Interpreting::match("insert after *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            listord = listord.to_i
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            position = (lambda {
-                pos1, pos2 = store.items().drop(listord).take(2).map{|item| item["nx41"]["position"] }
-                (pos1+pos2)/2
-            }).call()
-            uuid = SecureRandom.uuid
-            behaviour = {
-                "btype" => "noble"
-            }
-            Items::init(uuid)
-            payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-            Nx41::setNx41(item, {
-                "type"     => "computed",
-                "unixtime" => Time.new.to_i,
-                "position" => position
-            })
-            puts JSON.pretty_generate(item)
             return
         end
 
@@ -148,7 +122,6 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 cursor = baseposition1 + 0.9 * (cursor - baseposition1)
                 Nx41::setNx41(item, {
-                    "type"     => "computed",
                     "unixtime" => Time.new.to_i,
                     "position" => cursor
                 })
@@ -161,9 +134,8 @@ class CommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Nx41::setNx41(item, {
-                    "type"     => "computed",
-                    "unixtime" => Time.new.to_i,
-                    "position" => 0.9 * Nx41::listingFirstPosition()
+                    "unixtime" => nil, # if null, positioning does not expire
+                    "position" => 0.9 * Nx41::firstListingPositionForSortingSpecialPositioning()
                 })
             }
             return
@@ -229,18 +201,16 @@ class CommandsAndInterpreters
                 .each{|line|
                     puts "processing: #{line}".green
                     description = line
-
                     uuid = SecureRandom.uuid
                     behaviour = {
-                        "btype" => "noble"
+                        "btype" => "positioned-priority"
                     }
                     Items::init(uuid)
                     payload = nil
                     item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
                     Nx41::setNx41(item, {
-                        "type"     => "computed",
-                        "unixtime" => Time.new.to_i,
-                        "position" => 0.9 * Nx41::listingFirstPosition()
+                        "unixtime" => nil, # if null, positioning does not expire
+                        "position" => 0.9 * Nx41::firstListingPositionForSortingSpecialPositioning()
                     })
                     last_item = item
                 }

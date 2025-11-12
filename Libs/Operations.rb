@@ -83,13 +83,6 @@ class Operations
                     puts "moving #{item["uuid"]} from NxIce to polymorph task"
                     Items::setAttribute(item["uuid"], "bx42", behaviour)
                     Items::setAttribute(item["uuid"], "mikuType", "NxPolymorph")
-                    nx41 = {
-                        "type"     => "task-fixed",
-                        "unixtime" => Time.new.to_i,
-                        "position" => Tasks::lastTaskPosition() + rand # tradition
-                    }
-                    puts JSON.pretty_generate(nx41)
-                    Items::setAttribute(item["uuid"], "nx41", nx41)
                     if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
                         unitId = item["uxpayload-b4e4"]["id"]
                         location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
@@ -254,15 +247,14 @@ class Operations
         }
         uuid = SecureRandom.uuid
         behaviour = {
-            "btype" => "noble"
+            "btype" => "positioned-priority"
         }
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
         Nx41::setNx41(item, {
-            "type"     => "computed",
-            "unixtime" => Time.new.to_i,
-            "position" => 0.9 * Nx41::listingFirstPosition()
+            "unixtime" => nil, # if null, positioning does not expire
+            "position" => 0.9 * Nx41::firstListingPositionForSortingSpecialPositioning()
         })
         if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
             PolyActions::start(item)
@@ -317,9 +309,8 @@ class Operations
 
         items.reverse.each{|item|
             Nx41::setNx41(item, {
-                "type"     => "computed",
-                "unixtime" => Time.new.to_i,
-                "position" => 0.9 * Nx41::listingFirstPosition()
+                "unixtime" => nil, # if null, positioning does not expire
+                "position" => 0.9 * Nx41::firstListingPositionForSortingSpecialPositioning()
             })
         }
     end

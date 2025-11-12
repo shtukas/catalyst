@@ -1,7 +1,7 @@
 
 TxBehaviour
 {
-    "btype": "noble"
+    "btype": "positioned-priority"
 }
 {
     "btype": "NxAwait"

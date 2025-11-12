@@ -22,8 +22,17 @@ class FrontPage
         storePrefix = store ? "(#{store.prefixString()})" : ""
         lp = (lambda {|item|
             return "" if item["nx41"].nil?
-            timespan = (Time.new.to_i - item["nx41"]["unixtime"]).to_f/86400
-            " (#{item["nx41"]["position"]}; #{timespan.round(2)})"
+            timespan = (Time.new.to_i - item["nx41"]["unixtime"])
+            timestring = (lambda {|timespan|
+                if timespan < 3600 then
+                    return "#{timespan/60} mins"
+                end
+                if timespan < 86400 then
+                    return "#{timespan/3600} hs"
+                end
+                "#{timespan/86400} days"
+            }).call(timespan)
+            " (#{item["nx41"]["position"].round(3)}; #{timestring})"
         }).call(item)
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp.yellow}"
         if TmpSkip1::isSkipped(item) then
@@ -72,7 +81,7 @@ class FrontPage
             end
             tasks = Items::mikuType("NxPolymorph")
                         .select{|item| item["bx42"]["btype"] == "task" }
-                        .sort_by{|item| item["unixtime"] }
+                        .sort_by{|item| item["nx41"]["position"] }
             tasks = tasks.take(10) + tasks.reverse.take(10)
             XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
             tasks
