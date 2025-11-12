@@ -252,7 +252,11 @@ class Operations
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-        NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
+        Nx41::setNx41(item, {
+            "type"     => "computed",
+            "unixtime" => Time.new.to_i,
+            "position" => 0.9 * Nx41::listingFirstPosition()
+        })
         if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
             PolyActions::start(item)
         end
@@ -305,7 +309,11 @@ class Operations
         end
 
         items.reverse.each{|item|
-            NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
+            Nx41::setNx41(item, {
+                "type"     => "computed",
+                "unixtime" => Time.new.to_i,
+                "position" => 0.9 * Nx41::listingFirstPosition()
+            })
         }
     end
 

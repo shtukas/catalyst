@@ -80,7 +80,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
-            NxPolymorphs::delist(item)
+            Nx41::delist(item)
             return
         end
 
@@ -96,10 +96,14 @@ class CommandsAndInterpreters
             item = store.get(listord1)
             return if item.nil?
             newposition = (lambda {
-                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| item["listing-position-2141"] }
+                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| item["nx41"]["position"] }
                 (pos1+pos2)/2
             }).call()
-            NxPolymorphs::setListingPosition(item, newposition)
+            Nx41::setNx41(item, {
+                "type"     => "computed",
+                "unixtime" => Time.new.to_i,
+                "position" => newposition
+            })
             return
         end
 
@@ -109,7 +113,7 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             position = (lambda {
-                pos1, pos2 = store.items().drop(listord).take(2).map{|item| item["listing-position-2141"] }
+                pos1, pos2 = store.items().drop(listord).take(2).map{|item| item["nx41"]["position"] }
                 (pos1+pos2)/2
             }).call()
             uuid = SecureRandom.uuid
@@ -119,7 +123,11 @@ class CommandsAndInterpreters
             Items::init(uuid)
             payload = UxPayload::makeNewOrNull(uuid)
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-            NxPolymorphs::setListingPosition(item, position)
+            Nx41::setNx41(item, {
+                "type"     => "computed",
+                "unixtime" => Time.new.to_i,
+                "position" => position
+            })
             puts JSON.pretty_generate(item)
             return
         end
@@ -128,8 +136,8 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             listord = listord.to_i
 
-            baseposition1 = store.items().take(listord+1).map{|item| item["listing-position-2141"] }.max
-            cursor = store.items().take(listord+2).map{|item| item["listing-position-2141"] }.max
+            baseposition1 = store.items().take(listord+1).map{|item| item["nx41"]["position"] }.max
+            cursor = store.items().take(listord+2).map{|item| item["nx41"]["position"] }.max
 
             items2 = store.items().drop(listord+1)
             items2 = items2.select{|item| item["mikuType"] == "NxPolymorph" }
@@ -139,7 +147,11 @@ class CommandsAndInterpreters
 
             selected.reverse.each{|item|
                 cursor = baseposition1 + 0.9 * (cursor - baseposition1)
-                NxPolymorphs::setListingPosition(item, cursor)
+                Nx41::setNx41(item, {
+                    "type"     => "computed",
+                    "unixtime" => Time.new.to_i,
+                    "position" => cursor
+                })
             }
             return
         end
@@ -148,7 +160,11 @@ class CommandsAndInterpreters
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
+                Nx41::setNx41(item, {
+                    "type"     => "computed",
+                    "unixtime" => Time.new.to_i,
+                    "position" => 0.9 * Nx41::listingFirstPosition()
+                })
             }
             return
         end
@@ -221,7 +237,11 @@ class CommandsAndInterpreters
                     Items::init(uuid)
                     payload = nil
                     item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
-                    NxPolymorphs::setListingPosition(item, 0.9 * Nx41::listingFirstPosition())
+                    Nx41::setNx41(item, {
+                        "type"     => "computed",
+                        "unixtime" => Time.new.to_i,
+                        "position" => 0.9 * Nx41::listingFirstPosition()
+                    })
                     last_item = item
                 }
             if last_item then

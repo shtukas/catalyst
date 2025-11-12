@@ -21,13 +21,9 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         lp = (lambda {|item|
-            return "" if item["mikuType"] != "NxPolymorph"
-            if item["listing-unixtime"].nil? then
-                return " (#{item["listing-position-2141"]})"
-            end
-            timespan = (Time.new.to_i - item["listing-unixtime"]).to_f/86400
-            " (#{item["listing-position-2141"]}; #{timespan.round(2)})"
-
+            return "" if item["nx41"].nil?
+            timespan = (Time.new.to_i - item["nx41"]["unixtime"]).to_f/86400
+            " (#{item["nx41"]["position"]}; #{timespan.round(2)})"
         }).call(item)
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp.yellow}"
         if TmpSkip1::isSkipped(item) then
@@ -62,20 +58,20 @@ class FrontPage
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         tasks = (lambda {
-            uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b63b:#{CommonUtils::today()}")
+            uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}")
             if uuids then
                 tasks = JSON.parse(uuids)
                         .map{|uuid| Items::itemOrNull(uuid) }
                         .compact
                         .select{|item| item["bx42"]["btype"] == "task" }
-                XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
+                XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
                 return tasks
             end
             tasks = Items::mikuType("NxPolymorph")
                         .select{|item| item["bx42"]["btype"] == "task" }
                         .sort_by{|item| item["unixtime"] }
             tasks = tasks.take(10) + tasks.reverse.take(10)
-            XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63b:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
+            XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
             tasks
         }).call()
 

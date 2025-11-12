@@ -1,27 +1,11 @@
 
-=begin
-
-Nx41
-{
-    "type"    : "fixed-at-the-top"
-    "unixtime": integer
-    "position": Float
-}
-{
-    "type"    : "computed"
-    "unixtime": Integer
-    "position": Float
-}
-
-=end
-
 class Nx41
 
     # Nx41::listingFirstPosition()
     def self.listingFirstPosition()
         positions = Items::items()
             .select{|item| item["mikuType"] == "NxPolymorph" }
-            .map{|item| item["listing-position-2141"] }
+            .map{|item| item["nx41"]["position"] }
             .compact
         return 1 if positions.empty?
         positions.min
@@ -32,7 +16,8 @@ class Nx41
         positions = Items::items()
             .select{|item| item["mikuType"] == "NxPolymorph" }
             .select{|item| FrontPage::isVisible(item) }
-            .map{|item| item["listing-position-2141"] }
+            .select{|item| item["nx41"] }
+            .map{|item| item["nx41"]["position"] }
             .compact
             .sort
         return 1 if positions.empty?
@@ -44,8 +29,8 @@ class Nx41
 
     # Nx41::decideItemListingPositionOrNull(item) # [position: null or float, item]
     def self.decideItemListingPositionOrNull(item)
-        if item["listing-position-2141"] then
-            return [item["listing-position-2141"], item]
+        if item["nx41"] then
+            return [item["nx41"]["position"], item]
         end
         runningTimespan = (lambda{
             nxball = NxBalls::getNxBallOrNull(item)
@@ -54,9 +39,22 @@ class Nx41
         }).call()
         position = TxBehaviour::decideListingPositionOrNull(item["bx42"], runningTimespan)
         return [nil, item] if position.nil?
-        NxPolymorphs::setListingPosition(item, position)
+        Nx41::setNx41(item, {
+            "type"     => "computed",
+            "unixtime" => Time.new.to_i,
+            "position" => position
+        })
         item = Items::itemOrNull(item["uuid"])
         [position, item]
     end
 
+    # Nx41::setNx41(item, nx41)
+    def self.setNx41(item, nx41)
+        Items::setAttribute(item["uuid"], "nx41", nx41)
+    end
+
+    # Nx41::delist(item)
+    def self.delist(item)
+        Items::setAttribute(item["uuid"], "nx41", nil)
+    end
 end

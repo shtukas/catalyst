@@ -1,0 +1,11 @@
+Nx41
+{
+    "type"    : "fixed-at-the-top"
+    "unixtime": integer
+    "position": Float
+}
+{
+    "type"    : "computed"
+    "unixtime": Integer
+    "position": Float
+}
