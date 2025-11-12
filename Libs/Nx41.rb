@@ -39,7 +39,7 @@ class Nx41
         end
         if behaviour["btype"] == "wave" then
             if behaviour["interruption"] then
-                return 0.099
+                return 0.050
             end
             return 0.400
         end
