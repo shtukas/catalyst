@@ -33,9 +33,10 @@ class Nx41
             return 0.300
         end
         if behaviour["btype"] == "project" then
-            ratio = Project::ratio(behaviour, runningTimespan)
-            return nil if ratio >= 1
-            return 0.100 + 0.9 * ratio
+            ratio1 = Project::ratio(behaviour, runningTimespan)
+            ratio2 = BankDerivedData::recoveredAverageHoursPerDay("projects-4798-96c5-0e5fe723633a").to_f/8
+            return nil if ratio1 >= 1
+            return (0.100 + 0.8 * ratio2) + 0.9 * ratio1
         end
         if behaviour["btype"] == "wave" then
             if behaviour["interruption"] then

@@ -132,7 +132,7 @@ require_relative "CommandsAndInterpreters.rb"
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
-require_relative "Datablocks.rb"
+require_relative "Datablobs.rb"
 
 require_relative "Elizabeth.rb"
 
@@ -151,6 +151,7 @@ require_relative "NxPolymorphs.rb"
 require_relative "NxTimeCommitment.rb"
 require_relative "Nx46.rb"
 require_relative "Nx41.rb"
+require_relative "NxSequenceItem.rb"
 
 require_relative "Operations.rb"
 

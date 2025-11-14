@@ -335,4 +335,20 @@ class Operations
         end
         nil
     end
+
+    # Operations::moveToSequence(item)
+    def self.moveToSequence(item)
+        if UxPayload::itemIsSequenceCarrier(item) then
+            puts "You cannot move a sequence carrier"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        positioning = NxSequenceItem::interactivelyDecidePositioningOrNull_ExistingSequence()
+        return if positioning.nil?
+        Items::setAttribute(item["uuid"], "sequenceuuid", positioning["sequenceuuid"])
+        Items::setAttribute(item["uuid"], "ordinal", positioning["ordinal"])
+        Items::setAttribute(item["uuid"], "mikuType", "NxSequenceItem")
+        item = Items::itemOrNull(item["uuid"])
+        puts JSON.pretty_generate(item)
+    end
 end

@@ -1,0 +1,9 @@
+NxSequenceItem:
+    - uuid           : String
+    - mikuType       : "NxSequenceItem"
+    - unixtime       :
+    - datetime       :
+    - sequenceuuid   : String
+    - ordinal        : Float
+    - description    : String
+    - uxpayload-b4e4 : null | UxPayload

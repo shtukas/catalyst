@@ -47,3 +47,8 @@ UxPayloads are stored in attribute `uxpayload-b4e4`.
     "type"   : "stored-procedure"
     "ticket" : String # URL
 }
+
+{
+    "type" : "sequence",
+    "sequenceuuid"
+}

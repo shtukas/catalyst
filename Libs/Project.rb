@@ -3,6 +3,43 @@
 
 class Project
 
+    # Project::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        return if description == ""
+        timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
+        return if timeCommitment.nil?
+        behaviour = {
+            "btype" => "project",
+            "timeCommitment" => timeCommitment
+        }
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+        item
+    end
+
+    # Project::interactivelyIssueNewSequenceCarrierOrNull()
+    def self.interactivelyIssueNewSequenceCarrierOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        return if description == ""
+        timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
+        return if timeCommitment.nil?
+        behaviour = {
+            "btype" => "project",
+            "timeCommitment" => timeCommitment
+        }
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        payload = {
+            "type"  => "sequence",
+            "sequenceuuid" => SecureRandom.hex
+        }
+        item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+        item
+    end
+
     # Project::ratio(behaviour, runningTimespan)
     def self.ratio(behaviour, runningTimespan)
         #{

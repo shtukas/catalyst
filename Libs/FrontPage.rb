@@ -20,21 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        lp = (lambda {|item|
-            return "" if item["nx41"].nil?
-            timespan = (Time.new.to_i - item["nx41"]["unixtime"])
-            timestring = (lambda {|timespan|
-                if timespan < 3600 then
-                    return "#{timespan/60} mins"
-                end
-                if timespan < 86400 then
-                    return "#{timespan/3600} hs"
-                end
-                "#{timespan/86400} days"
-            }).call(timespan)
-            " (#{item["nx41"]["position"].round(3)}; #{timestring})"
-        }).call(item)
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lp.yellow}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -201,21 +187,6 @@ class FrontPage
                         }
                 }).call()
                 sleep 120
-            }
-        }
-
-        Thread.new {
-            loop {
-                sleep 300
-                LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/items-destroyed")
-                    .select{|filepath| filepath[-4, 4] == ".txt" }
-                    .each{|filepath|
-                        uuid = IO.read(filepath).strip
-                        status = Datablocks::removeUUID(uuid)
-                        if status and File.exist?(filepath) then
-                            FileUtils.rm(filepath)
-                        end
-                    }
             }
         }
 

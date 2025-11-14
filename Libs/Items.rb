@@ -303,14 +303,6 @@ class Items
     # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
         Items::setAttribute(uuid, "mikuType", 'NxDeleted')
-
-        # Version 1
-        # This synchronous processing was taking too long, so we are doing version 2
-        # Datablocks::removeUUID(item["uuid"])
-
-        # Version 2
-        filepath = "#{Config::pathToCatalystDataRepository()}/items-destroyed/#{(Time.new.to_f * 1000).to_i}.txt"
-        File.open(filepath, "w") {|f| f.puts(uuid) }
     end
 
     # ------------------------------------------------------

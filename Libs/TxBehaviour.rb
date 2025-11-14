@@ -127,7 +127,7 @@ class TxBehaviour
     # TxBehaviour::bankAccountsNumbers(behaviour)
     def self.bankAccountsNumbers(behaviour)
         if behaviour["btype"] == "project" then
-            return [behaviour["timeCommitment"]["uuid"]]
+            return [behaviour["timeCommitment"]["uuid"], "projects-4798-96c5-0e5fe723633a"]
         end
         if behaviour["btype"] == "task" then
             return ["task-account-8e7fa41a"]

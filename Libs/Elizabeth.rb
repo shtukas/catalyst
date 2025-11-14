@@ -5,7 +5,7 @@ class Elizabeth
     end
  
     def putBlob(datablob) # nhash
-        Datablocks::putDatablob(@uuid, datablob)
+        Datablobs::putBlob(datablob)
     end
  
     def filepathToContentHash(filepath)
@@ -13,7 +13,7 @@ class Elizabeth
     end
  
     def getBlobOrNull(nhash)
-        Datablocks::getDatablobOrNull(@uuid, nhash)
+        Datablobs::getBlobOrNull(nhash)
     end
  
     def readBlobErrorIfNotFound(nhash)

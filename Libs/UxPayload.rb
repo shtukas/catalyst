@@ -8,6 +8,7 @@ class UxPayload
             "url",
             "breakdown",
             "aion-point",
+            "sequence",
             "todo-text-file-by-name-fragment",
             "open cycle",
             "stored-procedure",
@@ -75,6 +76,12 @@ class UxPayload
             return {
                 "type" => "unique-string",
                 "uniquestring" => uniquestring
+            }
+        end
+        if type == "sequence" then
+            return {
+                "type" => "sequence",
+                "sequenceuuid" => SecureRandom.hex
             }
         end
         if type == "open cycle" then
@@ -199,6 +206,13 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             return
         end
+        if payload["type"] == "sequence" then
+            item = NxSequenceItem::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            return if item.nil?
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            return
+        end
+        raise "(error: e0040ec0-1c8f) type: #{payload["type"]}"
     end
 
     # UxPayload::edit(itemuuid, payload) -> nil or new payload
@@ -268,7 +282,7 @@ class UxPayload
                 "lines" => Operations::interactivelyRecompileLines(payload["lines"])
             }
         end
-        if type == "stored-procedure" then
+        if payload["type"] == "stored-procedure" then
             ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
             return nil if ticket == ""
             return {
@@ -323,17 +337,13 @@ class UxPayload
         if payload["type"] == "breakdown" then
             return
         end
-        if type == "stored-procedure" then
+        if payload["type"] == "sequence" then
+            return
+        end
+        if payload["type"] == "stored-procedure" then
             return
         end
         raise "unkown payload type: #{payload["type"]} at #{payload}"
-    end
-
-    # UxPayload::suffix_string(item)
-    def self.suffix_string(item)
-        payload = item["uxpayload-b4e4"]
-        return "" if payload.nil?
-        " (#{payload["type"]})".green
     end
 
     # UxPayload::interactivelyMakeBreakdown()
@@ -346,6 +356,12 @@ class UxPayload
 
     # UxPayload::payloadProgram(item)
     def self.payloadProgram(item)
+        if UxPayload::isNonEmptySequence(item) then
+            puts "You cannot payload program a sequence carrier that is not empty"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         payload = nil
         if item["uxpayload-b4e4"] then
             options = ["access", "edit", "make new (default)", "delete existing payload"]
@@ -367,5 +383,33 @@ class UxPayload
         end
         return if payload.nil?
         Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+    end
+
+    # UxPayload::toString(payload)
+    def self.toString(payload)
+        return "" if payload.nil?
+        if payload["type"] == "sequence" then
+            item = NxSequenceItem::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            return "(sequence: empty)" if item.nil?
+            return "(sequence: next: #{item["description"]})"
+        end
+        "(#{payload["type"]})"
+    end
+
+    # UxPayload::suffixString(item)
+    def self.suffixString(item)
+        payload = item["uxpayload-b4e4"]
+        return "" if payload.nil?
+        " #{UxPayload::toString(payload)}".green
+    end
+
+    # UxPayload::itemIsSequenceCarrier(item)
+    def self.itemIsSequenceCarrier(item)
+        item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "sequence"
+    end
+
+    # UxPayload::isNonEmptySequence(item)
+    def self.isNonEmptySequence(item)
+        UxPayload::itemIsSequenceCarrier(item) and NxSequenceItem::sequenceSize(item["uxpayload-b4e4"]["sequenceuuid"]) > 0
     end
 end

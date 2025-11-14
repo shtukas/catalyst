@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after * | delist *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after * | delist * | lift * (promote to sequence carrier) | move * (move to sequence)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -84,6 +84,21 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("move", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Operations::moveToSequence(item)
+            return
+        end
+
+        if Interpreting::match("move *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Operations::moveToSequence(item)
+            return
+        end
+
         if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
             return
@@ -147,6 +162,50 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("lift *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+
+            # creating the new payload
+            payload2 = {
+                "type" => "sequence",
+                "sequenceuuid" => SecureRandom.hex
+            }
+
+            # If there is an existing payload, we make it a sequence item
+            if item["uxpayload-b4e4"] then
+                uuid2 = SecureRandom.uuid
+                Items::init(uuid2)
+                Items::setAttribute(uuid2, "unixtime", Time.new.to_i)
+                Items::setAttribute(uuid2, "datetime", Time.new.utc.iso8601)
+                Items::setAttribute(uuid2, "sequenceuuid", payload2["sequenceuuid"])
+                Items::setAttribute(uuid2, "ordinal", 1)
+                Items::setAttribute(uuid2, "description", "#{item["description"]} (lifted)")
+                Items::setAttribute(uuid2, "uxpayload-b4e4", item["uxpayload-b4e4"])
+                Items::setAttribute(uuid2, "mikuType", "NxSequenceItem")
+                sequenceItem = Items::itemOrNull(uuid2)
+                puts "sequenceItem: #{JSON.pretty_generate(sequenceItem)}"
+            end
+
+            # We create the carrier
+            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
+            return
+        end
+
+        if Interpreting::match("unlift *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if UxPayload::isNonEmptySequence(item) then
+                puts "You cannot unlift a non empty sequence carrier"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
             return
         end
 
@@ -467,18 +526,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("project", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
-            return if timeCommitment.nil?
-            behaviour = {
-                "btype" => "project",
-                "timeCommitment" => timeCommitment
-            }
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            payload = UxPayload::makeNewOrNull(uuid)
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = Project::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
             return
         end

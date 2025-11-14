@@ -17,6 +17,9 @@ class Fsck
         if item["mikuType"] == "NxPolymorph" then
             return
         end
+        if item["mikuType"] == "NxSequenceItem" then
+            return
+        end
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 

@@ -39,6 +39,14 @@ class PolyActions
             return
         end
 
+        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "sequence" then
+            sequenceItem = NxSequenceItem::firstItemInSequenceOrNull(item["uxpayload-b4e4"]["sequenceuuid"])
+            puts JSON.pretty_generate(sequenceItem)
+            PolyActions::done(item)
+            exit
+            return
+        end
+
         PolyActions::stop(item)
 
         if item["mikuType"] == "DesktopTx1" then
@@ -49,6 +57,13 @@ class PolyActions
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 DropBox::done(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxSequenceItem" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                Items::deleteItem(item["uuid"])
             end
             return
         end
