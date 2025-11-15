@@ -87,6 +87,7 @@ class NxSequenceItem
     # NxSequenceItem::interactivelyDecideSequenceOrNull() # sequenceuuid or null
     def self.interactivelyDecideSequenceOrNull()
         items = Items::items()
+                    .select{|item| item["mikuType"] != "NxDeleted" }
                     .select{|item| UxPayload::itemIsSequenceCarrier(item) }
         item = LucilleCore::selectEntityFromListOfEntitiesOrNull("sequence", items, lambda{|item| PolyFunctions::toString(item) })
         return nil if item.nil?

@@ -42,7 +42,6 @@ class FrontPage
             puts "Code change detected"
             exit
         end
-        Operations::dispatchPickUp()
     end
 
     # FrontPage::isVisible(item)
@@ -61,6 +60,7 @@ class FrontPage
                 tasks = JSON.parse(uuids)
                         .map{|uuid| Items::itemOrNull(uuid) }
                         .compact
+                        .select{|item| item["mikuType"] == "NxPolymorph" }
                         .select{|item| item["bx42"]["btype"] == "task" }
                 XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
                 return tasks

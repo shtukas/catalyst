@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | relocate * after * | delist * | lift * (promote to sequence carrier) | move * (move to sequence)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | sort | sort after * | maintenance | morning",
+            "misc          : search | commands | fsck | sort | maintenance | morning",
         ].join("\n")
     end
 
@@ -101,46 +101,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
-            return
-        end
-
-        if Interpreting::match("relocate * after *", input) then
-            _, listord1, _, listord2 = Interpreting::tokenizer(input)
-            listord1 = listord1.to_i
-            listord2 = listord2.to_i
-            item = store.get(listord1)
-            return if item.nil?
-            newposition = (lambda {
-                pos1, pos2 = store.items().drop(listord2).take(2).map{|item| item["nx41"]["position"] }
-                (pos1+pos2)/2
-            }).call()
-            Nx41::setNx41(item, {
-                "unixtime" => Time.new.to_i,
-                "position" => newposition
-            })
-            return
-        end
-
-        if Interpreting::match("sort after *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            listord = listord.to_i
-
-            baseposition1 = store.items().take(listord+1).map{|item| item["nx41"]["position"] }.max
-            cursor = store.items().take(listord+2).map{|item| item["nx41"]["position"] }.max
-
-            items2 = store.items().drop(listord+1)
-            items2 = items2.select{|item| item["mikuType"] == "NxPolymorph" }
-
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items2, lambda{|i| PolyFunctions::toString(i) })
-            return if selected.empty?
-
-            selected.reverse.each{|item|
-                cursor = baseposition1 + 0.9 * (cursor - baseposition1)
-                Nx41::setNx41(item, {
-                    "unixtime" => Time.new.to_i,
-                    "position" => cursor
-                })
-            }
             return
         end
 
