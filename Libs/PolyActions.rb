@@ -40,7 +40,7 @@ class PolyActions
         end
 
         if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "sequence" then
-            sequenceItem = NxSequenceItem::firstItemInSequenceOrNull(item["uxpayload-b4e4"]["sequenceuuid"])
+            sequenceItem = Sequences::firstItemInSequenceOrNull(item["uxpayload-b4e4"]["sequenceuuid"])
             puts JSON.pretty_generate(sequenceItem)
             PolyActions::done(sequenceItem)
             return

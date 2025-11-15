@@ -207,7 +207,7 @@ class UxPayload
             return
         end
         if payload["type"] == "sequence" then
-            item = NxSequenceItem::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
             return if item.nil?
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -389,7 +389,7 @@ class UxPayload
     def self.toString(payload)
         return "" if payload.nil?
         if payload["type"] == "sequence" then
-            item = NxSequenceItem::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
             return "(sequence: empty)" if item.nil?
             return "(sequence: next: #{item["description"]})"
         end
@@ -410,6 +410,6 @@ class UxPayload
 
     # UxPayload::isNonEmptySequence(item)
     def self.isNonEmptySequence(item)
-        UxPayload::itemIsSequenceCarrier(item) and NxSequenceItem::sequenceSize(item["uxpayload-b4e4"]["sequenceuuid"]) > 0
+        UxPayload::itemIsSequenceCarrier(item) and Sequences::sequenceSize(item["uxpayload-b4e4"]["sequenceuuid"]) > 0
     end
 end

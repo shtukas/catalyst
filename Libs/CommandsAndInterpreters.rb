@@ -87,7 +87,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            Operations::moveToSequence(item)
+            Sequences::moveToSequence(item)
             return
         end
 
@@ -95,7 +95,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Operations::moveToSequence(item)
+            Sequences::moveToSequence(item)
             return
         end
 
@@ -274,6 +274,17 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             UxPayload::payloadProgram(item)
+            return
+        end
+
+
+        if Interpreting::match("dive *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            
+            
+
             return
         end
 
