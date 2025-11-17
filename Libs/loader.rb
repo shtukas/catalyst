@@ -146,11 +146,12 @@ require_relative "ItemStore.rb"
 require_relative "Instances.rb"
 require_relative "Items.rb"
 
+require_relative "ListingPosition.rb"
+
 require_relative "NxBalls.rb"
 require_relative "NxPolymorphs.rb"
 require_relative "NxTimeCommitment.rb"
 require_relative "Nx46.rb"
-require_relative "Nx41.rb"
 require_relative "NxSequenceItem.rb"
 
 require_relative "Operations.rb"

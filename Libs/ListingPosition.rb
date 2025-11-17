@@ -1,15 +1,15 @@
 
-class Nx41
+class ListingPosition
 
     # ---------------------------------------------------------------
     # Functions & Data
 
-    # Nx41::realLineTo01Increasing(x)
+    # ListingPosition::realLineTo01Increasing(x)
     def self.realLineTo01Increasing(x)
         (2 + Math.atan(x)).to_f/10
     end
 
-    # Nx41::firstListingPositionForSortingSpecialPositioning()
+    # ListingPosition::firstListingPositionForSortingSpecialPositioning()
     def self.firstListingPositionForSortingSpecialPositioning()
         positions = Items::items()
             .select{|item| item["nx41"] }
@@ -17,7 +17,7 @@ class Nx41
         ([1] + positions).min
     end
 
-    # Nx41::decideRatioListingOrNull(behaviour, runningTimespan)
+    # ListingPosition::decideRatioListingOrNull(behaviour, runningTimespan)
     def self.decideRatioListingOrNull(behaviour, runningTimespan)
         if behaviour["btype"] == "positioned-priority" then
             raise "(error: 5489613f) this case should not happen"
@@ -54,7 +54,7 @@ class Nx41
         raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
     end
 
-    # Nx41::decideItemListingPositionOrNull(item) # [position: null or float, item]
+    # ListingPosition::decideItemListingPositionOrNull(item) # [position: null or float, item]
     def self.decideItemListingPositionOrNull(item)
         if item["nx41"] and item["nx41"]["unixtime"].nil? then
             return [item["nx41"]["position"], item]
@@ -67,13 +67,13 @@ class Nx41
             return 0 if nxball.nil?
             NxBalls::ballRunningTime(nxball)
         }).call()
-        ratio = Nx41::decideRatioListingOrNull(item["bx42"], runningTimespan)
+        ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], runningTimespan)
         if ratio.nil? then
-            Nx41::delist(item)
+            ListingPosition::delist(item)
             return [nil, item]
         end
         position = 1 + ratio
-        Nx41::setNx41(item, {
+        ListingPosition::setNx41(item, {
             "unixtime" => Time.new.to_i,
             "position" => position
         })
@@ -84,12 +84,12 @@ class Nx41
     # ---------------------------------------------------------------
     # Functions & Data
 
-    # Nx41::setNx41(item, nx41 or null)
+    # ListingPosition::setNx41(item, nx41 or null)
     def self.setNx41(item, nx41)
         Items::setAttribute(item["uuid"], "nx41", nx41)
     end
 
-    # Nx41::delist(item)
+    # ListingPosition::delist(item)
     def self.delist(item)
         Items::setAttribute(item["uuid"], "nx41", nil)
     end

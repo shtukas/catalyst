@@ -41,7 +41,7 @@ class NxPolymorphs
 
     # NxPolymorphs::stop(item)
     def self.stop(item)
-        Nx41::delist(item)
+        ListingPosition::delist(item)
         Items::itemOrNull(item["uuid"])
     end
 
@@ -49,7 +49,7 @@ class NxPolymorphs
     def self.done(item)
         packet = TxBehaviour::done(item["bx42"]) # null or { "behaviour" => behaviour, "do-not-show-until" => unixtime }
         if packet then
-            Nx41::delist(item)
+            ListingPosition::delist(item)
             Items::setAttribute(item["uuid"], "do-not-show-until-51", Time.at(packet["do-not-show-until"]).utc.iso8601)
             Items::setAttribute(item["uuid"], "bx42", packet["behaviour"])
         else

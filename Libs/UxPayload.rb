@@ -356,7 +356,7 @@ class UxPayload
 
     # UxPayload::payloadProgram(item)
     def self.payloadProgram(item)
-        if UxPayload::isNonEmptySequence(item) then
+        if Sequences::isNonEmptySequence(item) then
             puts "You cannot payload program a sequence carrier that is not empty"
             LucilleCore::pressEnterToContinue()
             return
@@ -401,15 +401,5 @@ class UxPayload
         payload = item["uxpayload-b4e4"]
         return "" if payload.nil?
         " #{UxPayload::toString(payload)}".green
-    end
-
-    # UxPayload::itemIsSequenceCarrier(item)
-    def self.itemIsSequenceCarrier(item)
-        item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "sequence"
-    end
-
-    # UxPayload::isNonEmptySequence(item)
-    def self.isNonEmptySequence(item)
-        UxPayload::itemIsSequenceCarrier(item) and Sequences::sequenceSize(item["uxpayload-b4e4"]["sequenceuuid"]) > 0
     end
 end

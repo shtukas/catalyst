@@ -6,11 +6,15 @@ class Sequences
     # ---------------------------------------
     # Data
 
-    # Sequences::sequenceSize(sequenceuuid)
-    def self.sequenceSize(sequenceuuid)
+    # Sequences::sequenceElements(sequenceuuid)
+    def self.sequenceElements(sequenceuuid)
         Items::mikuType("NxSequenceItem")
             .select{|item| item["sequenceuuid"] == sequenceuuid }
-            .size
+    end
+
+    # Sequences::sequenceSize(sequenceuuid)
+    def self.sequenceSize(sequenceuuid)
+        Sequences::sequenceElements(sequenceuuid).size
     end
 
     # Sequences::firstOrdinalInSequence(sequenceuuid)
@@ -36,8 +40,18 @@ class Sequences
         (ordinals + [1]).max
     end
 
+    # Sequences::itemIsSequenceCarrier(item)
+    def self.itemIsSequenceCarrier(item)
+        item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "sequence"
+    end
+
+    # Sequences::isNonEmptySequence(item)
+    def self.isNonEmptySequence(item)
+        Sequences::itemIsSequenceCarrier(item) and Sequences::sequenceSize(item["uxpayload-b4e4"]["sequenceuuid"]) > 0
+    end
+
     # ---------------------------------------
-    # Interactive Data
+    # Interactive
 
     # Sequences::interativelydecideOrdinalInSequenceOrNull(sequenceuuid) # ordinal
     def self.interativelydecideOrdinalInSequenceOrNull(sequenceuuid)
@@ -61,13 +75,13 @@ class Sequences
     def self.interactivelyDecideSequenceOrNull()
         items = Items::items()
                     .select{|item| item["mikuType"] != "NxDeleted" }
-                    .select{|item| UxPayload::itemIsSequenceCarrier(item) }
+                    .select{|item| Sequences::itemIsSequenceCarrier(item) }
         item = LucilleCore::selectEntityFromListOfEntitiesOrNull("sequence", items, lambda{|item| PolyFunctions::toString(item) })
         return nil if item.nil?
         item["uxpayload-b4e4"]["sequenceuuid"]
     end
 
-    # Sequences::interactivelyDecidePositioningOrNull_ExistingSequence()
+    # Sequences::interactivelyDecidePositioningOrNull_ExistingSequence() # {"sequenceuuid", "ordinal"}
     def self.interactivelyDecidePositioningOrNull_ExistingSequence()
         sequenceuuid = Sequences::interactivelyDecideSequenceOrNull()
         return nil if sequenceuuid.nil?
@@ -80,7 +94,7 @@ class Sequences
 
     # Sequences::moveToSequence(item)
     def self.moveToSequence(item)
-        if UxPayload::itemIsSequenceCarrier(item) then
+        if Sequences::itemIsSequenceCarrier(item) then
             puts "You cannot move a sequence carrier"
             LucilleCore::pressEnterToContinue()
             return

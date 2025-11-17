@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | sequence item",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | sort | maintenance | morning",
@@ -80,7 +80,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
-            Nx41::delist(item)
+            ListingPosition::delist(item)
             return
         end
 
@@ -108,9 +108,9 @@ class CommandsAndInterpreters
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                Nx41::setNx41(item, {
+                ListingPosition::setNx41(item, {
                     "unixtime" => nil, # if null, positioning does not expire
-                    "position" => 0.9 * Nx41::firstListingPositionForSortingSpecialPositioning()
+                    "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning()
                 })
             }
             return
@@ -122,6 +122,15 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("sequence item", input) then
+            positioning = Sequences::interactivelyDecidePositioningOrNull_ExistingSequence() # {"sequenceuuid", "ordinal"}
+            return if positioning.nil?
+            item = NxSequenceItem::interactivelyIssueNewOrNull(positioning["sequenceuuid"], positioning["ordinal"])
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -160,7 +169,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if UxPayload::isNonEmptySequence(item) then
+            if Sequences::isNonEmptySequence(item) then
                 puts "You cannot unlift a non empty sequence carrier"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -227,9 +236,9 @@ class CommandsAndInterpreters
                     Items::init(uuid)
                     payload = nil
                     item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
-                    Nx41::setNx41(item, {
+                    ListingPosition::setNx41(item, {
                         "unixtime" => nil, # if null, positioning does not expire
-                        "position" => 0.9 * Nx41::firstListingPositionForSortingSpecialPositioning()
+                        "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning()
                     })
                     last_item = item
                 }
@@ -282,9 +291,17 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            
-            
-
+            if !Sequences::itemIsSequenceCarrier(item) then
+                puts "You can only dive a sequence carrier"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            sequenceuuid = item["uxpayload-b4e4"]["sequenceuuid"]
+            lx = lambda {
+                Sequences::sequenceElements(sequenceuuid)
+                    .sort_by{|item| item["ordinal"] }
+            }
+            Operations::program3(lx)
             return
         end
 

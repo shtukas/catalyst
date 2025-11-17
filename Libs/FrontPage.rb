@@ -76,7 +76,7 @@ class FrontPage
         (items + tasks)
             .select{|item| FrontPage::isVisible(item) }
             .map{|item|
-                position, item = Nx41::decideItemListingPositionOrNull(item)
+                position, item = ListingPosition::decideItemListingPositionOrNull(item)
                 {
                     "item" => item,
                     "position" => position
