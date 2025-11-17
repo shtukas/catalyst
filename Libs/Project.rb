@@ -108,4 +108,9 @@ class Project
 
         ""
     end
+
+    # Project::isProject(item)
+    def self.isProject(item)
+        item["bx42"] and item["bx42"]["btype"] == "project"
+    end
 end

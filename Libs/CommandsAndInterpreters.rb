@@ -109,8 +109,9 @@ class CommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 ListingPosition::setNx41(item, {
-                    "unixtime" => nil, # if null, positioning does not expire
-                    "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning()
+                    "unixtime" => Time.new.to_f,
+                    "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
+                    "isSort"   => true
                 })
             }
             return
@@ -237,8 +238,9 @@ class CommandsAndInterpreters
                     payload = nil
                     item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
                     ListingPosition::setNx41(item, {
-                        "unixtime" => nil, # if null, positioning does not expire
-                        "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning()
+                        "unixtime" => Time.new.to_f,
+                        "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
+                        "isSort"   => true
                     })
                     last_item = item
                 }

@@ -34,9 +34,9 @@ class ListingPosition
         end
         if behaviour["btype"] == "project" then
             ratio1 = Project::ratio(behaviour, runningTimespan)
-            ratio2 = BankDerivedData::recoveredAverageHoursPerDay("projects-4798-96c5-0e5fe723633a").to_f/8
             return nil if ratio1 >= 1
-            return (0.100 + 0.8 * ratio2) + 0.9 * ratio1
+            ratio2 = BankDerivedData::recoveredAverageHoursPerDay("projects-4798-96c5-0e5fe723633a").to_f/5
+            return (0.100 + 0.4 * ratio2) + 0.4 * ratio1
         end
         if behaviour["btype"] == "wave" then
             if behaviour["interruption"] then
@@ -54,14 +54,8 @@ class ListingPosition
         raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
     end
 
-    # ListingPosition::decideItemListingPositionOrNull(item) # [position: null or float, item]
-    def self.decideItemListingPositionOrNull(item)
-        if item["nx41"] and item["nx41"]["unixtime"].nil? then
-            return [item["nx41"]["position"], item]
-        end
-        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
-            return [item["nx41"]["position"], item]
-        end
+    # ListingPosition::recomputeItemListingPositionOrNull(item) # [position: null or float, item]
+    def self.recomputeItemListingPositionOrNull(item)
         runningTimespan = (lambda{
             nxball = NxBalls::getNxBallOrNull(item)
             return 0 if nxball.nil?
@@ -79,6 +73,20 @@ class ListingPosition
         })
         item = Items::itemOrNull(item["uuid"])
         [position, item]
+    end
+
+    # ListingPosition::decideItemListingPositionOrNull(item) # [position: null or float, item]
+    def self.decideItemListingPositionOrNull(item)
+        if item["nx41"] and item["nx41"]["isSort"] then
+            return [item["nx41"]["position"], item]
+        end
+        if Project::isProject(item) then
+            return ListingPosition::recomputeItemListingPositionOrNull(item)
+        end
+        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
+            return [item["nx41"]["position"], item]
+        end
+        ListingPosition::recomputeItemListingPositionOrNull(item)
     end
 
     # ---------------------------------------------------------------

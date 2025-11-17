@@ -1,5 +1,6 @@
 Nx41
 {
-    "unixtime": integer # if null, positioning does not expire
+    "unixtime": integer
     "position": Float
+    "isSort"  : Boolean # If true, does not expire
 }
