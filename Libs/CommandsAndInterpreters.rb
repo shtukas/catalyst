@@ -520,11 +520,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("projects", input) then
-            Operations::program4(lambda { 
-                Items::mikuType("NxProject")
-                    .sort_by{|item| item["px21"] || 0 }
-                    .reverse
-            }, "projects")
+            NxProjects::program()
             return
         end
 

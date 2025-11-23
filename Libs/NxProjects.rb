@@ -78,4 +78,34 @@ class NxProjects
         }
         []
     end
+
+    # NxProjects::program()
+    def self.program()
+        loop {
+            elements = Items::mikuType("NxProject")
+                            .sort_by{|item| NxProjects::ratio(item) }
+            store = ItemStore.new()
+            puts ""
+            elements
+                .each{|item|
+                    store.register(item, FrontPage::canBeDefault(item))
+                    puts FrontPage::toString2(store, item)
+                }
+            puts ""
+            puts "project management"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+            if input == "project management" then
+                priority = NxProjects::interactivelyDecidePriority()
+                projects, _ = LucilleCore::selectZeroOrMore("projects", [], Items::mikuType("NxProject"), lambda{|item| PolyFunctions::toString(item) })
+                projects.each{|project|
+                    Items::setAttribute(project["uuid"], "px21", priority)
+                }
+                next
+            end
+            CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
 end

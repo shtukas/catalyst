@@ -50,36 +50,6 @@ class Operations
         }
     end
 
-    # Operations::program4(lx, context)
-    def self.program4(lx, context)
-        loop {
-            elements = lx.call()
-            store = ItemStore.new()
-            puts ""
-            elements
-                .each{|item|
-                    store.register(item, FrontPage::canBeDefault(item))
-                    puts FrontPage::toString2(store, item)
-                }
-            puts ""
-            if context == "projects" then
-                puts "project management"
-            end
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-            if context == "projects" and input == "project management" then
-                priority = NxProjects::interactivelyDecidePriority()
-                projects, _ = LucilleCore::selectZeroOrMore("projects", [], Items::mikuType("NxProject"), lambda{|item| PolyFunctions::toString(item) })
-                projects.each{|project|
-                    Items::setAttribute(project["uuid"], "px21", priority)
-                }
-                next
-            end
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
     # Operations::globalMaintenance()
     def self.globalMaintenance()
         puts "Bank::maintenance()"
