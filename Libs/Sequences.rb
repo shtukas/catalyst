@@ -40,14 +40,19 @@ class Sequences
         (ordinals + [1]).max
     end
 
-    # Sequences::itemIsSequenceCarrier(item)
-    def self.itemIsSequenceCarrier(item)
-        item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "sequence"
+    # Sequences::itemPayloadIsSequenceCarrier(item)
+    def self.itemPayloadIsSequenceCarrier(item)
+        return false if item["payload-uuid-1141"].nil?
+        payload = Items::itemOrNull(item["payload-uuid-1141"])
+        payload and payload["type"] == "sequence"
     end
 
     # Sequences::isNonEmptySequence(item)
     def self.isNonEmptySequence(item)
-        Sequences::itemIsSequenceCarrier(item) and Sequences::sequenceSize(item["uxpayload-b4e4"]["sequenceuuid"]) > 0
+        return false if !Sequences::itemPayloadIsSequenceCarrier(item)
+        payload = Items::itemOrNull(item["payload-uuid-1141"])
+        return false if payload.nil?
+        Sequences::sequenceSize(payload["sequenceuuid"]) > 0
     end
 
     # ---------------------------------------
@@ -75,10 +80,11 @@ class Sequences
     def self.interactivelyDecideSequenceOrNull()
         items = Items::items()
                     .select{|item| item["mikuType"] != "NxDeleted" }
-                    .select{|item| Sequences::itemIsSequenceCarrier(item) }
+                    .select{|item| Sequences::itemPayloadIsSequenceCarrier(item) }
         item = LucilleCore::selectEntityFromListOfEntitiesOrNull("sequence", items, lambda{|item| PolyFunctions::toString(item) })
         return nil if item.nil?
-        item["uxpayload-b4e4"]["sequenceuuid"]
+        payload  = Item::itemOrNull(item["payload-uuid-1141"])
+        payload["sequenceuuid"]
     end
 
     # Sequences::interactivelyDecidePositioningOrNull_ExistingSequence() # {"sequenceuuid", "ordinal"}
@@ -94,7 +100,7 @@ class Sequences
 
     # Sequences::moveToSequence(item)
     def self.moveToSequence(item)
-        if Sequences::itemIsSequenceCarrier(item) then
+        if Sequences::itemPayloadIsSequenceCarrier(item) then
             puts "You cannot move a sequence carrier"
             LucilleCore::pressEnterToContinue()
             return

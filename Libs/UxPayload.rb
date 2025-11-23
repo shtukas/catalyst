@@ -140,9 +140,21 @@ class UxPayload
         raise "(error: 9dc106ff-44c6)"
     end
 
-    # UxPayload::interactivelyIssueReferenceOrNull() # issues the new payload and return a uuid
-    def self.interactivelyIssueReferenceOrNull()
+    # UxPayload::interactivelyIssueNewGetReferenceOrNull() # issues the new payload and return a uuid
+    def self.interactivelyIssueNewGetReferenceOrNull()
         payload = UxPayload::makeNewPayloadOrNull()
+        Items::commitItem(payload)
+        payload["uuid"]
+    end
+
+    # UxPayload::issueNewSequenceGetReference() # issues the new sequence and return a uuid
+    def self.issueNewSequenceGetReference()
+        payload = {
+            "uuid"         => SecureRandom.uuid,
+            "mikuType"     => "UxPayload",
+            "type"         => "sequence",
+            "sequenceuuid" => SecureRandom.hex
+        }
         Items::commitItem(payload)
         payload["uuid"]
     end
@@ -163,16 +175,23 @@ class UxPayload
 
     # UxPayload::suffixString(item)
     def self.suffixString(item)
-        payload = item["uxpayload-b4e4"]
+        return "" if item["payload-uuid-1141"].nil?
+        payload = Items::itemOrNull(item["payload-uuid-1141"])
         return "" if payload.nil?
         " #{UxPayload::toString(payload)}".green
+    end
+
+    # UxPayload::itemToPayloadOrNull(item)
+    def self.itemToPayloadOrNull(item)
+        return nil if item["payload-uuid-1141"].nil?
+        Items::itemOrNull(item["payload-uuid-1141"])
     end
 
     # ---------------------------------------
     # Operation
 
-    # UxPayload::access(uuid, payload)
-    def self.access(uuid, payload)
+    # UxPayload::access(payload)
+    def self.access(payload)
         return if payload.nil?
         if payload["type"] == "text" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file (also does edit)"])
@@ -187,7 +206,7 @@ class UxPayload
                 system("open '#{filepath}'")
                 LucilleCore::pressEnterToContinue()
                 payload["text"] = IO.read(filepath)
-                Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+                Items::commitItem(payload)
             end
             return
         end
@@ -271,17 +290,19 @@ class UxPayload
         if payload["type"] == "sequence" then
             item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
             return if item.nil?
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            UxPayload::access(UxPayload::itemToPayloadOrNull(item))
             return
         end
         raise "(error: e0040ec0-1c8f) type: #{payload["type"]}"
     end
 
-    # UxPayload::edit(itemuuid, payload) -> nil or new payload
-    def self.edit(itemuuid, payload)
+    # UxPayload::edit(payload)
+    def self.edit(payload)
+        return if payload.nil?
         if payload["type"] == "text" then
             payload["text"] = CommonUtils::editTextSynchronously(payload["text"])
-            return payload
+            Items::commitItem(payload)
+            return
         end
         if payload["type"] == "todo-text-file-by-name-fragment" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit the name fragment itself", "access the text file"])
@@ -290,20 +311,22 @@ class UxPayload
                 name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
                 return nil if name1 == ""
                 payload["name"] = name1
-                return payload
+                Items::commitItem(payload)
+                return
             end
             if option == "access the text file" then
-                UxPayload::access(uuid, payload)
-                return nil
+                Items::commitItem(payload)
+                return
             end
             raise "(error: f1ee6b3d)"
         end
         if payload["type"] == "aion-point" then
-            UxPayload::access(itemuuid, payload)
+            UxPayload::access(payload)
             LucilleCore::pressEnterToContinue()
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            return UxPayload::locationToPayload(location)
+            Items::commitItem(payload)
+            return
         end
         if payload["type"] == "Dx8Unit" then
             puts "You can't edit a Dx8Unit"
@@ -314,29 +337,34 @@ class UxPayload
             url = LucilleCore::askQuestionAnswerAsString("url (empty to abort): ")
             return nil if url == ""
             payload["url"] = url
-            return payload
+            Items::commitItem(payload)
+            return
         end
         if payload["type"] == "unique-string" then
             uniquestring = LucilleCore::askQuestionAnswerAsString("unique-string (empty to abort): ")
             return nil if uniquestring == ""
             payload["uniquestring"] = uniquestring
-            return payload
+            Items::commitItem(payload)
+            return
         end
         if payload["type"] == "open cycle" then
             name1 = LucilleCore::askQuestionAnswerAsString("open cycle directory name (empty to abort): ")
             return nil if name1 == ""
             payload["name"] = name1
-            return payload
+            Items::commitItem(payload)
+            return
         end
         if payload["type"] == "breakdown" then
             payload["lines"] = Operations::interactivelyRecompileLines(payload["lines"])
-            return payload
+            Items::commitItem(payload)
+            return
         end
         if payload["type"] == "stored-procedure" then
             ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
             return nil if ticket == ""
             payload["ticket"] = ticket
-            return payload
+            Items::commitItem(payload)
+            return
         end
         raise "(error: 9dc106ff-44c6)"
     end
@@ -407,26 +435,21 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             return
         end
-        payload = nil
-        if item["uxpayload-b4e4"] then
-            options = ["access", "edit", "make new (default)", "delete existing payload"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            if option == "access" then
-                payload = UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            end
-            if option == "edit" then
-                payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
-            end
-            if option.nil? or option == "make new (default)" then
-                payload = UxPayload::makeNewPayloadOrNull()
-            end
-            if option == "delete existing payload" then
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
-            end
-        else
-            payload = UxPayload::makeNewPayloadOrNull()
-        end
+        payload = UxPayload::itemToPayloadOrNull(item)
         return if payload.nil?
-        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+        options = ["access", "edit", "make new (default)", "delete existing payload"]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        if option == "access" then
+            UxPayload::access(payload)
+        end
+        if option == "edit" then
+            UxPayload::edit(payload)
+        end
+        if option.nil? or option == "make new (default)" then
+            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayload::interactivelyIssueNewGetReferenceOrNull())
+        end
+        if option == "delete existing payload" then
+            Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)
+        end
     end
 end

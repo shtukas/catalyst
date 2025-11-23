@@ -129,7 +129,7 @@ class CommandsAndInterpreters
         if Interpreting::match("sequence item", input) then
             positioning = Sequences::interactivelyDecidePositioningOrNull_ExistingSequence() # {"sequenceuuid", "ordinal"}
             return if positioning.nil?
-            item = NxSequenceItem::interactivelyIssueNewOrNull(positioning["sequenceuuid"], positioning["ordinal"])
+            item = NxSequenceItem::interactivelyIssueNewGetReferenceOrNull(positioning["sequenceuuid"], positioning["ordinal"])
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -141,13 +141,10 @@ class CommandsAndInterpreters
             return if item.nil?
 
             # creating the new payload
-            payload2 = {
-                "type" => "sequence",
-                "sequenceuuid" => SecureRandom.hex
-            }
+            payload2uuid = UxPayload::issueNewSequenceGetReference()
 
             # If there is an existing payload, we make it a sequence item
-            if item["uxpayload-b4e4"] then
+            if item["payload-uuid-1141"] then
                 uuid2 = SecureRandom.uuid
                 Items::init(uuid2)
                 Items::setAttribute(uuid2, "unixtime", Time.new.to_i)
@@ -155,14 +152,14 @@ class CommandsAndInterpreters
                 Items::setAttribute(uuid2, "sequenceuuid", payload2["sequenceuuid"])
                 Items::setAttribute(uuid2, "ordinal", 1)
                 Items::setAttribute(uuid2, "description", "#{item["description"]} (lifted)")
-                Items::setAttribute(uuid2, "uxpayload-b4e4", item["uxpayload-b4e4"])
+                Items::setAttribute(uuid2, "payload-uuid-1141", item["payload-uuid-1141"])
                 Items::setAttribute(uuid2, "mikuType", "NxSequenceItem")
                 sequenceItem = Items::itemOrNull(uuid2)
                 puts "sequenceItem: #{JSON.pretty_generate(sequenceItem)}"
             end
 
             # We create the carrier
-            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
+            Items::setAttribute(item["uuid"], "payload-uuid-1141", payload2uuid)
             return
         end
 
@@ -175,7 +172,7 @@ class CommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
+            Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)
             return
         end
 
@@ -293,12 +290,13 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !Sequences::itemIsSequenceCarrier(item) then
+            if !Sequences::itemPayloadIsSequenceCarrier(item) then
                 puts "You can only dive a sequence carrier"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            sequenceuuid = item["uxpayload-b4e4"]["sequenceuuid"]
+            payload = Items::itemOrNull(item["payload-uuid-1141"])
+            sequenceuuid = payload["sequenceuuid"]
             lx = lambda {
                 Sequences::sequenceElements(sequenceuuid)
                     .sort_by{|item| item["ordinal"] }
@@ -516,7 +514,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("project", input) then
-            item = Project::interactivelyIssueNewOrNull()
+            item = Project::interactivelyIssueNewGetReferenceOrNull()
             puts JSON.pretty_generate(item)
             return
         end

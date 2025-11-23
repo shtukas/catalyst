@@ -90,9 +90,9 @@ class FrontPage
 
     # FrontPage::extraLines(item)
     def self.extraLines(item) # Array[String]
-        if item["uxpayload-b4e4"] then
-            if item["uxpayload-b4e4"]["type"] == "text" then
-                return item["uxpayload-b4e4"]["text"].lines(chomp: true)
+        if (payload = UxPayload::itemToPayloadOrNull(item)) then
+            if payload["type"] == "text" then
+                return payload["text"].lines(chomp: true)
             end
         end
         []

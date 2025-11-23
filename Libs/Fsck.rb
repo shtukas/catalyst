@@ -1,9 +1,11 @@
 
 class Fsck
 
-    # Fsck::fsckItemOrError(item)
-    def self.fsckItemOrError(item)
-        puts "fsck item: #{JSON.pretty_generate(item)}"
+    # Fsck::fsckItemOrError(item, verbose)
+    def self.fsckItemOrError(item, verbose)
+        if verbose then
+            puts "fsck item: #{JSON.pretty_generate(item)}"
+        end
 
         if item["mikuType"] == "NxDeleted" then
             return
@@ -51,7 +53,7 @@ class Fsck
             .each{|item|
                 key = "#{config["mark"]}:#{item["uuid"]}"
                 next if XCache::getOrNull(key) == "done"
-                Fsck::fsckItemOrError(item)
+                Fsck::fsckItemOrError(item, true)
                 XCache::set(key, "done")
             }
     end

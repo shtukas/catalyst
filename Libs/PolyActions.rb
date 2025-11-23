@@ -13,7 +13,7 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+        UxPayload::access(UxPayload::itemToPayloadOrNull(item))
     end
 
     # PolyActions::stop(item)
@@ -27,20 +27,22 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
 
-        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "breakdown" and item["uxpayload-b4e4"]["lines"].size > 0 then
-            line = item["uxpayload-b4e4"]["lines"].first
+        payload = UxPayload::itemToPayloadOrNull(item)
+
+        if payload and payload["type"] == "breakdown" and payload["lines"].size > 0 then
+            line = payload["lines"].first
             puts "done: #{line}"
-            item["uxpayload-b4e4"]["lines"] = item["uxpayload-b4e4"]["lines"].drop(1)
-            if item["uxpayload-b4e4"]["lines"].size > 0 then
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", item["uxpayload-b4e4"])
+            payload["lines"] = payload["lines"].drop(1)
+            if payload["lines"].size > 0 then
+                Items::commitItem(payload)
             else
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
+                Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)
             end
             return
         end
 
-        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "sequence" then
-            sequenceItem = Sequences::firstItemInSequenceOrNull(item["uxpayload-b4e4"]["sequenceuuid"])
+        if payload and payload["type"] == "sequence" then
+            sequenceItem = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
             puts JSON.pretty_generate(sequenceItem)
             PolyActions::done(sequenceItem)
             return

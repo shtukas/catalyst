@@ -3,8 +3,8 @@
 
 class Project
 
-    # Project::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # Project::interactivelyIssueNewGetReferenceOrNull()
+    def self.interactivelyIssueNewGetReferenceOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return if description == ""
         timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()

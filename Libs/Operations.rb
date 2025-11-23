@@ -11,14 +11,9 @@ class Operations
 
     # Operations::editItemPayload(item)
     def self.editItemPayload(item)
-        if item["uxpayload-b4e4"].nil? then
-            puts "I could not find a payload on '#{PolyFunctions::toString(item)}'"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
-        return if payload.nil?
-        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+        payload = UxPayload::itemToPayloadOrNull(item)
+        return payload.nil?
+        UxPayload::edit(payload)
     end
 
     # Operations::editItem(item)
@@ -83,13 +78,16 @@ class Operations
                     puts "moving #{item["uuid"]} from NxIce to polymorph task"
                     Items::setAttribute(item["uuid"], "bx42", behaviour)
                     Items::setAttribute(item["uuid"], "mikuType", "NxPolymorph")
-                    if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
-                        unitId = item["uxpayload-b4e4"]["id"]
-                        location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
-                        puts "unit location: #{location}"
-                        payload2 = UxPayload::locationToPayload(location)
-                        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
-                        LucilleCore::removeFileSystemLocation(location)
+                    if item["payload-uuid-1141"] and (payload = Items::itemOrNull(item["payload-uuid-1141"])) then
+                        if payload["type"] == "Dx8Unit" then
+                            unitId = payload["id"]
+                            location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
+                            puts "unit location: #{location}"
+                            payload2 = UxPayload::locationToPayload(location)
+                            Items::commitItem(payload2)
+                            Items::setAttribute(item["uuid"], "payload-uuid-1141", payload2["uuid"])
+                            LucilleCore::removeFileSystemLocation(location)
+                        end
                     end
                 }
         end

@@ -7,6 +7,6 @@ Database:
 
 Cross types conventions (all optional):
     - skip-0843      : unixtime (skipped until this time)
-    - uxpayload-b4e4 : UxPayload
+    - payload-uuid-1141   : null or uuid of UxPayload
 
 This date is added by the morning process. If present and equal to the current date add a star to the listing

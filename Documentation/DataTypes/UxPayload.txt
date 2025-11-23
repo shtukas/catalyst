@@ -1,8 +1,6 @@
 
 UxPayload:
 
-UxPayloads are stored in attribute `uxpayload-b4e4`.
-
 {
     "uuid"     : String
     "mikuType" : "UxPayload"
