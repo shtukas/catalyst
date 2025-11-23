@@ -17,10 +17,10 @@ class ListingPosition
         ([1] + positions).min
     end
 
-    # ListingPosition::decideRatioListingOrNull(behaviour, runningTimespan)
-    def self.decideRatioListingOrNull(behaviour, runningTimespan)
+    # ListingPosition::decideRatioListingOrNull(behaviour, nx41, runningTimespan)
+    def self.decideRatioListingOrNull(behaviour, nx41, runningTimespan)
         if behaviour["btype"] == "positioned-priority" then
-            raise "(error: 5489613f) this case should not happen"
+            return nx41["position"]
         end
         if behaviour["btype"] == "ondate" then
             return nil if CommonUtils::today() < behaviour["date"]
@@ -33,6 +33,7 @@ class ListingPosition
             return 0.300
         end
         if behaviour["btype"] == "project" then
+            # the range for projects is [0.100, 0.900]
             ratio1 = Project::ratio(behaviour, runningTimespan)
             return nil if ratio1 >= 1
             ratio2 = BankDerivedData::recoveredAverageHoursPerDay("projects-4798-96c5-0e5fe723633a").to_f/5
@@ -42,7 +43,9 @@ class ListingPosition
             if behaviour["interruption"] then
                 return 0.050
             end
-            return 0.400
+            hash1 = Digest::SHA1.hexdigest(behaviour.to_s)
+            digits = hash1.gsub(/\D/, '')
+            return 0.100 + 0.8 * "0.#{digits}".to_f
         end
         if behaviour["btype"] == "task" then
             return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 1
@@ -61,7 +64,7 @@ class ListingPosition
             return 0 if nxball.nil?
             NxBalls::ballRunningTime(nxball)
         }).call()
-        ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], runningTimespan)
+        ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"], runningTimespan)
         if ratio.nil? then
             ListingPosition::delist(item)
             return [nil, item]
@@ -77,7 +80,7 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item) # [position: null or float, item]
     def self.decideItemListingPositionOrNull(item)
-        if item["nx41"] and item["nx41"]["isSort"] then
+        if item["nx41"] and item["nx41"]["keepPosition"] then
             return [item["nx41"]["position"], item]
         end
         if Project::isProject(item) then

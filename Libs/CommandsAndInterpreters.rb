@@ -111,7 +111,7 @@ class CommandsAndInterpreters
                 ListingPosition::setNx41(item, {
                     "unixtime" => Time.new.to_f,
                     "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
-                    "isSort"   => true
+                    "keepPosition"   => true
                 })
             }
             return
@@ -240,7 +240,7 @@ class CommandsAndInterpreters
                     ListingPosition::setNx41(item, {
                         "unixtime" => Time.new.to_f,
                         "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
-                        "isSort"   => true
+                        "keepPosition"   => true
                     })
                     last_item = item
                 }

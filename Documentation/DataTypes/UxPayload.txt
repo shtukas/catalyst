@@ -4,51 +4,71 @@ UxPayload:
 UxPayloads are stored in attribute `uxpayload-b4e4`.
 
 {
-    "type" : "text"
-    "text" : String # contents
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "text"
+    "text"     : String # contents
 }
 
 {
-    "type" : "todo-text-file-by-name-fragment"
-    "name" : String # name or name fragment of a text file
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "todo-text-file-by-name-fragment"
+    "name"     : String # name or name fragment of a text file
 }
 
 {
-    "type"  : "aion-point"
-    "nhash" : String # aion point root hash
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "aion-point"
+    "nhash"    : String # aion point root hash
 }
 
 {
-    "type" : "Dx8Unit"
-    "id"   : String # Dx8Unit Identifier
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "Dx8Unit"
+    "id"       : String # Dx8Unit Identifier
 }
 
 {
-    "type" : "url"
-    "url"  : String # URL
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "url"
+    "url"      : String # URL
 }
 
 {
-    "type"         : "unique-string"
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "unique-string"
     "uniquestring" : String # URL
 }
 
 {
-    "type" : "open cycle"
-    "name" : String
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "open cycle"
+    "name"     : String
 }
 
 {
-    "type"  : "breakdown"
-    "lines" : Array[String]
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "breakdown"
+    "lines"    : Array[String]
 }
 
 {
-    "type"   : "stored-procedure"
-    "ticket" : String # URL
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "stored-procedure"
+    "ticket"   : String # URL
 }
 
 {
-    "type" : "sequence",
-    "sequenceuuid"
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "sequence",
+    "sequenceuuid" : String
 }

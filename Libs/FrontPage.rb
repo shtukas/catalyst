@@ -20,7 +20,8 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}"
+        listingPosition = " (#{ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"], 0)})".yellow
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPosition}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
