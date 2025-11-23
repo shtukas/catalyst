@@ -11,10 +11,6 @@ TxBehaviour
     "date": YYYY-MM-DD
 }
 {
-    "btype": "project"
-    "timeCommitment": NxTimeCommitment
-}
-{
     "btype": "wave"
     "nx46": Nx46
     "lastDoneUnixtime" : Integer

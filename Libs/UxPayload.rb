@@ -143,7 +143,8 @@ class UxPayload
     # UxPayload::interactivelyIssueNewGetReferenceOrNull() # issues the new payload and return a uuid
     def self.interactivelyIssueNewGetReferenceOrNull()
         payload = UxPayload::makeNewPayloadOrNull()
-        Items::commitItem(payload)
+        return nil if payload.nil?
+        Items::commitObject(payload)
         payload["uuid"]
     end
 
@@ -155,7 +156,7 @@ class UxPayload
             "type"         => "sequence",
             "sequenceuuid" => SecureRandom.hex
         }
-        Items::commitItem(payload)
+        Items::commitObject(payload)
         payload["uuid"]
     end
 
@@ -206,7 +207,7 @@ class UxPayload
                 system("open '#{filepath}'")
                 LucilleCore::pressEnterToContinue()
                 payload["text"] = IO.read(filepath)
-                Items::commitItem(payload)
+                Items::commitObject(payload)
             end
             return
         end
@@ -301,7 +302,7 @@ class UxPayload
         return if payload.nil?
         if payload["type"] == "text" then
             payload["text"] = CommonUtils::editTextSynchronously(payload["text"])
-            Items::commitItem(payload)
+            Items::commitObject(payload)
             return
         end
         if payload["type"] == "todo-text-file-by-name-fragment" then
@@ -311,11 +312,11 @@ class UxPayload
                 name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
                 return nil if name1 == ""
                 payload["name"] = name1
-                Items::commitItem(payload)
+                Items::commitObject(payload)
                 return
             end
             if option == "access the text file" then
-                Items::commitItem(payload)
+                Items::commitObject(payload)
                 return
             end
             raise "(error: f1ee6b3d)"
@@ -325,7 +326,7 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            Items::commitItem(payload)
+            Items::commitObject(payload)
             return
         end
         if payload["type"] == "Dx8Unit" then
@@ -337,33 +338,33 @@ class UxPayload
             url = LucilleCore::askQuestionAnswerAsString("url (empty to abort): ")
             return nil if url == ""
             payload["url"] = url
-            Items::commitItem(payload)
+            Items::commitObject(payload)
             return
         end
         if payload["type"] == "unique-string" then
             uniquestring = LucilleCore::askQuestionAnswerAsString("unique-string (empty to abort): ")
             return nil if uniquestring == ""
             payload["uniquestring"] = uniquestring
-            Items::commitItem(payload)
+            Items::commitObject(payload)
             return
         end
         if payload["type"] == "open cycle" then
             name1 = LucilleCore::askQuestionAnswerAsString("open cycle directory name (empty to abort): ")
             return nil if name1 == ""
             payload["name"] = name1
-            Items::commitItem(payload)
+            Items::commitObject(payload)
             return
         end
         if payload["type"] == "breakdown" then
             payload["lines"] = Operations::interactivelyRecompileLines(payload["lines"])
-            Items::commitItem(payload)
+            Items::commitObject(payload)
             return
         end
         if payload["type"] == "stored-procedure" then
             ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
             return nil if ticket == ""
             payload["ticket"] = ticket
-            Items::commitItem(payload)
+            Items::commitObject(payload)
             return
         end
         raise "(error: 9dc106ff-44c6)"

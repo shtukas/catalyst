@@ -50,6 +50,36 @@ class Operations
         }
     end
 
+    # Operations::program4(lx, context)
+    def self.program4(lx, context)
+        loop {
+            elements = lx.call()
+            store = ItemStore.new()
+            puts ""
+            elements
+                .each{|item|
+                    store.register(item, FrontPage::canBeDefault(item))
+                    puts FrontPage::toString2(store, item)
+                }
+            puts ""
+            if context == "projects" then
+                puts "project management"
+            end
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+            if context == "projects" and input == "project management" then
+                priority = NxProjects::interactivelyDecidePriority()
+                projects, _ = LucilleCore::selectZeroOrMore("projects", [], Items::mikuType("NxProject"), lambda{|item| PolyFunctions::toString(item) })
+                projects.each{|project|
+                    Items::setAttribute(project["uuid"], "px21", priority)
+                }
+                next
+            end
+            CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
     # Operations::globalMaintenance()
     def self.globalMaintenance()
         puts "Bank::maintenance()"
@@ -84,7 +114,7 @@ class Operations
                             location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
                             puts "unit location: #{location}"
                             payload2 = UxPayload::locationToPayload(location)
-                            Items::commitItem(payload2)
+                            Items::commitObject(payload2)
                             Items::setAttribute(item["uuid"], "payload-uuid-1141", payload2["uuid"])
                             LucilleCore::removeFileSystemLocation(location)
                         end
@@ -130,7 +160,7 @@ class Operations
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        NxPolymorphs::doNotShowUntil(item, unixtime)
+        Operations::doNotShowUntil(item, unixtime)
     end
 
     # Operations::expose(item)
@@ -147,10 +177,10 @@ class Operations
         options = ["postpone to tomorrow (default)", "destroy"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option.nil? or option == "postpone to tomorrow (default)" then
-            NxPolymorphs::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            Operations::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
         end
         if option == "destroy" then
-            Items::deleteItem(item["uuid"])
+            Items::deleteObject(item["uuid"])
         end
     end
 
@@ -166,7 +196,7 @@ class Operations
         Items::init(uuid)
         payload = UxPayload::makeNewPayloadOrNull()
         item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-        ListingPosition::setNx41(item, {
+        Items::setAttribute(item["uuid"], "nx41", {
             "unixtime" => Time.new.to_f,
             "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
             "keepPosition"   => true
@@ -181,7 +211,7 @@ class Operations
         l = lambda { 
             Items::mikuType("NxPolymorph")
                 .select{|item| item["bx42"]["btype"] == btype }
-                .sort_by{|item| ListingPosition::decideItemListingPositionOrNull(item)[0] || 1 }
+                .sort_by{|item| ListingPosition::decideItemListingPositionOrNull(item) || 1 }
         }
         Operations::program3(l)
     end
@@ -223,7 +253,7 @@ class Operations
         end
 
         items.reverse.each{|item|
-            ListingPosition::setNx41(item, {
+            Items::setAttribute(item["uuid"], "nx41", {
                 "unixtime" => Time.new.to_f,
                 "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
                 "keepPosition"   => true
@@ -241,14 +271,15 @@ class Operations
             raise "(error: 9cae7b7c-7b5d) How did this happen ? 🤔"
         end
         return nil if item["mikuType"] != "NxPolymorph"
-        if item["bx42"]["btype"] == "project" then
-            runningTimespan = NxBalls::ballRunningTime(nxball)
-            return (Project::ratio(item["bx42"], runningTimespan) >= 1) ? "project is over running" : nil
-        end
         if item["bx42"]["btype"] == "task" then
             runningTimespan = NxBalls::ballRunningTime(nxball)
             return (runningTimespan >= 3600) ? "task is over running" : nil
         end
         nil
+    end
+
+    # Operations::doNotShowUntil(item, unixtime)
+    def self.doNotShowUntil(item, unixtime)
+        Items::setAttribute(item["uuid"], "do-not-show-until-51", Time.at(unixtime).utc.iso8601)
     end
 end

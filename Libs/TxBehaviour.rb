@@ -22,17 +22,7 @@ class TxBehaviour
                  "btype" => "NxAwait"
             }
         end
-        if option == "project" then
-            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
-            return nil if timeCommitment.nil?
-            return {
-                "btype" => "project",
-                "timeCommitment" => timeCommitment
-            }
-        end
         if option == "ondate" then
-            timeCommitment = NxTimeCommitment::interactivelyMakeNewOrNull()
-            return nil if timeCommitment.nil?
             return {
                 "btype" => "ondate",
                 "date" => CommonUtils::interactivelyMakeADate()
@@ -82,9 +72,6 @@ class TxBehaviour
     def self.behaviourToDescriptionRight(behaviour, runningTimespan)
         if behaviour["btype"] == "do-not-show-until" then
             return " (do not show until #{Time.at(behaviour["unixtime"]).to_s})".yellow
-        end
-        if behaviour["btype"] == "project" then
-            return " #{Project::toDescription(behaviour)} (#{Project::ratio(behaviour, runningTimespan).round(3)})".yellow
         end
         if behaviour["btype"] == "backup" then
             return " (every #{behaviour["period"]} days)"

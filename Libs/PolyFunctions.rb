@@ -49,6 +49,9 @@ class PolyFunctions
         if item["mikuType"] == "NxSequenceItem" then
             return NxSequenceItem::toString(item)
         end
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toString(item)
+        end
         if item["mikuType"] == "NxIce" then
             return "[iced] #{item["description"]}"
         end

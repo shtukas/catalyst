@@ -20,8 +20,8 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        listingPosition = " (#{ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"], 0)})".yellow
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPosition}"
+        listingPositionX = " (#{ListingPosition::decideItemListingPositionOrNull(item)})".yellow
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPositionX}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -52,8 +52,11 @@ class FrontPage
 
     # FrontPage::itemsForListing()
     def self.itemsForListing()
-        items = Items::mikuType("NxPolymorph")
-            .select{|item| item["bx42"]["btype"] != "task" }
+        items = [
+            Items::mikuType("NxPolymorph")
+                .select{|item| item["bx42"]["btype"] != "task" },
+            NxProjects::listingItems()
+        ].flatten
 
         tasks = (lambda {
             uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}")
@@ -77,10 +80,9 @@ class FrontPage
         (items + tasks)
             .select{|item| FrontPage::isVisible(item) }
             .map{|item|
-                position, item = ListingPosition::decideItemListingPositionOrNull(item)
                 {
                     "item" => item,
-                    "position" => position
+                    "position" => ListingPosition::decideItemListingPositionOrNull(item)
                 }
             }
             .select{|packet| packet["position"] }

@@ -34,7 +34,7 @@ class PolyActions
             puts "done: #{line}"
             payload["lines"] = payload["lines"].drop(1)
             if payload["lines"].size > 0 then
-                Items::commitItem(payload)
+                Items::commitObject(payload)
             else
                 Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)
             end
@@ -64,18 +64,30 @@ class PolyActions
 
         if item["mikuType"] == "NxSequenceItem" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteItem(item["uuid"])
+                Items::deleteObject(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxDeleted" then
-            Items::deleteItem(item["uuid"])
+            Items::deleteObject(item["uuid"])
             return
         end
 
         if item["mikuType"] == "NxPolymorph" then
             NxPolymorphs::done(item)
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
+            return if option.nil?
+            if option == "done for the day (default)" then
+                Operations::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                PolyActions::destroy(item)
+            end
             return
         end
 
@@ -122,8 +134,14 @@ class PolyActions
 
         if item["mikuType"] == "NxPolymorph" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteObject(item["uuid"])
             end
             return
         end

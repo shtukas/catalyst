@@ -230,7 +230,7 @@ class Items
           "uuid" => uuid,
           "mikuType" => "NxDeleted",
         }
-        Items::commitItem(item)
+        Items::commitObject(item)
     end
 
     # Items::itemOrNull(uuid)
@@ -242,8 +242,8 @@ class Items
         entry["item"]
     end
 
-    # Items::commitItem(item,)
-    def self.commitItem(item)
+    # Items::commitObject(item)
+    def self.commitObject(item)
         Fsck::fsckItemOrError(item, false)
         filepath = Items::getDatabaseFilepath()
         Items::insertUpdateItemAtFile(filepath, item)
@@ -256,12 +256,12 @@ class Items
             raise "(error: ce53d4c7) you are trying to set an attribute of an non existant item, uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
         end
         item[attrname] = attrvalue
-        Items::commitItem(item)
+        Items::commitObject(item)
         item
     end
 
-    # Items::items()
-    def self.items()
+    # Items::objects()
+    def self.objects()
         items = []
         db = SQLite3::Database.new(Items::getDatabaseFilepath())
         db.busy_timeout = 117
@@ -302,8 +302,8 @@ class Items
         items
     end
 
-    # Items::deleteItem(uuid)
-    def self.deleteItem(uuid)
+    # Items::deleteObject(uuid)
+    def self.deleteObject(uuid)
         Items::setAttribute(uuid, "mikuType", 'NxDeleted')
     end
 

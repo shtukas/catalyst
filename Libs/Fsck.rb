@@ -28,6 +28,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxProject" then
+            return
+        end
+
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 
@@ -49,7 +53,7 @@ class Fsck
             }
             XCache::set("82e98b31-2d0a-4a9d-9030-28fd195a97c0", JSON.generate(config))
         end
-        Items::items()
+        Items::objects()
             .each{|item|
                 key = "#{config["mark"]}:#{item["uuid"]}"
                 next if XCache::getOrNull(key) == "done"

@@ -11,7 +11,7 @@ class ListingPosition
 
     # ListingPosition::firstListingPositionForSortingSpecialPositioning()
     def self.firstListingPositionForSortingSpecialPositioning()
-        positions = Items::items()
+        positions = Items::objects()
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
         ([1] + positions).min
@@ -32,13 +32,6 @@ class ListingPosition
         if behaviour["btype"] == "backup" then
             return 0.300
         end
-        if behaviour["btype"] == "project" then
-            # the range for projects is [0.100, 0.900]
-            ratio1 = Project::ratio(behaviour, runningTimespan)
-            return nil if ratio1 >= 1
-            ratio2 = BankDerivedData::recoveredAverageHoursPerDay("projects-4798-96c5-0e5fe723633a").to_f/5
-            return (0.100 + 0.4 * ratio2) + 0.4 * ratio1
-        end
         if behaviour["btype"] == "wave" then
             if behaviour["interruption"] then
                 return 0.050
@@ -57,7 +50,7 @@ class ListingPosition
         raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
     end
 
-    # ListingPosition::recomputeItemListingPositionOrNull(item) # [position: null or float, item]
+    # ListingPosition::recomputeItemListingPositionOrNull(item)
     def self.recomputeItemListingPositionOrNull(item)
         runningTimespan = (lambda{
             nxball = NxBalls::getNxBallOrNull(item)
@@ -66,42 +59,29 @@ class ListingPosition
         }).call()
         ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"], runningTimespan)
         if ratio.nil? then
-            ListingPosition::delist(item)
-            return [nil, item]
+            Items::setAttribute(item["uuid"], "nx41", nil)
+            return nil
         end
         position = 1 + ratio
-        ListingPosition::setNx41(item, {
-            "unixtime" => Time.new.to_i,
-            "position" => position
+        Items::setAttribute(item["uuid"], "nx41", {
+            "unixtime"     => Time.new.to_f,
+            "position"     => position,
+            "keepPosition" => false
         })
-        item = Items::itemOrNull(item["uuid"])
-        [position, item]
+        position
     end
 
-    # ListingPosition::decideItemListingPositionOrNull(item) # [position: null or float, item]
+    # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
-        if item["nx41"] and item["nx41"]["keepPosition"] then
-            return [item["nx41"]["position"], item]
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::listingPosition(item)
         end
-        if Project::isProject(item) then
-            return ListingPosition::recomputeItemListingPositionOrNull(item)
+        if item["nx41"] and item["nx41"]["keepPosition"] then
+            return item["nx41"]["position"]
         end
         if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
-            return [item["nx41"]["position"], item]
+            return item["nx41"]["position"]
         end
         ListingPosition::recomputeItemListingPositionOrNull(item)
-    end
-
-    # ---------------------------------------------------------------
-    # Functions & Data
-
-    # ListingPosition::setNx41(item, nx41 or null)
-    def self.setNx41(item, nx41)
-        Items::setAttribute(item["uuid"], "nx41", nx41)
-    end
-
-    # ListingPosition::delist(item)
-    def self.delist(item)
-        Items::setAttribute(item["uuid"], "nx41", nil)
     end
 end

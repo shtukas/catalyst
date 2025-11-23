@@ -1,0 +1,81 @@
+
+class NxProjects
+
+    # NxProjects::interactivelyDecidePriority()
+    def self.interactivelyDecidePriority()
+        levels = [
+            "3: high priority (to be done today)",
+            "2: to be worked on seriously (deadlined)",
+            "1: medium priority",
+            "0: low priority (default)"
+        ]
+        level = LucilleCore::selectEntityFromListOfEntitiesOrNull("priority level", levels)
+        return 0 if level.nil?
+        level[0, 1].to_i
+    end
+
+    # NxProjects::interactivelyIssueNewProjectOrNull()
+    def self.interactivelyIssueNewProjectOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        return nil if description == ""
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "payload-uuid-1141", UxPayload::interactivelyIssueNewGetReferenceOrNull())
+        Items::setAttribute(uuid, "px21", NxProjects::interactivelyDecidePriority())
+        Items::setAttribute(uuid, "mikuType", "NxProject")
+        item = Items::itemOrNull(uuid)
+        Fsck::fsckItemOrError(item, false)
+        item
+    end
+
+    # NxProjects::icon()
+    def self.icon()
+        "⛵️"
+    end
+
+    # Projects::timeCommitmentToString(timeCommitment)
+    def self.timeCommitmentToString(timeCommitment)
+        if timeCommitment["type"] == "day" then
+            return "(day: #{timeCommitment["hours"]} hours)"
+        end
+        if timeCommitment["type"] == "week" then
+            return "(week: #{timeCommitment["hours"]} hours)"
+        end
+        if timeCommitment["type"] == "presence" then
+            return "(presence)"
+        end
+        ""
+    end
+
+    # NxProjects::ratio(item)
+    def self.ratio(item)
+        Math.atan(BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])).to_f/(1.5)
+    end
+
+    # NxProjects::listingPosition(item)
+    def self.listingPosition(item)
+        position = 1 + NxProjects::ratio(item)
+    end
+
+    # NxProjects::toString(item)
+    def self.toString(item)
+        ratio = NxProjects::ratio(item)
+        prioritystring = "(priority: #{item["px21"]})".yellow
+        ratiostring = "(ratio: #{ratio.round(3)})".yellow
+        "#{NxProjects::icon()} #{item["description"]} #{prioritystring} #{ratiostring}"
+    end
+
+    # NxProjects::listingItems()
+    def self.listingItems()
+        [3, 2, 1, 0].each{|priority|
+            items = Items::mikuType("NxProject")
+                .select{|item| item["px21"] == priority or (priority == 0 and item["px21"].nil?) }
+                .select{|item| FrontPage::isVisible(item) }
+            return items if !items.empty?
+        }
+        []
+    end
+end

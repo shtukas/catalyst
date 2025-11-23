@@ -20,7 +20,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
-                NxPolymorphs::doNotShowUntil(item, unixtime)
+                Operations::doNotShowUntil(item, unixtime)
                 return
             end
         end
@@ -61,7 +61,7 @@ class CommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
-            NxPolymorphs::doNotShowUntil(item, unixtime)
+            Operations::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -80,7 +80,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
-            ListingPosition::delist(item)
+            Items::setAttribute(item["uuid"], "nx41", nil)
             return
         end
 
@@ -108,7 +108,7 @@ class CommandsAndInterpreters
             items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                ListingPosition::setNx41(item, {
+                Items::setAttribute(item["uuid"], "nx41", {
                     "unixtime" => Time.new.to_f,
                     "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
                     "keepPosition"   => true
@@ -183,7 +183,7 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             NxBalls::stop(item)
-            NxPolymorphs::doNotShowUntil(item, unixtime)
+            Operations::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -234,7 +234,7 @@ class CommandsAndInterpreters
                     Items::init(uuid)
                     payload = nil
                     item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
-                    ListingPosition::setNx41(item, {
+                    Items::setAttribute(item["uuid"], "nx41", {
                         "unixtime" => Time.new.to_f,
                         "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
                         "keepPosition"   => true
@@ -435,7 +435,7 @@ class CommandsAndInterpreters
             Items::init(uuid)
             behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
             if behaviour.nil? then
-                Items::deleteItem(uuid)
+                Items::deleteObject(uuid)
                 return
             end
             payload = UxPayload::makeNewPayloadOrNull()
@@ -514,13 +514,17 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("project", input) then
-            item = Project::interactivelyIssueNewGetReferenceOrNull()
+            item = NxProjects::interactivelyIssueNewProjectOrNull()
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("projects", input) then
-            Operations::program3ItemsWithGivenBehaviour("project")
+            Operations::program4(lambda { 
+                Items::mikuType("NxProject")
+                    .sort_by{|item| item["px21"] || 0 }
+                    .reverse
+            }, "projects")
             return
         end
 

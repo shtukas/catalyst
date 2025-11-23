@@ -34,14 +34,9 @@ class NxPolymorphs
     # --------------------------------------
     # Ops
 
-    # NxPolymorphs::doNotShowUntil(item, unixtime)
-    def self.doNotShowUntil(item, unixtime)
-        Items::setAttribute(item["uuid"], "do-not-show-until-51", Time.at(unixtime).utc.iso8601)
-    end
-
     # NxPolymorphs::stop(item)
     def self.stop(item)
-        ListingPosition::delist(item)
+        Items::setAttribute(item["uuid"], "nx41", nil)
         Items::itemOrNull(item["uuid"])
     end
 
@@ -49,12 +44,12 @@ class NxPolymorphs
     def self.done(item)
         packet = TxBehaviour::done(item["bx42"]) # null or { "behaviour" => behaviour, "do-not-show-until" => unixtime }
         if packet then
-            ListingPosition::delist(item)
+            Items::setAttribute(item["uuid"], "nx41", nil)
             Items::setAttribute(item["uuid"], "do-not-show-until-51", Time.at(packet["do-not-show-until"]).utc.iso8601)
             Items::setAttribute(item["uuid"], "bx42", packet["behaviour"])
         else
             if LucilleCore::askQuestionAnswerAsBoolean("confirm destroy '#{PolyFunctions::toString(item).green}': ") then
-                Items::deleteItem(item["uuid"])
+                Items::deleteObject(item["uuid"])
             end
         end
     end

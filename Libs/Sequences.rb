@@ -78,7 +78,7 @@ class Sequences
 
     # Sequences::interactivelyDecideSequenceOrNull() # sequenceuuid or null
     def self.interactivelyDecideSequenceOrNull()
-        items = Items::items()
+        items = Items::objects()
                     .select{|item| item["mikuType"] != "NxDeleted" }
                     .select{|item| Sequences::itemPayloadIsSequenceCarrier(item) }
         item = LucilleCore::selectEntityFromListOfEntitiesOrNull("sequence", items, lambda{|item| PolyFunctions::toString(item) })
