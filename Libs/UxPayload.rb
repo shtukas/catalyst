@@ -49,8 +49,8 @@ class UxPayload
         }
     end
 
-    # UxPayload::makeNewPayloadOrNull(uuid)
-    def self.makeNewPayloadOrNull(uuid)
+    # UxPayload::makeNewPayloadOrNull()
+    def self.makeNewPayloadOrNull()
         type = UxPayload::interactivelySelectTypeOrNull()
         return nil if type.nil?
         if type == "text" then
@@ -138,6 +138,13 @@ class UxPayload
             }
         end
         raise "(error: 9dc106ff-44c6)"
+    end
+
+    # UxPayload::interactivelyIssueReferenceOrNull() # issues the new payload and return a uuid
+    def self.interactivelyIssueReferenceOrNull()
+        payload = UxPayload::makeNewPayloadOrNull()
+        Items::commitItem(payload)
+        payload["uuid"]
     end
 
     # ---------------------------------------
@@ -411,13 +418,13 @@ class UxPayload
                 payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
             end
             if option.nil? or option == "make new (default)" then
-                payload = UxPayload::makeNewPayloadOrNull(item["uuid"])
+                payload = UxPayload::makeNewPayloadOrNull()
             end
             if option == "delete existing payload" then
                 Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
             end
         else
-            payload = UxPayload::makeNewPayloadOrNull(item["uuid"])
+            payload = UxPayload::makeNewPayloadOrNull()
         end
         return if payload.nil?
         Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)

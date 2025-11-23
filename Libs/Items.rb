@@ -243,6 +243,7 @@ class Items
 
     # Items::commitItem(item)
     def self.commitItem(item)
+        Fsck::fsckItemOrError(item)
         filepath = Items::getDatabaseFilepath()
         Items::insertUpdateItemAtFile(filepath, item)
     end

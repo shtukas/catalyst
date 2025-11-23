@@ -166,7 +166,7 @@ class Operations
             "btype" => "positioned-priority"
         }
         Items::init(uuid)
-        payload = UxPayload::makeNewPayloadOrNull(uuid)
+        payload = UxPayload::makeNewPayloadOrNull()
         item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
         ListingPosition::setNx41(item, {
             "unixtime" => Time.new.to_f,
