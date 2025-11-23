@@ -1,29 +1,31 @@
 
 class Fsck
 
-    # Fsck::fsckOrError(item)
-    def self.fsckOrError(item)
+    # Fsck::fsckItemOrError(item)
+    def self.fsckItemOrError(item)
         puts "fsck item: #{JSON.pretty_generate(item)}"
 
         if item["mikuType"] == "NxDeleted" then
             return
         end
 
-        UxPayload::fsck(item["uxpayload-b4e4"])
-
-        if item["mikuType"] == "UxPayload" then
-            return
-        end
-
         if item["mikuType"] == "NxIce" then
             return
         end
+
         if item["mikuType"] == "NxPolymorph" then
             return
         end
+
         if item["mikuType"] == "NxSequenceItem" then
             return
         end
+
+        if item["mikuType"] == "UxPayload" then
+            UxPayload::fsck(item)
+            return
+        end
+
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 
@@ -49,7 +51,7 @@ class Fsck
             .each{|item|
                 key = "#{config["mark"]}:#{item["uuid"]}"
                 next if XCache::getOrNull(key) == "done"
-                Fsck::fsckOrError(item)
+                Fsck::fsckItemOrError(item)
                 XCache::set(key, "done")
             }
     end

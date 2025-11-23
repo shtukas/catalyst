@@ -13,7 +13,7 @@ class NxPolymorphs
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "mikuType", "NxPolymorph")
         item = Items::itemOrNull(uuid)
-        Fsck::fsckOrError(item)
+        Fsck::fsckItemOrError(item)
         item
     end
 
