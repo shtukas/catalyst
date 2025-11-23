@@ -9,7 +9,11 @@ class Fsck
             return
         end
 
-        UxPayload::fsck(item["uuid"], item["uxpayload-b4e4"])
+        UxPayload::fsck(item["uxpayload-b4e4"])
+
+        if item["mikuType"] == "UxPayload" then
+            return
+        end
 
         if item["mikuType"] == "NxIce" then
             return

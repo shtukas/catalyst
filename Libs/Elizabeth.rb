@@ -1,7 +1,6 @@
 class Elizabeth
  
-    def initialize(uuid)
-        @uuid = uuid
+    def initialize()
     end
  
     def putBlob(datablob) # nhash

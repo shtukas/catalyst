@@ -1,6 +1,9 @@
 
 class UxPayload
 
+    # ---------------------------------------
+    # Types
+
     # UxPayload::types()
     def self.types()
         [
@@ -17,70 +20,97 @@ class UxPayload
         ]
     end
 
+    # ---------------------------------------
+    # Makers
+
     # UxPayload::interactivelySelectTypeOrNull()
     def self.interactivelySelectTypeOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayload::types())
     end
 
-    # UxPayload::locationToPayload(uuid, location)
-    def self.locationToPayload(uuid, location)
-        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
+    # UxPayload::interactivelyMakeBreakdownPayload()
+    def self.interactivelyMakeBreakdownPayload()
         {
-            "type" => "aion-point",
-            "nhash" => nhash
+            "uuid"     => SecureRandom.uuid,
+            "mikuType" => "UxPayload",
+            "type"     => "breakdown",
+            "lines"    => Operations::interactivelyGetLinesUsingTextEditor()
         }
     end
 
-    # UxPayload::makeNewOrNull(uuid)
-    def self.makeNewOrNull(uuid)
+    # UxPayload::locationToPayload(location)
+    def self.locationToPayload(location)
+        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
+        {
+            "uuid"     => SecureRandom.uuid,
+            "mikuType" => "UxPayload",
+            "type"     => "aion-point",
+            "nhash"    => nhash
+        }
+    end
+
+    # UxPayload::makeNewPayloadOrNull(uuid)
+    def self.makeNewPayloadOrNull(uuid)
         type = UxPayload::interactivelySelectTypeOrNull()
         return nil if type.nil?
         if type == "text" then
             return {
-                "type" => "text",
-                "text" => CommonUtils::editTextSynchronously("")
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "UxPayload",
+                "type"     => "text",
+                "text"     => CommonUtils::editTextSynchronously("")
             }
         end
         if type == "todo-text-file-by-name-fragment" then
             name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
             return nil if name1 == ""
             return {
-                "type" => "todo-text-file-by-name-fragment",
-                "name" => name1
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "UxPayload",
+                "type"     => "todo-text-file-by-name-fragment",
+                "name"     => name1
             }
         end
         if type == "aion-point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            return UxPayload::locationToPayload(uuid, location)
+            return UxPayload::locationToPayload(location)
         end
         if type == "Dx8Unit" then
             identifier = LucilleCore::askQuestionAnswerAsString("Dx8Unit identifier (empty to abort): ")
             return nil if identifier == ""
             return {
-                "type" => "Dx8Unit",
-                "id" => identifier
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "UxPayload",
+                "type"     => "Dx8Unit",
+                "id"       => identifier
             }
         end
         if type == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url (empty to abort): ")
             return nil if url == ""
             return {
-                "type" => "url",
-                "url" => url
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "UxPayload",
+                "type"     => "url",
+                "url"      => url
             }
         end
         if type == "unique-string" then
             uniquestring = LucilleCore::askQuestionAnswerAsString("unique-string (empty to abort): ")
             return nil if uniquestring == ""
             return {
-                "type" => "unique-string",
+                "uuid"         => SecureRandom.uuid,
+                "mikuType"     => "UxPayload",
+                "type"         => "unique-string",
                 "uniquestring" => uniquestring
             }
         end
         if type == "sequence" then
             return {
-                "type" => "sequence",
+                "uuid"         => SecureRandom.uuid,
+                "mikuType"     => "UxPayload",
+                "type"         => "sequence",
                 "sequenceuuid" => SecureRandom.hex
             }
         end
@@ -88,23 +118,51 @@ class UxPayload
             name1 = LucilleCore::askQuestionAnswerAsString("name (empty to abort): ")
             return nil if name1 == ""
             return {
-                "type" => "open cycle",
-                "name" => name1
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "UxPayload",
+                "type"     => "open cycle",
+                "name"     => name1
             }
         end
         if type == "breakdown" then
-            return UxPayload::interactivelyMakeBreakdown()
+            return UxPayload::interactivelyMakeBreakdownPayload()
         end
         if type == "stored-procedure" then
             ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
             return nil if ticket == ""
             return {
-                "type" => "stored-procedure",
-                "ticket" => ticket
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "UxPayload",
+                "type"     => "stored-procedure",
+                "ticket"   => ticket
             }
         end
         raise "(error: 9dc106ff-44c6)"
     end
+
+    # ---------------------------------------
+    # Data
+
+    # UxPayload::toString(payload)
+    def self.toString(payload)
+        return "" if payload.nil?
+        if payload["type"] == "sequence" then
+            item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            return "(sequence: empty)" if item.nil?
+            return "(sequence: next: #{item["description"]})"
+        end
+        "(#{payload["type"]})"
+    end
+
+    # UxPayload::suffixString(item)
+    def self.suffixString(item)
+        payload = item["uxpayload-b4e4"]
+        return "" if payload.nil?
+        " #{UxPayload::toString(payload)}".green
+    end
+
+    # ---------------------------------------
+    # Operation
 
     # UxPayload::access(uuid, payload)
     def self.access(uuid, payload)
@@ -121,10 +179,7 @@ class UxPayload
                 File.open(filepath, "w"){|f| f.puts(payload["text"]) }
                 system("open '#{filepath}'")
                 LucilleCore::pressEnterToContinue()
-                payload = {
-                    "type" => "text",
-                    "text" => IO.read(filepath)
-                }
+                payload["text"] = IO.read(filepath)
                 Items::setAttribute(uuid, "uxpayload-b4e4", payload)
             end
             return
@@ -149,7 +204,7 @@ class UxPayload
             exportFoldername = "#{exportId}-aion-point"
             exportFolderpath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
             FileUtils.mkpath(exportFolderpath)
-            AionCore::exportHashAtFolder(Elizabeth.new(uuid), nhash, exportFolderpath)
+            AionCore::exportHashAtFolder(Elizabeth.new(), nhash, exportFolderpath)
             system("open '#{exportFolderpath}'")
             LucilleCore::pressEnterToContinue()
             return
@@ -218,21 +273,17 @@ class UxPayload
     # UxPayload::edit(itemuuid, payload) -> nil or new payload
     def self.edit(itemuuid, payload)
         if payload["type"] == "text" then
-            return {
-                "type" => "text",
-                "text" => CommonUtils::editTextSynchronously(payload["text"])
-            }
+            payload["text"] = CommonUtils::editTextSynchronously(payload["text"])
+            return payload
         end
         if payload["type"] == "todo-text-file-by-name-fragment" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit the text fragment itself", "access the text file"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit the name fragment itself", "access the text file"])
             return nil if option.nil?
-            if option == "edit the text fragment itself" then
+            if option == "edit the name fragment itself" then
                 name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
                 return nil if name1 == ""
-                return {
-                    "type" => "todo-text-file-by-name-fragment",
-                    "name" => name1
-                }
+                payload["name"] = name1
+                return payload
             end
             if option == "access the text file" then
                 UxPayload::access(uuid, payload)
@@ -245,7 +296,7 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            return UxPayload::locationToPayload(itemuuid, location)
+            return UxPayload::locationToPayload(location)
         end
         if payload["type"] == "Dx8Unit" then
             puts "You can't edit a Dx8Unit"
@@ -255,47 +306,43 @@ class UxPayload
         if payload["type"] == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url (empty to abort): ")
             return nil if url == ""
-            return {
-                "type" => "url",
-                "url" => url
-            }
+            payload["url"] = url
+            return payload
         end
         if payload["type"] == "unique-string" then
             uniquestring = LucilleCore::askQuestionAnswerAsString("unique-string (empty to abort): ")
             return nil if uniquestring == ""
-            return {
-                "type" => "unique-string",
-                "uniquestring" => uniquestring
-            }
+            payload["uniquestring"] = uniquestring
+            return payload
         end
         if payload["type"] == "open cycle" then
             name1 = LucilleCore::askQuestionAnswerAsString("open cycle directory name (empty to abort): ")
             return nil if name1 == ""
-            return {
-                "type" => "open cycle",
-                "name" => name1
-            }
+            payload["name"] = name1
+            return payload
         end
         if payload["type"] == "breakdown" then
-            return {
-                "type"  => "breakdown",
-                "lines" => Operations::interactivelyRecompileLines(payload["lines"])
-            }
+            payload["lines"] = Operations::interactivelyRecompileLines(payload["lines"])
+            return payload
         end
         if payload["type"] == "stored-procedure" then
             ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
             return nil if ticket == ""
-            return {
-                "type" => "stored-procedure",
-                "ticket" => ticket
-            }
+            payload["ticket"] = ticket
+            return payload
         end
         raise "(error: 9dc106ff-44c6)"
     end
 
-    # UxPayload::fsck(uuid, payload)
-    def self.fsck(uuid, payload)
+    # UxPayload::fsck(payload)
+    def self.fsck(payload)
         return if payload.nil?
+        if payload["uuid"].nil? then
+            raise "could not find `uuid` attribute for payload #{payload}"
+        end
+        if payload["mikuType"].nil? then
+            raise "could not find `mikuType` attribute for payload #{payload}"
+        end
         if payload["type"] == "text" then
             if payload["text"].nil? then
                 raise "could not find `text` attribute for payload #{payload}"
@@ -310,7 +357,7 @@ class UxPayload
         end
         if payload["type"] == "aion-point" then
             nhash = payload["nhash"]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(uuid), nhash)
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), nhash)
             return
         end
         if payload["type"] == "Dx8Unit" then
@@ -346,14 +393,6 @@ class UxPayload
         raise "unkown payload type: #{payload["type"]} at #{payload}"
     end
 
-    # UxPayload::interactivelyMakeBreakdown()
-    def self.interactivelyMakeBreakdown()
-        {
-            "type"  => "breakdown",
-            "lines" => Operations::interactivelyGetLinesUsingTextEditor()
-        }
-    end
-
     # UxPayload::payloadProgram(item)
     def self.payloadProgram(item)
         if Sequences::isNonEmptySequence(item) then
@@ -361,7 +400,6 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             return
         end
-
         payload = nil
         if item["uxpayload-b4e4"] then
             options = ["access", "edit", "make new (default)", "delete existing payload"]
@@ -373,33 +411,15 @@ class UxPayload
                 payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
             end
             if option.nil? or option == "make new (default)" then
-                payload = UxPayload::makeNewOrNull(item["uuid"])
+                payload = UxPayload::makeNewPayloadOrNull(item["uuid"])
             end
             if option == "delete existing payload" then
                 Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
             end
         else
-            payload = UxPayload::makeNewOrNull(item["uuid"])
+            payload = UxPayload::makeNewPayloadOrNull(item["uuid"])
         end
         return if payload.nil?
         Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-    end
-
-    # UxPayload::toString(payload)
-    def self.toString(payload)
-        return "" if payload.nil?
-        if payload["type"] == "sequence" then
-            item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
-            return "(sequence: empty)" if item.nil?
-            return "(sequence: next: #{item["description"]})"
-        end
-        "(#{payload["type"]})"
-    end
-
-    # UxPayload::suffixString(item)
-    def self.suffixString(item)
-        payload = item["uxpayload-b4e4"]
-        return "" if payload.nil?
-        " #{UxPayload::toString(payload)}".green
     end
 end

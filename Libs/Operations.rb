@@ -87,7 +87,7 @@ class Operations
                         unitId = item["uxpayload-b4e4"]["id"]
                         location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
                         puts "unit location: #{location}"
-                        payload2 = UxPayload::locationToPayload(item["uuid"], location)
+                        payload2 = UxPayload::locationToPayload(location)
                         Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
                         LucilleCore::removeFileSystemLocation(location)
                     end
@@ -166,7 +166,7 @@ class Operations
             "btype" => "positioned-priority"
         }
         Items::init(uuid)
-        payload = UxPayload::makeNewOrNull(uuid)
+        payload = UxPayload::makeNewPayloadOrNull(uuid)
         item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
         ListingPosition::setNx41(item, {
             "unixtime" => Time.new.to_f,

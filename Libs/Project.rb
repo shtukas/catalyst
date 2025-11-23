@@ -15,7 +15,7 @@ class Project
         }
         uuid = SecureRandom.uuid
         Items::init(uuid)
-        payload = UxPayload::makeNewOrNull(uuid)
+        payload = UxPayload::makeNewPayloadOrNull(uuid)
         item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
         item
     end

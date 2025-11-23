@@ -12,7 +12,7 @@ class NxSequenceItem
         return nil if description == ""
         uuid = SecureRandom.uuid
         Items::init(uuid)
-        payload = UxPayload::makeNewOrNull(uuid)
+        payload = UxPayload::makeNewPayloadOrNull(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "sequenceuuid", sequenceuuid)
