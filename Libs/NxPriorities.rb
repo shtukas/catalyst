@@ -3,8 +3,6 @@ class NxPriorities
 
     # NxPriorities::issue(description, position)
     def self.issue(description, position)
-        description = LucilleCore::askQuestionAnswerAsString("description: ")
-        return nil if description == ""
         uuid = SecureRandom.uuid
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)

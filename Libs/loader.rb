@@ -154,6 +154,7 @@ require_relative "Nx46.rb"
 require_relative "NxSequenceItem.rb"
 require_relative "NxProjects.rb"
 require_relative "NxTasks.rb"
+require_relative "NxPriorities.rb"
 
 require_relative "Operations.rb"
 
@@ -166,7 +167,6 @@ require_relative "Sequences.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "TxBehaviour.rb"
-require_relative "Tasks.rb"
 
 require_relative "UxPayload.rb"
 
