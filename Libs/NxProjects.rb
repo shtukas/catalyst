@@ -50,17 +50,10 @@ class NxProjects
         ""
     end
 
-    # NxProjects::listingPosition(item)
-    def self.listingPosition(item)
-        position = 1 + NxProjects::ratio(item)
-    end
-
     # NxProjects::toString(item)
     def self.toString(item)
-        ratio = NxProjects::ratio(item)
         prioritystring = "(priority: #{item["px21"]})".yellow
-        ratiostring = "(ratio: #{ratio.round(3)})".yellow
-        "#{NxProjects::icon()} #{item["description"]} #{prioritystring} #{ratiostring}"
+        "#{NxProjects::icon()} #{item["description"]} #{prioritystring}"
     end
 
     # NxProjects::listingItems()
@@ -78,7 +71,7 @@ class NxProjects
     def self.program()
         loop {
             elements = Items::mikuType("NxProject")
-                            .sort_by{|item| (item["px21"] || 0) - NxProjects::ratio(item) }
+                            .sort_by{|item| (item["px21"] || 0) - BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]).to_f/10 }
                             .reverse
             store = ItemStore.new()
             puts ""
