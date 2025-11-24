@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | sequence item",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -18,7 +18,7 @@ class CommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                NxBalls::stop(item)
+                PolyActions::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 Operations::doNotShowUntil(item, unixtime)
                 return
@@ -60,7 +60,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
-            NxBalls::stop(item)
+            PolyActions::stop(item)
             Operations::doNotShowUntil(item, unixtime)
             return
         end
@@ -172,17 +172,6 @@ class CommandsAndInterpreters
                 return
             end
             Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)
-            return
-        end
-
-        if Interpreting::match("dismiss *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
-            puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-            NxBalls::stop(item)
-            Operations::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -623,7 +612,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxBalls::stop(item)
+            PolyActions::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
             return

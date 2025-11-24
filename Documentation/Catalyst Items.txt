@@ -9,6 +9,6 @@ Cross types conventions (all optional):
     - skip-0843             : unixtime (skipped until this time)
     - payload-uuid-1141     : null or uuid of UxPayload
     - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
-    - nx41                  : Nx41
+    - nx41                  : Nx41 # Positioning
 
 This date is added by the morning process. If present and equal to the current date add a star to the listing

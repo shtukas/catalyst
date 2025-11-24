@@ -22,6 +22,7 @@ class PolyActions
             item = NxPolymorphs::stop(item)
         end
         NxBalls::stop(item)
+        Items::setAttribute(item["uuid"], "nx41", nil)
     end
 
     # PolyActions::done(item)
@@ -143,7 +144,7 @@ class PolyActions
     # PolyActions::destroy(item)
     def self.destroy(item)
 
-        NxBalls::stop(item)
+        PolyActions::stop(item)
 
         if item["mikuType"] == "NxPolymorph" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
