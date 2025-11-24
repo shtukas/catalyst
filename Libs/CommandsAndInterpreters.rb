@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | sequence item",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | sort | maintenance | morning",
+            "misc          : search | commands | fsck | sort | maintenance",
         ].join("\n")
     end
 
@@ -197,11 +197,6 @@ class CommandsAndInterpreters
                     puts "recorduuid: #{record["recorduuid"]}; uuid: #{record["id"]}, date: #{record["date"]}, value: #{"%9.2f" % record["value"]}"
                 }
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("morning", input) then
-            Operations::morning()
             return
         end
 
