@@ -83,7 +83,8 @@ class NxProjects
     def self.program()
         loop {
             elements = Items::mikuType("NxProject")
-                            .sort_by{|item| NxProjects::ratio(item) }
+                            .sort_by{|item| (item["px21"] || 0) - NxProjects::ratio(item) }
+                            .reverse
             store = ItemStore.new()
             puts ""
             elements

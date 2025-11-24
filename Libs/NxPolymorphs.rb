@@ -10,7 +10,7 @@ class NxPolymorphs
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "bx42", behaviour)
-        Items::setAttribute(uuid, "payload-uuid-1141", payload["uuid"])
+        Items::setAttribute(uuid, "payload-uuid-1141", payload ? payload["uuid"] : nil)
         Items::setAttribute(uuid, "mikuType", "NxPolymorph")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)

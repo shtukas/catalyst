@@ -206,7 +206,8 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("priority", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
             Operations::issuePriority(description)
             return
         end
