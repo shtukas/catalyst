@@ -156,24 +156,6 @@ class FrontPage
     # FrontPage::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
-
-        Thread.new {
-            loop {
-                (lambda {
-                    NxBalls::all()
-                        .select{|nxball| nxball["type"] == "running" }
-                        .each{|nxball|
-                            item = Items::itemOrNull(nxball["itemuuid"])
-                            next if item.nil?
-                            if message = Operations::runningItemOverruningMessage(item) then
-                                CommonUtils::onScreenNotification("Catalyst", message)
-                            end
-                        }
-                }).call()
-                sleep 120
-            }
-        }
-
         loop {
             FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)

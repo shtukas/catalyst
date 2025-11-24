@@ -57,9 +57,7 @@ class Operations
         puts "Items::maintenance()"
         Items::maintenance()
 
-        count = Items::mikuType("NxPolymorph")
-                    .select{|item| item["bx42"]["btype"] == "task" }
-                    .size
+        count = Items::mikuType("NxTask").size
         puts "task count: #{count}"
         if count < 50 then
             iced = Items::mikuType("NxIce")
@@ -158,23 +156,6 @@ class Operations
                 .sort_by{|item| ListingPosition::decideItemListingPositionOrNull(item) || 1 }
         }
         Operations::program3(l)
-    end
-
-    # Operations::runningItemOverruningMessage(item)
-    def self.runningItemOverruningMessage(item)
-        if !NxBalls::itemIsRunning(item) then
-            raise "(error: 9cae7b7c-7b5d) item: #{item}"
-        end
-        nxball = NxBalls::getNxBallOrNull(item)
-        if nxball.nil? then
-            raise "(error: 9cae7b7c-7b5d) How did this happen ? 🤔"
-        end
-        return nil if item["mikuType"] != "NxPolymorph"
-        if item["bx42"]["btype"] == "task" then
-            runningTimespan = NxBalls::ballRunningTime(nxball)
-            return (runningTimespan >= 3600) ? "task is over running" : nil
-        end
-        nil
     end
 
     # Operations::doNotShowUntil(item, unixtime)

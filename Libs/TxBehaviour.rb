@@ -85,9 +85,6 @@ class TxBehaviour
         if behaviour["btype"] == "wave" then
             return "🌊"
         end
-        if behaviour["btype"] == "task" then
-            return "🔹"
-        end
         if behaviour["btype"] == "backup" then
             return "💾"
         end
