@@ -50,27 +50,6 @@ class ListingPosition
         raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
     end
 
-    # ListingPosition::recomputeItemListingPositionOrNull(item)
-    def self.recomputeItemListingPositionOrNull(item)
-        runningTimespan = (lambda{
-            nxball = NxBalls::getNxBallOrNull(item)
-            return 0 if nxball.nil?
-            NxBalls::ballRunningTime(nxball)
-        }).call()
-        ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"], runningTimespan)
-        if ratio.nil? then
-            Items::setAttribute(item["uuid"], "nx41", nil)
-            return nil
-        end
-        position = 1 + ratio
-        Items::setAttribute(item["uuid"], "nx41", {
-            "unixtime"     => Time.new.to_f,
-            "position"     => position,
-            "keepPosition" => false
-        })
-        position
-    end
-
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
         if item["mikuType"] == "NxProject" then
@@ -82,6 +61,39 @@ class ListingPosition
         if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
             return item["nx41"]["position"]
         end
-        ListingPosition::recomputeItemListingPositionOrNull(item)
+        if item["mikuType"] == "NxTask" then
+            ratio = NxTasks::ratio(item)
+           if ratio > 2 then
+                Items::setAttribute(item["uuid"], "nx41", nil)
+                return nil
+            end
+            position = 1.5 + 0.5 * ratio
+            Items::setAttribute(item["uuid"], "nx41", {
+                "unixtime"     => Time.new.to_f,
+                "position"     => position,
+                "keepPosition" => false
+            })
+            return position
+        end
+        if item["mikuType"] == "NxPolymorph" then
+            runningTimespan = (lambda{
+                nxball = NxBalls::getNxBallOrNull(item)
+                return 0 if nxball.nil?
+                NxBalls::ballRunningTime(nxball)
+            }).call()
+            ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"], runningTimespan)
+            if ratio.nil? then
+                Items::setAttribute(item["uuid"], "nx41", nil)
+                return nil
+            end
+            position = 1 + ratio
+            Items::setAttribute(item["uuid"], "nx41", {
+                "unixtime"     => Time.new.to_f,
+                "position"     => position,
+                "keepPosition" => false
+            })
+            return position
+        end
+        raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
     end
 end

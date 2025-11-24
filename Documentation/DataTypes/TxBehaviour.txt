@@ -17,10 +17,6 @@ TxBehaviour
     "interruption" : null or boolean, indicates if the item is interruption
 }
 {
-    "btype": "task"
-    "unixtime": Float
-}
-{
     "btype": "backup"
     "period": Float # period in Days
 }

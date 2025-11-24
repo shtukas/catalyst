@@ -1,0 +1,8 @@
+
+NxTask:
+    - uuid         : String
+    - mikuType     : "NxTask"
+    - unixtime     :
+    - datetime     :
+    - description  : String
+    - px36-ordinal : Float

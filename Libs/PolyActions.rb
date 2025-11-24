@@ -79,6 +79,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTask" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
+            return if option.nil?
+            if option == "done for the day (default)" then
+                Operations::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                PolyActions::destroy(item)
+            end
+            return
+        end
+
         if item["mikuType"] == "NxProject" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
             return if option.nil?
@@ -115,13 +127,10 @@ class PolyActions
 
         return if NxBalls::itemIsActive(item)
 
-        if item["mikuType"] == "NxPolymorph" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to done: ")
-            PolyActions::done(item)
-            return
-        end
+        PolyActions::start(item)
+        PolyActions::access(item)
+        LucilleCore::pressEnterToContinue("Press [enter] to done: ")
+        PolyActions::done(item)
 
         puts "I do not know how to PolyActions::tripleDots(#{JSON.pretty_generate(item)})"
         raise "(error: ba36812e-bd85-4c1a-9a10-e1d650a239a5)"
@@ -133,6 +142,13 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxPolymorph" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end

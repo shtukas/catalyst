@@ -153,6 +153,7 @@ require_relative "NxPolymorphs.rb"
 require_relative "Nx46.rb"
 require_relative "NxSequenceItem.rb"
 require_relative "NxProjects.rb"
+require_relative "NxTasks.rb"
 
 require_relative "Operations.rb"
 

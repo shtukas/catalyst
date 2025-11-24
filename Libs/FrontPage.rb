@@ -52,32 +52,12 @@ class FrontPage
 
     # FrontPage::itemsForListing()
     def self.itemsForListing()
-        items = [
-            Items::mikuType("NxPolymorph")
-                .select{|item| item["bx42"]["btype"] != "task" },
-            NxProjects::listingItems()
-        ].flatten
-
-        tasks = (lambda {
-            uuids = XCache::getOrNull("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}")
-            if uuids then
-                tasks = JSON.parse(uuids)
-                        .map{|uuid| Items::itemOrNull(uuid) }
-                        .compact
-                        .select{|item| item["mikuType"] == "NxPolymorph" }
-                        .select{|item| item["bx42"]["btype"] == "task" }
-                XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
-                return tasks
-            end
-            tasks = Items::mikuType("NxPolymorph")
-                        .select{|item| item["bx42"]["btype"] == "task" }
-                        .sort_by{|item| item["nx41"]["position"] }
-            tasks = tasks.take(10) + tasks.reverse.take(10)
-            XCache::set("20672dab-79cb-44e8-80d0-418cadd8b63c:#{CommonUtils::today()}", JSON.generate(tasks.map{|item| item["uuid"]}))
-            tasks
-        }).call()
-
-        (items + tasks)
+        [
+            Items::mikuType("NxPolymorph").select{|item| item["bx42"]["btype"] != "task" },
+            NxProjects::listingItems(),
+            NxTasks::listingItems()
+        ]
+            .flatten
             .select{|item| FrontPage::isVisible(item) }
             .map{|item|
                 {
