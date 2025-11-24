@@ -49,7 +49,7 @@ class ListingPosition
             return item["nx41"]["position"]
         end
         if item["mikuType"] == "NxProject" then
-            position = Math.atan(BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])).to_f/(1.5)
+            position = NxProjects::listingPosition(item)
             Items::setAttribute(item["uuid"], "nx41", {
                 "unixtime" => Time.new.to_f,
                 "position" => position

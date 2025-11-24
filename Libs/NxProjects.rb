@@ -58,7 +58,21 @@ class NxProjects
     # NxProjects::toString(item)
     def self.toString(item)
         prioritystring = "[#{item["px21"]}]".yellow
-        "#{NxProjects::icon()} #{prioritystring} #{item["description"]}"
+        rts = "(rt: #{BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]).round(2)})".yellow
+        "#{NxProjects::icon()} #{prioritystring} #{item["description"]} #{rts}"
+    end
+
+    # NxProjects::listingPosition(item)
+    def self.listingPosition(item)
+        mapping = {
+            3 => 0.2,
+            2 => 0.3,
+            1 => 0.5,
+            0 => 0.8
+        }
+        hours = BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])
+        basePosition = mapping[item["px21"]]
+        basePosition + hours.to_f/5
     end
 
     # NxProjects::listingItems()
@@ -76,8 +90,7 @@ class NxProjects
     def self.program()
         loop {
             elements = Items::mikuType("NxProject")
-                            .sort_by{|item| (item["px21"] || 0) - BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]).to_f/10 }
-                            .reverse
+                            .sort_by{|item| NxProjects::listingPosition(item) }
             store = ItemStore.new()
             puts ""
             NxProjects::printLevelDescriptions()
