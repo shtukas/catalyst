@@ -1,8 +1,8 @@
 
 class NxProjects
 
-    # NxProjects::interactivelyDecidePriority()
-    def self.interactivelyDecidePriority()
+    # NxProjects::printLevelDescriptions()
+    def self.printLevelDescriptions()
         [
             "3: high priority (to be done today)",
             "2: to be worked on seriously (deadlined)",
@@ -11,6 +11,11 @@ class NxProjects
         ].each{ |line|
             puts line
         }
+    end
+
+    # NxProjects::interactivelyDecidePriority()
+    def self.interactivelyDecidePriority()
+        NxProjects::printLevelDescriptions()
         LucilleCore::askQuestionAnswerAsString("priority ? : ").to_i
     end
 
@@ -52,8 +57,8 @@ class NxProjects
 
     # NxProjects::toString(item)
     def self.toString(item)
-        prioritystring = "(priority: #{item["px21"]})".yellow
-        "#{NxProjects::icon()} #{item["description"]} #{prioritystring}"
+        prioritystring = "[#{item["px21"]}]".yellow
+        "#{NxProjects::icon()} #{prioritystring} #{item["description"]}"
     end
 
     # NxProjects::listingItems()
@@ -75,9 +80,10 @@ class NxProjects
                             .reverse
             store = ItemStore.new()
             puts ""
+            NxProjects::printLevelDescriptions()
             elements
                 .each{|item|
-                    store.register(item, FrontPage::canBeDefault(item))
+                    store.register(item, true)
                     puts FrontPage::toString2(store, item)
                 }
             puts ""

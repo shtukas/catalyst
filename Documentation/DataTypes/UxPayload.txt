@@ -60,13 +60,6 @@ UxPayload:
 {
     "uuid"     : String
     "mikuType" : "UxPayload"
-    "type"     : "stored-procedure"
-    "ticket"   : String # URL
-}
-
-{
-    "uuid"     : String
-    "mikuType" : "UxPayload"
     "type"     : "sequence",
     "sequenceuuid" : String
 }

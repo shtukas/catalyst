@@ -14,7 +14,6 @@ class UxPayload
             "sequence",
             "todo-text-file-by-name-fragment",
             "open cycle",
-            "stored-procedure",
             "unique-string",
             "Dx8Unit",
         ]
@@ -126,16 +125,6 @@ class UxPayload
         end
         if type == "breakdown" then
             return UxPayload::interactivelyMakeBreakdownPayload()
-        end
-        if type == "stored-procedure" then
-            ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
-            return nil if ticket == ""
-            return {
-                "uuid"     => SecureRandom.uuid,
-                "mikuType" => "UxPayload",
-                "type"     => "stored-procedure",
-                "ticket"   => ticket
-            }
         end
         raise "(error: 9dc106ff-44c6)"
     end
@@ -360,13 +349,6 @@ class UxPayload
             Items::commitObject(payload)
             return
         end
-        if payload["type"] == "stored-procedure" then
-            ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
-            return nil if ticket == ""
-            payload["ticket"] = ticket
-            Items::commitObject(payload)
-            return
-        end
         raise "(error: 9dc106ff-44c6)"
     end
 
@@ -423,9 +405,6 @@ class UxPayload
         if payload["type"] == "sequence" then
             return
         end
-        if payload["type"] == "stored-procedure" then
-            return
-        end
         raise "unkown payload type: #{payload["type"]} at #{payload}"
     end
 
@@ -437,7 +416,10 @@ class UxPayload
             return
         end
         payload = UxPayload::itemToPayloadOrNull(item)
-        return if payload.nil?
+        if payload.nil? then
+            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayload::interactivelyIssueNewGetReferenceOrNull())
+            return
+        end
         options = ["access", "edit", "make new (default)", "delete existing payload"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option == "access" then
