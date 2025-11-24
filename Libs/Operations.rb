@@ -150,28 +150,6 @@ class Operations
         end
     end
 
-    # Operations::issuePriority(description)
-    def self.issuePriority(description)
-        NxBalls::activeItems().each{|i|
-            NxBalls::pause(i)
-        }
-        uuid = SecureRandom.uuid
-        behaviour = {
-            "btype" => "positioned-priority"
-        }
-        Items::init(uuid)
-        payload = UxPayload::makeNewPayloadOrNull()
-        item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-        Items::setAttribute(item["uuid"], "nx41", {
-            "unixtime" => Time.new.to_f,
-            "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
-            "keepPosition"   => true
-        })
-        if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
-            PolyActions::start(item)
-        end
-    end
-
     # Operations::program3ItemsWithGivenBehaviour(btype)
     def self.program3ItemsWithGivenBehaviour(btype)
         l = lambda { 
@@ -180,51 +158,6 @@ class Operations
                 .sort_by{|item| ListingPosition::decideItemListingPositionOrNull(item) || 1 }
         }
         Operations::program3(l)
-    end
-
-    # Operations::morning()
-    def self.morning()
-        ondates = (lambda {
-            items = Items::mikuType("NxPolymorph")
-                .select{|item| item["bx42"]["btype"] == "ondate" }
-                .select{|item| item["bx42"]["date"] <= CommonUtils::today() }
-                .sort_by{|item| item["bx42"]["date"] }
-            return [] if items.empty?
-            items, _ = LucilleCore::selectZeroOrMore("ondates", [], items, lambda {|item| PolyFunctions::toString(item) })
-            items
-        }).call()
-
-        waves = (lambda {
-            items = Items::mikuType("NxPolymorph")
-                .select{|item| item["bx42"]["btype"] == "wave" }
-                .select{|item| FrontPage::isVisible(item) }
-            return [] if items.empty?
-            items, _ = LucilleCore::selectZeroOrMore("waves",[], items, lambda {|item| PolyFunctions::toString(item) })
-            items
-        }).call()
-
-        projects = (lambda {
-            items = Items::mikuType("NxPolymorph")
-                .select{|item| item["bx42"]["btype"] == "project" }
-                .select{|item| FrontPage::isVisible(item) }
-            return [] if items.empty?
-            items, _ = LucilleCore::selectZeroOrMore("projects",[], items, lambda {|item| PolyFunctions::toString(item) })
-            items
-        }).call()
-
-        items = ondates + waves + projects
-        if !items.empty? then
-            selected, nonselected = LucilleCore::selectZeroOrMore("items",[],items,lambda {|item| PolyFunctions::toString(item) })
-            items = selected + nonselected
-        end
-
-        items.reverse.each{|item|
-            Items::setAttribute(item["uuid"], "nx41", {
-                "unixtime" => Time.new.to_f,
-                "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
-                "keepPosition"   => true
-            })
-        }
     end
 
     # Operations::runningItemOverruningMessage(item)

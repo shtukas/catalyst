@@ -13,14 +13,11 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["mikuType"] == "NxPolymorph" then
-            accounts = accounts + TxBehaviour::bankAccountsNumbers(item["bx42"])
-                .map{|number|
-                    {
-                        "description" => "(behaviour: #{number})",
-                        "number"      => number
-                    }
-                }
+        if item["mikuType"] == "NxTask" then
+            accounts << {
+                "description" => "task-account-8e7fa41a",
+                "number"      => "task-account-8e7fa41a"
+            }
         end
 
         accounts.reduce([]){|as, account|
@@ -54,6 +51,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
+        end
+        if item["mikuType"] == "NxPriority" then
+            return NxPriorities::toString(item)
         end
         if item["mikuType"] == "NxIce" then
             return "[iced] #{item["description"]}"

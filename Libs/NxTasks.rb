@@ -32,11 +32,6 @@ class NxTasks
         "#{NxTasks::icon()} #{item["description"]}"
     end
 
-    # NxTasks::ratio(item)
-    def self.ratio(item)
-        BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])
-    end
-
     # NxTasks::listingItems()
     def self.listingItems()
         Items::mikuType("NxTask")

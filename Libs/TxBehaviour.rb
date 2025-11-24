@@ -8,10 +8,8 @@ class TxBehaviour
     def self.interactivelyMakeBehaviourOrNull()
         options = [
             "await",
-            "project",
             "ondate",
             "wave",
-            "task",
             "backup",
             "anniversary"
         ]
@@ -30,12 +28,6 @@ class TxBehaviour
         end
         if option == "wave" then
             return Wave::interactivelyMakeNewOrNull()
-        end
-        if option == "task" then
-            return {
-                "btype" => "task",
-                "unixtime" => Time.new.to_i
-            }
         end
         if option == "backup" then
             period = LucilleCore::askQuestionAnswerAsString("period (in days): ").to_f
@@ -81,17 +73,11 @@ class TxBehaviour
 
     # TxBehaviour::behaviourToIcon(behaviour)
     def self.behaviourToIcon(behaviour)
-        if behaviour["btype"] == "positioned-priority" then
-            return "🖋️ "
-        end
         if behaviour["btype"] == "NxAwait" then
             return "😴"
         end
         if behaviour["btype"] == "do-not-show-until" then
             return "🫥"
-        end
-        if behaviour["btype"] == "project" then
-            return "⛵️"
         end
         if behaviour["btype"] == "ondate" then
             return "🗓️ "
@@ -109,17 +95,6 @@ class TxBehaviour
             return "🎂"
         end
         "[icon]"
-    end
-
-    # TxBehaviour::bankAccountsNumbers(behaviour)
-    def self.bankAccountsNumbers(behaviour)
-        if behaviour["btype"] == "project" then
-            return [behaviour["timeCommitment"]["uuid"], "projects-4798-96c5-0e5fe723633a"]
-        end
-        if behaviour["btype"] == "task" then
-            return ["task-account-8e7fa41a"]
-        end
-        return []
     end
 
     # ---------------------------------------------------------------
@@ -155,9 +130,6 @@ class TxBehaviour
 
     # TxBehaviour::done(behaviour: TxBehaviour) -> null or { "behaviour" => behaviour, "do-not-show-until" => unixtime }
     def self.done(behaviour)
-        if behaviour["btype"] == "project" then
-            return TxBehaviour::postponeToTomorrowOrNil(behaviour)
-        end
         if behaviour["btype"] == "wave" then
             behaviour["lastDoneUnixtime"] = Time.new.to_i
             unixtime = Wave::nx46ToNextDisplayUnixtime(behaviour["nx46"], Time.new.to_i)

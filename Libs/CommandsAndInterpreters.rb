@@ -110,8 +110,7 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "unixtime" => Time.new.to_f,
-                    "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
-                    "keepPosition"   => true
+                    "position" => ListingPosition::firstListingPositionForSortingSpecialPositioning() - 1
                 })
             }
             return
@@ -203,13 +202,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            Operations::issuePriority(description)
-            return
-        end
-
-        if input.start_with?("priority ") then
-            description = input[8, input.size].strip
-            Operations::issuePriority(description)
+            NxPriorities::issue(description, ListingPosition::firstListingPositionForSortingSpecialPositioning() - 1)
             return
         end
 
@@ -222,19 +215,7 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    description = line
-                    uuid = SecureRandom.uuid
-                    behaviour = {
-                        "btype" => "positioned-priority"
-                    }
-                    Items::init(uuid)
-                    payload = nil
-                    item = NxPolymorphs::issueNew(uuid, description, behaviour, nil)
-                    Items::setAttribute(item["uuid"], "nx41", {
-                        "unixtime" => Time.new.to_f,
-                        "position" => 0.9 * ListingPosition::firstListingPositionForSortingSpecialPositioning(),
-                        "keepPosition"   => true
-                    })
+                    item = NxPriorities::issue(line, ListingPosition::firstListingPositionForSortingSpecialPositioning() - 1)
                     last_item = item
                 }
             if last_item then

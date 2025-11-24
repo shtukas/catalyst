@@ -50,11 +50,6 @@ class NxProjects
         ""
     end
 
-    # NxProjects::ratio(item)
-    def self.ratio(item)
-        Math.atan(BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])).to_f/(1.5)
-    end
-
     # NxProjects::listingPosition(item)
     def self.listingPosition(item)
         position = 1 + NxProjects::ratio(item)

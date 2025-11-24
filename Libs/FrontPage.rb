@@ -55,7 +55,8 @@ class FrontPage
         [
             Items::mikuType("NxPolymorph").select{|item| item["bx42"]["btype"] != "task" },
             NxProjects::listingItems(),
-            NxTasks::listingItems()
+            NxTasks::listingItems(),
+            Items::mikuType("NxPriority")
         ]
             .flatten
             .select{|item| FrontPage::isVisible(item) }

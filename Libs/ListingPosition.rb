@@ -14,14 +14,11 @@ class ListingPosition
         positions = Items::objects()
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
-        ([1] + positions).min
+        ([-1] + positions).min
     end
 
-    # ListingPosition::decideRatioListingOrNull(behaviour, nx41, runningTimespan)
-    def self.decideRatioListingOrNull(behaviour, nx41, runningTimespan)
-        if behaviour["btype"] == "positioned-priority" then
-            return nx41["position"]
-        end
+    # ListingPosition::decideRatioListingOrNull(behaviour, nx41)
+    def self.decideRatioListingOrNull(behaviour, nx41)
         if behaviour["btype"] == "ondate" then
             return nil if CommonUtils::today() < behaviour["date"]
             return 0.200
@@ -40,10 +37,6 @@ class ListingPosition
             digits = hash1.gsub(/\D/, '')
             return 0.100 + 0.8 * "0.#{digits}".to_f
         end
-        if behaviour["btype"] == "task" then
-            return nil if BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a") >= 1
-            return 0.500
-        end
         if behaviour["btype"] == "anniversary" then
             return 0.150
         end
@@ -52,45 +45,35 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
+        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600*12 then
+            return item["nx41"]["position"]
+        end
         if item["mikuType"] == "NxProject" then
-            return NxProjects::listingPosition(item)
-        end
-        if item["nx41"] and item["nx41"]["keepPosition"] then
-            return item["nx41"]["position"]
-        end
-        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
-            return item["nx41"]["position"]
+            position = Math.atan(BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])).to_f/(1.5)
+            Items::setAttribute(item["uuid"], "nx41", {
+                "unixtime" => Time.new.to_f,
+                "position" => position
+            })
+            return position
         end
         if item["mikuType"] == "NxTask" then
-            ratio = NxTasks::ratio(item)
-           if ratio > 2 then
-                Items::setAttribute(item["uuid"], "nx41", nil)
-                return nil
-            end
-            position = 1.5 + 0.5 * ratio
+            position = 0.2 + 0.4 * BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) + 0.4 * BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a")
             Items::setAttribute(item["uuid"], "nx41", {
-                "unixtime"     => Time.new.to_f,
-                "position"     => position,
-                "keepPosition" => false
+                "unixtime" => Time.new.to_f,
+                "position" => position
             })
             return position
         end
         if item["mikuType"] == "NxPolymorph" then
-            runningTimespan = (lambda{
-                nxball = NxBalls::getNxBallOrNull(item)
-                return 0 if nxball.nil?
-                NxBalls::ballRunningTime(nxball)
-            }).call()
-            ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"], runningTimespan)
+            ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"])
             if ratio.nil? then
                 Items::setAttribute(item["uuid"], "nx41", nil)
                 return nil
             end
-            position = 1 + ratio
+            position = ratio
             Items::setAttribute(item["uuid"], "nx41", {
-                "unixtime"     => Time.new.to_f,
-                "position"     => position,
-                "keepPosition" => false
+                "unixtime" => Time.new.to_f,
+                "position" => position
             })
             return position
         end
