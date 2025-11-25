@@ -57,7 +57,7 @@ class ListingPosition
             return position
         end
         if item["mikuType"] == "NxTask" then
-            position = 0.2 + 0.4 * BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) + 0.4 * BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a").to_f/5
+            position = 0.2 + 0.4 * BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) + 0.4 * BankDerivedData::recoveredAverageHoursPerDay("task-account-8e7fa41a").to_f/2
             Items::setAttribute(item["uuid"], "nx41", {
                 "unixtime" => Time.new.to_f,
                 "position" => position
@@ -92,7 +92,7 @@ class ListingPosition
             }
         end
         if item["mikuType"] == "NxTask" then
-            Items::mikuType("NxTask").each{|item|
+            NxTasks::listingItems().each{|item|
                 Items::setAttribute(item["uuid"], "nx41", nil)
             }
         end

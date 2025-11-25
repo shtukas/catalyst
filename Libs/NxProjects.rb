@@ -72,7 +72,7 @@ class NxProjects
         }
         hours = BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])
         basePosition = basePositions[item["px21"]]
-        basePosition + hours.to_f/5
+        basePosition + hours.to_f/2
     end
 
     # NxProjects::program()
