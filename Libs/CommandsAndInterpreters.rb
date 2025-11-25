@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | sequence item",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | sort | maintenance",
+            "misc          : search | commands | fsck | maintenance",
         ].join("\n")
     end
 
@@ -104,18 +104,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sort", input) then
-            items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|item|
-                Items::setAttribute(item["uuid"], "nx41", {
-                    "unixtime" => Time.new.to_f,
-                    "position" => ListingPosition::firstListingPositionForSortingSpecialPositioning() - 1
-                })
-            }
-            return
-        end
-
         if Interpreting::match("bank accounts *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -191,7 +179,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            NxPriorities::issue(description, ListingPosition::firstListingPositionForSortingSpecialPositioning() - 1)
+            NxPriorities::issue(description, ListingPosition::firstListingPositionForPriorities() - 1)
             return
         end
 
@@ -204,7 +192,7 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    item = NxPriorities::issue(line, ListingPosition::firstListingPositionForSortingSpecialPositioning() - 1)
+                    item = NxPriorities::issue(line, ListingPosition::firstListingPositionForPriorities() - 1)
                     last_item = item
                 }
             if last_item then

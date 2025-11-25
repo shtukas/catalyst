@@ -9,8 +9,8 @@ class ListingPosition
         (2 + Math.atan(x)).to_f/10
     end
 
-    # ListingPosition::firstListingPositionForSortingSpecialPositioning()
-    def self.firstListingPositionForSortingSpecialPositioning()
+    # ListingPosition::firstListingPositionForPriorities()
+    def self.firstListingPositionForPriorities()
         positions = Items::objects()
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
@@ -77,6 +77,24 @@ class ListingPosition
             })
             return position
         end
+        if item["mikuType"] == "NxPriority" then
+            return item["position-09"]
+        end
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
+    end
+
+    # ListingPosition::delistItemAndSimilar(item)
+    def self.delistItemAndSimilar(item)
+        Items::setAttribute(item["uuid"], "nx41", nil)
+        if item["mikuType"] == "NxProject" then
+            Items::mikuType("NxProject").each{|item|
+                Items::setAttribute(item["uuid"], "nx41", nil)
+            }
+        end
+        if item["mikuType"] == "NxTask" then
+            Items::mikuType("NxTask").each{|item|
+                Items::setAttribute(item["uuid"], "nx41", nil)
+            }
+        end
     end
 end

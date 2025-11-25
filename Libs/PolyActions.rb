@@ -22,7 +22,7 @@ class PolyActions
             item = NxPolymorphs::stop(item)
         end
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "nx41", nil)
+        ListingPosition::delistItemAndSimilar(item)
     end
 
     # PolyActions::done(item)
