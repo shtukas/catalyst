@@ -1,12 +1,5 @@
 {
     "uuid"     : String
-    "mikuType" : "UxPayload"
-    "type"     : "Dx8Unit"
-    "id"       : String # Dx8Unit Identifier
-}
-
-{
-    "uuid"     : String
     "mikuType" : "Dx8Unit"
     "id"       : String # Dx8Unit Identifier
 }

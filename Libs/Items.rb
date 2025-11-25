@@ -63,7 +63,7 @@ class Items
         uuid = item["uuid"]
         utime = Time.new.to_f
         mikuType = item["mikuType"]
-        description = decideDescription(item)
+        description = Items::decideDescription(item)
 
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -212,10 +212,7 @@ class Items
 
     # Items::decideDescription(item)
     def self.decideDescription(item)
-        return "NxDeleted" if item['mikuType'] == "NxDeleted"
-        return "UxPayload" if item['mikuType'] == "UxPayload"
-        return item["description"] if item["description"]
-        raise "(error: d9a4a31c) I do not know how to determine the description for item: #{item}"
+        item["description"] || item['mikuType']
     end
 
     # ------------------------------------------------------

@@ -1,12 +1,5 @@
 {
     "uuid"     : String
-    "mikuType" : "UxPayload"
-    "type"     : "url"
-    "url"      : String # URL
-}
-
-{
-    "uuid"     : String
     "mikuType" : "URL"
     "url"      : String # URL
 }

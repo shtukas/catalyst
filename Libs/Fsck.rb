@@ -40,6 +40,45 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "AionPoint" then
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), item["nhash"])
+            return
+        end
+
+        if item["mikuType"] == "Dx8Unit" then
+            if item["id"].nil? then
+                raise "could not find `id` attribute for item #{item}"
+            end
+            return
+        end
+
+        if item["mikuType"] == "OpenCycle" then
+            return
+        end
+
+        if item["mikuType"] == "Sequence" then
+            return
+        end
+
+        if item["mikuType"] == "Text" then
+            if item["text"].nil? then
+                raise "could not find `text` attribute for item #{item}"
+            end
+            return
+        end
+
+        if item["mikuType"] == "TodoTextFileByNameFragment" then
+            return
+        end
+
+        if item["mikuType"] == "UniqueString" then
+            return
+        end
+
+        if item["mikuType"] == "URL" then
+            return
+        end
+
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 
