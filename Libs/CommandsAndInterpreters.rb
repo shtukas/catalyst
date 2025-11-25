@@ -128,7 +128,7 @@ class CommandsAndInterpreters
             return if item.nil?
 
             # creating the new payload
-            payload2uuid = UxPayload::issueNewSequenceGetReference()
+            payload2uuid = UxPayloads::issueNewSequenceGetReference()
 
             # If there is an existing payload, we make it a sequence item
             if item["payload-uuid-1141"] then
@@ -213,7 +213,7 @@ class CommandsAndInterpreters
                 "btype" => "backup",
                 "period" => period
             }
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -227,7 +227,7 @@ class CommandsAndInterpreters
         if Interpreting::match("payload", input) then
             item = store.getDefault()
             return if item.nil?
-            UxPayload::payloadProgram(item)
+            UxPayloads::payloadProgram(item)
             return
         end
 
@@ -235,7 +235,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            UxPayload::payloadProgram(item)
+            UxPayloads::payloadProgram(item)
             return
         end
 
@@ -277,7 +277,7 @@ class CommandsAndInterpreters
                 "btype" => "ondate",
                 "date" => date
             }
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -293,7 +293,7 @@ class CommandsAndInterpreters
                 "btype" => "ondate",
                 "date" => date
             }
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -319,7 +319,7 @@ class CommandsAndInterpreters
                 "btype" => "ondate",
                 "date" => date
             }
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -335,7 +335,7 @@ class CommandsAndInterpreters
                 "btype" => "ondate",
                 "date" => date
             }
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -392,7 +392,7 @@ class CommandsAndInterpreters
                 Items::deleteObject(uuid)
                 return
             end
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -416,7 +416,7 @@ class CommandsAndInterpreters
             behaviour = {
                 "btype" => "NxAwait"
             }
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -437,7 +437,7 @@ class CommandsAndInterpreters
             }
             uuid = SecureRandom.uuid
             Items::init(uuid)
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, [b1, behaviour], payload)
             puts JSON.pretty_generate(item)
             return
@@ -461,7 +461,7 @@ class CommandsAndInterpreters
             }
             uuid = SecureRandom.uuid
             Items::init(uuid)
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -647,7 +647,7 @@ class CommandsAndInterpreters
             uuid = SecureRandom.uuid
             Items::init(uuid)
             behaviour = Wave::interactivelyMakeNewOrNull()
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return
@@ -670,7 +670,7 @@ class CommandsAndInterpreters
             behaviour = {
                 "btype" => "NxAwait"
             }
-            payload = UxPayload::makeNewPayloadOrNull()
+            payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
             puts JSON.pretty_generate(item)
             return

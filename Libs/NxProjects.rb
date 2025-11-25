@@ -28,7 +28,7 @@ class NxProjects
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "payload-uuid-1141", UxPayload::interactivelyIssueNewGetReferenceOrNull())
+        Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         Items::setAttribute(uuid, "px21", NxProjects::interactivelyDecidePriority())
         Items::setAttribute(uuid, "mikuType", "NxProject")
         item = Items::itemOrNull(uuid)

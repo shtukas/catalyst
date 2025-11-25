@@ -13,7 +13,7 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        UxPayload::access(UxPayload::itemToPayloadOrNull(item))
+        UxPayloads::access(UxPayloads::itemToPayloadOrNull(item))
     end
 
     # PolyActions::stop(item)
@@ -28,7 +28,7 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
 
-        payload = UxPayload::itemToPayloadOrNull(item)
+        payload = UxPayloads::itemToPayloadOrNull(item)
 
         if payload and payload["type"] == "breakdown" and payload["lines"].size > 0 then
             line = payload["lines"].first

@@ -12,7 +12,7 @@ class NxSequenceItem
         return nil if description == ""
         uuid = SecureRandom.uuid
         Items::init(uuid)
-        payload = UxPayload::makeNewPayloadOrNull()
+        payload = UxPayloads::makeNewPayloadOrNull()
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "sequenceuuid", sequenceuuid)
@@ -30,7 +30,7 @@ class NxSequenceItem
 
     # NxSequenceItem::toString(item)
     def self.toString(item)
-        "(sequence item) #{item["description"]}#{UxPayload::suffixString(item)}"
+        "(sequence item) #{item["description"]}#{UxPayloads::suffixString(item)}"
     end
 
 end

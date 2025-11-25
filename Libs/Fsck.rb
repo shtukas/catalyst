@@ -24,7 +24,7 @@ class Fsck
         end
 
         if item["mikuType"] == "UxPayload" then
-            UxPayload::fsck(item)
+            UxPayloads::fsck(item)
             return
         end
 

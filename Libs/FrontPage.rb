@@ -21,7 +21,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         listingPositionX = " (l: #{ListingPosition::decideItemListingPositionOrNull(item)})".yellow
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPositionX}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPositionX}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -73,7 +73,7 @@ class FrontPage
 
     # FrontPage::extraLines(item)
     def self.extraLines(item) # Array[String]
-        if (payload = UxPayload::itemToPayloadOrNull(item)) then
+        if (payload = UxPayloads::itemToPayloadOrNull(item)) then
             if payload["type"] == "text" then
                 return payload["text"].lines(chomp: true)
             end

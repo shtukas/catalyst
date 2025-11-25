@@ -1,10 +1,10 @@
 
-class UxPayload
+class UxPayloads
 
     # ---------------------------------------
     # Types
 
-    # UxPayload::types()
+    # UxPayloads::types()
     def self.types()
         [
             "text",
@@ -22,12 +22,12 @@ class UxPayload
     # ---------------------------------------
     # Makers
 
-    # UxPayload::interactivelySelectTypeOrNull()
+    # UxPayloads::interactivelySelectTypeOrNull()
     def self.interactivelySelectTypeOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayload::types())
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayloads::types())
     end
 
-    # UxPayload::interactivelyMakeBreakdownPayload()
+    # UxPayloads::interactivelyMakeBreakdownPayload()
     def self.interactivelyMakeBreakdownPayload()
         {
             "uuid"     => SecureRandom.uuid,
@@ -37,7 +37,7 @@ class UxPayload
         }
     end
 
-    # UxPayload::locationToPayload(location)
+    # UxPayloads::locationToPayload(location)
     def self.locationToPayload(location)
         nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
         {
@@ -48,9 +48,9 @@ class UxPayload
         }
     end
 
-    # UxPayload::makeNewPayloadOrNull()
+    # UxPayloads::makeNewPayloadOrNull()
     def self.makeNewPayloadOrNull()
-        type = UxPayload::interactivelySelectTypeOrNull()
+        type = UxPayloads::interactivelySelectTypeOrNull()
         return nil if type.nil?
         if type == "text" then
             return {
@@ -73,7 +73,7 @@ class UxPayload
         if type == "aion-point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            return UxPayload::locationToPayload(location)
+            return UxPayloads::locationToPayload(location)
         end
         if type == "Dx8Unit" then
             identifier = LucilleCore::askQuestionAnswerAsString("Dx8Unit identifier (empty to abort): ")
@@ -124,20 +124,20 @@ class UxPayload
             }
         end
         if type == "breakdown" then
-            return UxPayload::interactivelyMakeBreakdownPayload()
+            return UxPayloads::interactivelyMakeBreakdownPayload()
         end
         raise "(error: 9dc106ff-44c6)"
     end
 
-    # UxPayload::interactivelyIssueNewGetReferenceOrNull() # issues the new payload and return a uuid
+    # UxPayloads::interactivelyIssueNewGetReferenceOrNull() # issues the new payload and return a uuid
     def self.interactivelyIssueNewGetReferenceOrNull()
-        payload = UxPayload::makeNewPayloadOrNull()
+        payload = UxPayloads::makeNewPayloadOrNull()
         return nil if payload.nil?
         Items::commitObject(payload)
         payload["uuid"]
     end
 
-    # UxPayload::issueNewSequenceGetReference() # issues the new sequence and return a uuid
+    # UxPayloads::issueNewSequenceGetReference() # issues the new sequence and return a uuid
     def self.issueNewSequenceGetReference()
         payload = {
             "uuid"         => SecureRandom.uuid,
@@ -152,7 +152,7 @@ class UxPayload
     # ---------------------------------------
     # Data
 
-    # UxPayload::toString(payload)
+    # UxPayloads::toString(payload)
     def self.toString(payload)
         return "" if payload.nil?
         if payload["type"] == "sequence" then
@@ -163,15 +163,15 @@ class UxPayload
         "(#{payload["type"]})"
     end
 
-    # UxPayload::suffixString(item)
+    # UxPayloads::suffixString(item)
     def self.suffixString(item)
         return "" if item["payload-uuid-1141"].nil?
         payload = Items::itemOrNull(item["payload-uuid-1141"])
         return "" if payload.nil?
-        " #{UxPayload::toString(payload)}".green
+        " #{UxPayloads::toString(payload)}".green
     end
 
-    # UxPayload::itemToPayloadOrNull(item)
+    # UxPayloads::itemToPayloadOrNull(item)
     def self.itemToPayloadOrNull(item)
         return nil if item["payload-uuid-1141"].nil?
         Items::itemOrNull(item["payload-uuid-1141"])
@@ -180,7 +180,7 @@ class UxPayload
     # ---------------------------------------
     # Operation
 
-    # UxPayload::access(payload)
+    # UxPayloads::access(payload)
     def self.access(payload)
         return if payload.nil?
         if payload["type"] == "text" then
@@ -280,13 +280,13 @@ class UxPayload
         if payload["type"] == "sequence" then
             item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
             return if item.nil?
-            UxPayload::access(UxPayload::itemToPayloadOrNull(item))
+            UxPayloads::access(UxPayloads::itemToPayloadOrNull(item))
             return
         end
         raise "(error: e0040ec0-1c8f) type: #{payload["type"]}"
     end
 
-    # UxPayload::edit(payload)
+    # UxPayloads::edit(payload)
     def self.edit(payload)
         return if payload.nil?
         if payload["type"] == "text" then
@@ -311,7 +311,7 @@ class UxPayload
             raise "(error: f1ee6b3d)"
         end
         if payload["type"] == "aion-point" then
-            UxPayload::access(payload)
+            UxPayloads::access(payload)
             LucilleCore::pressEnterToContinue()
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
@@ -352,7 +352,7 @@ class UxPayload
         raise "(error: 9dc106ff-44c6)"
     end
 
-    # UxPayload::fsck(payload)
+    # UxPayloads::fsck(payload)
     def self.fsck(payload)
         return if payload.nil?
         if payload["uuid"].nil? then
@@ -408,28 +408,28 @@ class UxPayload
         raise "unkown payload type: #{payload["type"]} at #{payload}"
     end
 
-    # UxPayload::payloadProgram(item)
+    # UxPayloads::payloadProgram(item)
     def self.payloadProgram(item)
         if Sequences::isNonEmptySequence(item) then
             puts "You cannot payload program a sequence carrier that is not empty"
             LucilleCore::pressEnterToContinue()
             return
         end
-        payload = UxPayload::itemToPayloadOrNull(item)
+        payload = UxPayloads::itemToPayloadOrNull(item)
         if payload.nil? then
-            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayload::interactivelyIssueNewGetReferenceOrNull())
+            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
             return
         end
         options = ["access", "edit", "make new (default)", "delete existing payload"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option == "access" then
-            UxPayload::access(payload)
+            UxPayloads::access(payload)
         end
         if option == "edit" then
-            UxPayload::edit(payload)
+            UxPayloads::edit(payload)
         end
         if option.nil? or option == "make new (default)" then
-            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayload::interactivelyIssueNewGetReferenceOrNull())
+            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         end
         if option == "delete existing payload" then
             Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)

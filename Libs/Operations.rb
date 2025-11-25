@@ -11,9 +11,9 @@ class Operations
 
     # Operations::editItemPayload(item)
     def self.editItemPayload(item)
-        payload = UxPayload::itemToPayloadOrNull(item)
+        payload = UxPayloads::itemToPayloadOrNull(item)
         return payload.nil?
-        UxPayload::edit(payload)
+        UxPayloads::edit(payload)
     end
 
     # Operations::editItem(item)
@@ -77,7 +77,7 @@ class Operations
                             unitId = payload["id"]
                             location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
                             puts "unit location: #{location}"
-                            payload2 = UxPayload::locationToPayload(location)
+                            payload2 = UxPayloads::locationToPayload(location)
                             Items::commitObject(payload2)
                             Items::setAttribute(item["uuid"], "payload-uuid-1141", payload2["uuid"])
                             LucilleCore::removeFileSystemLocation(location)
