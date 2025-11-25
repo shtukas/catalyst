@@ -45,7 +45,7 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
-        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600*12 then
+        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
             return item["nx41"]["position"]
         end
         if item["mikuType"] == "NxProject" then

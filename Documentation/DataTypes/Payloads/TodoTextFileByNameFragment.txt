@@ -1,0 +1,12 @@
+{
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "todo-text-file-by-name-fragment"
+    "name"     : String # name or name fragment of a text file
+}
+
+{
+    "uuid"     : String
+    "mikuType" : "TodoTextFileByNameFragment"
+    "name"     : String # name or name fragment of a text file
+}

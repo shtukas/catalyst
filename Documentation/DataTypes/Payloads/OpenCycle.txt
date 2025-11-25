@@ -1,0 +1,12 @@
+{
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "open cycle"
+    "name"     : String
+}
+
+{
+    "uuid"     : String
+    "mikuType" : "OpenCycle"
+    "name"     : String
+}

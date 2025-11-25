@@ -64,26 +64,15 @@ class NxProjects
 
     # NxProjects::listingPosition(item)
     def self.listingPosition(item)
-        mapping = {
+        basePositions = {
             3 => 0.2,
             2 => 0.3,
             1 => 0.5,
             0 => 0.8
         }
         hours = BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])
-        basePosition = mapping[item["px21"]]
+        basePosition = basePositions[item["px21"]]
         basePosition + hours.to_f/5
-    end
-
-    # NxProjects::listingItems()
-    def self.listingItems()
-        [3, 2, 1, 0].each{|priority|
-            items = Items::mikuType("NxProject")
-                .select{|item| (item["px21"] || 0) => priority }
-                .select{|item| FrontPage::isVisible(item) }
-            return items if !items.empty?
-        }
-        []
     end
 
     # NxProjects::program()

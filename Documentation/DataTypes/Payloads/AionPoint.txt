@@ -1,0 +1,12 @@
+{
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "aion-point"
+    "nhash"    : String # aion point root hash
+}
+
+{
+    "uuid"     : String
+    "mikuType" : "AionPoint"
+    "nhash"    : String # aion point root hash
+}

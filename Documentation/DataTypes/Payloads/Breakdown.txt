@@ -1,0 +1,12 @@
+{
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "breakdown"
+    "lines"    : Array[String]
+}
+
+{
+    "uuid"     : String
+    "mikuType" : "Breakdown"
+    "lines"    : Array[String]
+}

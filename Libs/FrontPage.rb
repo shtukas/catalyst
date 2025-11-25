@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        listingPositionX = " (#{ListingPosition::decideItemListingPositionOrNull(item)})".yellow
+        listingPositionX = " (l: #{ListingPosition::decideItemListingPositionOrNull(item)})".yellow
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPositionX}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -54,7 +54,7 @@ class FrontPage
     def self.itemsForListing()
         [
             Items::mikuType("NxPolymorph").select{|item| item["bx42"]["btype"] != "task" },
-            NxProjects::listingItems(),
+            Items::mikuType("NxProject"),
             NxTasks::listingItems(),
             Items::mikuType("NxPriority")
         ]

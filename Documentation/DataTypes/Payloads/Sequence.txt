@@ -1,0 +1,14 @@
+
+{
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "sequence",
+    "sequenceuuid" : String
+}
+
+
+{
+    "uuid"     : String
+    "mikuType" : "Sequence"
+    "sequenceuuid" : String
+}

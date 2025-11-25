@@ -1,0 +1,12 @@
+{
+    "uuid"     : String
+    "mikuType" : "UxPayload"
+    "type"     : "text"
+    "text"     : String # contents
+}
+
+{
+    "uuid"     : String
+    "mikuType" : "Text"
+    "text"     : String # contents
+}
