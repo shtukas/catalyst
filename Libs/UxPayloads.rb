@@ -31,8 +31,7 @@ class UxPayloads
     def self.interactivelyMakeBreakdownPayload()
         {
             "uuid"     => SecureRandom.uuid,
-            "mikuType" => "UxPayload",
-            "type"     => "breakdown",
+            "mikuType" => "Breakdown",
             "lines"    => Operations::interactivelyGetLinesUsingTextEditor()
         }
     end
@@ -42,8 +41,7 @@ class UxPayloads
         nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
         {
             "uuid"     => SecureRandom.uuid,
-            "mikuType" => "UxPayload",
-            "type"     => "aion-point",
+            "mikuType" => "AionPoint",
             "nhash"    => nhash
         }
     end
@@ -55,8 +53,7 @@ class UxPayloads
         if type == "text" then
             return {
                 "uuid"     => SecureRandom.uuid,
-                "mikuType" => "UxPayload",
-                "type"     => "text",
+                "mikuType" => "Text",
                 "text"     => CommonUtils::editTextSynchronously("")
             }
         end
@@ -65,8 +62,7 @@ class UxPayloads
             return nil if name1 == ""
             return {
                 "uuid"     => SecureRandom.uuid,
-                "mikuType" => "UxPayload",
-                "type"     => "todo-text-file-by-name-fragment",
+                "mikuType" => "TodoTextFileByNameFragment",
                 "name"     => name1
             }
         end
@@ -80,8 +76,7 @@ class UxPayloads
             return nil if identifier == ""
             return {
                 "uuid"     => SecureRandom.uuid,
-                "mikuType" => "UxPayload",
-                "type"     => "Dx8Unit",
+                "mikuType" => "Dx8Unit",
                 "id"       => identifier
             }
         end
@@ -90,8 +85,7 @@ class UxPayloads
             return nil if url == ""
             return {
                 "uuid"     => SecureRandom.uuid,
-                "mikuType" => "UxPayload",
-                "type"     => "url",
+                "mikuType" => "URL",
                 "url"      => url
             }
         end
@@ -100,16 +94,14 @@ class UxPayloads
             return nil if uniquestring == ""
             return {
                 "uuid"         => SecureRandom.uuid,
-                "mikuType"     => "UxPayload",
-                "type"         => "unique-string",
+                "mikuType"     => "UniqueString",
                 "uniquestring" => uniquestring
             }
         end
         if type == "sequence" then
             return {
                 "uuid"         => SecureRandom.uuid,
-                "mikuType"     => "UxPayload",
-                "type"         => "sequence",
+                "mikuType"     => "Sequence",
                 "sequenceuuid" => SecureRandom.hex
             }
         end
@@ -118,8 +110,7 @@ class UxPayloads
             return nil if name1 == ""
             return {
                 "uuid"     => SecureRandom.uuid,
-                "mikuType" => "UxPayload",
-                "type"     => "open cycle",
+                "mikuType" => "OpenCycle",
                 "name"     => name1
             }
         end
@@ -141,8 +132,7 @@ class UxPayloads
     def self.issueNewSequenceGetReference()
         payload = {
             "uuid"         => SecureRandom.uuid,
-            "mikuType"     => "UxPayload",
-            "type"         => "sequence",
+            "mikuType"     => "Sequence",
             "sequenceuuid" => SecureRandom.hex
         }
         Items::commitObject(payload)
