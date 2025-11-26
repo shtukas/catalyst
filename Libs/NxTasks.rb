@@ -36,7 +36,7 @@ class NxTasks
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "px36-ordinal", NxTasks::nextOrdinal())
         Items::setAttribute(uuid, "mikuType", "NxTask")
-        item = Items::itemOrNull(uuid)
+        item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

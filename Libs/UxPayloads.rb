@@ -156,7 +156,7 @@ class UxPayloads
     # UxPayloads::suffixString(item)
     def self.suffixString(item)
         return "" if item["payload-uuid-1141"].nil?
-        payload = Items::itemOrNull(item["payload-uuid-1141"])
+        payload = Items::objectOrNull(item["payload-uuid-1141"])
         return "" if payload.nil?
         " #{UxPayloads::toString(payload)}".green
     end
@@ -164,7 +164,7 @@ class UxPayloads
     # UxPayloads::itemToPayloadOrNull(item)
     def self.itemToPayloadOrNull(item)
         return nil if item["payload-uuid-1141"].nil?
-        Items::itemOrNull(item["payload-uuid-1141"])
+        Items::objectOrNull(item["payload-uuid-1141"])
     end
 
     # ---------------------------------------

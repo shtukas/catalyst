@@ -72,7 +72,7 @@ class Operations
                     puts "moving #{item["uuid"]} from NxIce to NxTask"
                     Items::setAttribute(item["uuid"], "px36-ordinal", NxTasks::nextOrdinal())
                     Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-                    if item["payload-uuid-1141"] and (payload = Items::itemOrNull(item["payload-uuid-1141"])) then
+                    if item["payload-uuid-1141"] and (payload = Items::objectOrNull(item["payload-uuid-1141"])) then
                         if payload["type"] == "Dx8Unit" then
                             unitId = payload["id"]
                             location = Dx8Units::acquireUnitFolderPathOrNull(unitId)

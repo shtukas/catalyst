@@ -43,14 +43,14 @@ class Sequences
     # Sequences::itemPayloadIsSequenceCarrier(item)
     def self.itemPayloadIsSequenceCarrier(item)
         return false if item["payload-uuid-1141"].nil?
-        payload = Items::itemOrNull(item["payload-uuid-1141"])
+        payload = Items::objectOrNull(item["payload-uuid-1141"])
         payload and payload["type"] == "sequence"
     end
 
     # Sequences::isNonEmptySequence(item)
     def self.isNonEmptySequence(item)
         return false if !Sequences::itemPayloadIsSequenceCarrier(item)
-        payload = Items::itemOrNull(item["payload-uuid-1141"])
+        payload = Items::objectOrNull(item["payload-uuid-1141"])
         return false if payload.nil?
         Sequences::sequenceSize(payload["sequenceuuid"]) > 0
     end
@@ -110,7 +110,7 @@ class Sequences
         Items::setAttribute(item["uuid"], "sequenceuuid", positioning["sequenceuuid"])
         Items::setAttribute(item["uuid"], "ordinal", positioning["ordinal"])
         Items::setAttribute(item["uuid"], "mikuType", "NxSequenceItem")
-        item = Items::itemOrNull(item["uuid"])
+        item = Items::objectOrNull(item["uuid"])
         puts JSON.pretty_generate(item)
     end
 end

@@ -7,6 +7,9 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
+        if item["mikuType"] == "NxOndate" and item["donation-08"].nil? then
+            Donations::interactivelyAttachDonationOrNothing(item)
+        end
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end

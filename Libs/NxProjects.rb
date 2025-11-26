@@ -31,7 +31,7 @@ class NxProjects
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         Items::setAttribute(uuid, "px21", NxProjects::interactivelyDecidePriority())
         Items::setAttribute(uuid, "mikuType", "NxProject")
-        item = Items::itemOrNull(uuid)
+        item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
@@ -41,20 +41,6 @@ class NxProjects
         "⛵️"
     end
 
-    # Projects::timeCommitmentToString(timeCommitment)
-    def self.timeCommitmentToString(timeCommitment)
-        if timeCommitment["type"] == "day" then
-            return "(day: #{timeCommitment["hours"]} hours)"
-        end
-        if timeCommitment["type"] == "week" then
-            return "(week: #{timeCommitment["hours"]} hours)"
-        end
-        if timeCommitment["type"] == "presence" then
-            return "(presence)"
-        end
-        ""
-    end
-
     # NxProjects::toString(item)
     def self.toString(item)
         prioritystring = "[#{item["px21"]}]".yellow
@@ -62,8 +48,8 @@ class NxProjects
         "#{NxProjects::icon()} #{prioritystring} #{item["description"]} #{rts}"
     end
 
-    # NxProjects::listingPosition(item)
-    def self.listingPosition(item)
+    # NxProjects::computeListingPosition(item)
+    def self.computeListingPosition(item)
         basePositions = {
             3 => 0.2,
             2 => 0.3,
@@ -75,11 +61,20 @@ class NxProjects
         basePosition + hours.to_f/2
     end
 
+    # NxProjects::interactivelySelectProjectOrNull()
+    def self.interactivelySelectProjectOrNull()
+        items = Items::mikuType("NxProject").sort_by{|item| item["px21"] }.reverse
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # -------------------------------------
+    # Ops
+
     # NxProjects::program()
     def self.program()
         loop {
             elements = Items::mikuType("NxProject")
-                            .sort_by{|item| NxProjects::listingPosition(item) }
+                            .sort_by{|item| NxProjects::computeListingPosition(item) }
             store = ItemStore.new()
             puts ""
             NxProjects::printLevelDescriptions()

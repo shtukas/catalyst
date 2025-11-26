@@ -21,7 +21,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         listingPositionX = " (l: #{ListingPosition::decideItemListingPositionOrNull(item)})".yellow
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPositionX}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Donations::donationSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{listingPositionX}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end

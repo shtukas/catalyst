@@ -20,6 +20,16 @@ class PolyFunctions
             }
         end
 
+        if item["donation-08"] then
+            target = Items::objectOrNull(item["donation-08"])
+            if target then
+                accounts << {
+                    "description" => target["description"],
+                    "number"      => target["uuid"]
+                }
+            end
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -66,7 +76,7 @@ class PolyFunctions
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
     def self.get_name_of_donation_target_or_identity(donation_target_id)
-        target = Items::itemOrNull(donation_target_id)
+        target = Items::objectOrNull(donation_target_id)
         if target then
             return target["description"]
         end

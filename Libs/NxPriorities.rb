@@ -13,7 +13,7 @@ class NxPriorities
                 "position" => position
         })
         Items::setAttribute(uuid, "mikuType", "NxPriority")
-        item = Items::itemOrNull(uuid)
+        item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

@@ -12,7 +12,7 @@ class NxPolymorphs
         Items::setAttribute(uuid, "bx42", behaviour)
         Items::setAttribute(uuid, "payload-uuid-1141", payload ? payload["uuid"] : nil)
         Items::setAttribute(uuid, "mikuType", "NxPolymorph")
-        item = Items::itemOrNull(uuid)
+        item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
@@ -37,7 +37,7 @@ class NxPolymorphs
     # NxPolymorphs::stop(item)
     def self.stop(item)
         Items::setAttribute(item["uuid"], "nx41", nil)
-        Items::itemOrNull(item["uuid"])
+        Items::objectOrNull(item["uuid"])
     end
 
     # NxPolymorphs::done(item)

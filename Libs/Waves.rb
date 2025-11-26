@@ -18,7 +18,7 @@ class Waves
         Items::setAttribute(uuid, "lastDoneUnixtime", 0)
         Items::setAttribute(uuid, "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))
         Items::setAttribute(uuid, "mikuType", "Wave")
-        item = Items::itemOrNull(uuid)
+        item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

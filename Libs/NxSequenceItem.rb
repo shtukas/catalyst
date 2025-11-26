@@ -20,7 +20,7 @@ class NxSequenceItem
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-uuid-1141", payload ? payload["uuid"] : nil)
         Items::setAttribute(uuid, "mikuType", "NxSequenceItem")
-        item = Items::itemOrNull(uuid)
+        item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

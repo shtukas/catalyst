@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items) | donation *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | sequence item",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -76,7 +76,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items = store.items().select{|item| item["mikuType"] == "NxPolymorph" }
+            items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
@@ -108,6 +108,21 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Sequences::moveToSequence(item)
+            return
+        end
+
+        if Interpreting::match("donation", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Donations::interactivelyAttachDonationOrNothing(item)
+            return
+        end
+
+        if Interpreting::match("donation *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Donations::interactivelyAttachDonationOrNothing(item)
             return
         end
 
@@ -153,7 +168,7 @@ class CommandsAndInterpreters
                 Items::setAttribute(uuid2, "description", "#{item["description"]} (lifted)")
                 Items::setAttribute(uuid2, "payload-uuid-1141", item["payload-uuid-1141"])
                 Items::setAttribute(uuid2, "mikuType", "NxSequenceItem")
-                sequenceItem = Items::itemOrNull(uuid2)
+                sequenceItem = Items::objectOrNull(uuid2)
                 puts "sequenceItem: #{JSON.pretty_generate(sequenceItem)}"
             end
 
@@ -261,7 +276,7 @@ class CommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            payload = Items::itemOrNull(item["payload-uuid-1141"])
+            payload = Items::objectOrNull(item["payload-uuid-1141"])
             sequenceuuid = payload["sequenceuuid"]
             lx = lambda {
                 Sequences::sequenceElements(sequenceuuid)
@@ -291,6 +306,7 @@ class CommandsAndInterpreters
             }
             payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -307,6 +323,7 @@ class CommandsAndInterpreters
             }
             payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -333,6 +350,7 @@ class CommandsAndInterpreters
             }
             payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -349,6 +367,7 @@ class CommandsAndInterpreters
             }
             payload = UxPayloads::makeNewPayloadOrNull()
             item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
