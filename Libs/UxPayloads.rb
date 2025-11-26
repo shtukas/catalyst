@@ -145,12 +145,35 @@ class UxPayloads
     # UxPayloads::toString(payload)
     def self.toString(payload)
         return "" if payload.nil?
-        if payload["type"] == "sequence" then
+        if payload["mikuType"] == "Sequence" then
             item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
             return "(sequence: empty)" if item.nil?
             return "(sequence: next: #{item["description"]})"
         end
-        "(#{payload["type"]})"
+        if payload["mikuType"] == "URL" then
+            return "(url)"
+        end
+        if payload["mikuType"] == "AionPoint" then
+            return "(aion-point)"
+        end
+        if payload["mikuType"] == "Breakdown" then
+            return "(breakdown)"
+        end
+        if payload["mikuType"] == "Dx8Unit" then
+            return "(Dx8Unit)"
+        end
+        if payload["mikuType"] == "OpenCycle" then
+            return "(open-cycle)"
+        end
+        if payload["mikuType"] == "Text" then
+            return "(text)"
+        end
+        if payload["mikuType"] == "UniqueString" then
+            return "(unique-string)"
+        end
+        if payload["mikuType"] == "TodoTextFileByNameFragment" then
+            return "(todo-file-by-name-fragment)"
+        end
     end
 
     # UxPayloads::suffixString(item)
