@@ -25,8 +25,8 @@ class NxTasks
         1
     end
 
-    # NxTasks::interactivelyIssueNewProjectOrNull()
-    def self.interactivelyIssueNewProjectOrNull()
+    # NxTasks::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
         uuid = SecureRandom.uuid
@@ -34,6 +34,7 @@ class NxTasks
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         Items::setAttribute(uuid, "px36-ordinal", NxTasks::nextOrdinal())
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::objectOrNull(uuid)
