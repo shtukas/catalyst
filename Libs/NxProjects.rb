@@ -21,7 +21,7 @@ class NxProjects
 
     # NxProjects::interactivelyIssueNewProjectOrNull()
     def self.interactivelyIssueNewProjectOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
         Items::init(uuid)

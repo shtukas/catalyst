@@ -500,6 +500,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("project", input) then
             item = NxProjects::interactivelyIssueNewProjectOrNull()
+            return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
