@@ -79,6 +79,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "Wave" then
+            return
+        end
+
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 

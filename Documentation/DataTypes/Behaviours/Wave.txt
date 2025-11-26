@@ -1,0 +1,11 @@
+
+Wave:
+    - uuid        : String
+    - mikuType    : "Wave"
+    - unixtime    :
+    - datetime    :
+    - description : String
+    - nx46             : Nx46
+    - lastDoneUnixtime : Integer
+    - interruption     : null or boolean, indicates if the item is interruption
+    - nx41        : Nx41

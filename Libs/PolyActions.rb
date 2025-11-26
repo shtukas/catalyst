@@ -82,6 +82,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "Wave" then
+            Waves::performDone(item)
+            return
+        end
+
         if item["mikuType"] == "NxPolymorph" then
             NxPolymorphs::done(item)
             return
@@ -91,7 +96,7 @@ class PolyActions
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
             return if option.nil?
             if option == "done for the day (default)" then
-                Operations::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
                 PolyActions::destroy(item)
@@ -103,7 +108,7 @@ class PolyActions
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
             return if option.nil?
             if option == "done for the day (default)" then
-                Operations::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
                 PolyActions::destroy(item)

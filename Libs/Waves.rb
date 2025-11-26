@@ -1,23 +1,29 @@
 
 # encoding: UTF-8
 
-class Wave
+class Waves
 
-    # Wave::interactivelyMakeNewOrNull()
+    # Waves::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
         nx46 = Nx46::interactivelyMakeNewOrNull()
         return nil if nx46.nil?
-        lastDoneUnixtime = 0
-        interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ?: ")
-        {
-            "btype"            => "wave",
-            "nx46"             => nx46,
-            "lastDoneUnixtime" => lastDoneUnixtime,
-            "interruption"     => interruption
-        }
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "nx46", nx46)
+        Items::setAttribute(uuid, "lastDoneUnixtime", 0)
+        Items::setAttribute(uuid, "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))
+        Items::setAttribute(uuid, "mikuType", "Wave")
+        item = Items::itemOrNull(uuid)
+        Fsck::fsckItemOrError(item, false)
+        item
     end
 
-    # Wave::nx46ToNextDisplayUnixtime(nx46: Nx46, cursor: Unixtime)
+    # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46, cursor: Unixtime)
     def self.nx46ToNextDisplayUnixtime(nx46, cursor)
         if nx46["type"] == 'sticky' then
             cursor = cursor + 3600
@@ -50,7 +56,7 @@ class Wave
         raise "(error: afe44910-57c2-4be5-8e1f-2c2fb80ae61a) nx46: #{JSON.pretty_generate(nx46)}"
     end
 
-    # Wave::nx46ToString(nx46)
+    # Waves::nx46ToString(nx46)
     def self.nx46ToString(nx46)
         if nx46["type"] == 'sticky' then
             return "(sticky, from: #{nx46["value"]})"
@@ -58,13 +64,21 @@ class Wave
         "(#{nx46["type"]}: #{nx46["value"]})"
     end
 
-    # Wave::intsWithPrefix(behaviour)
-    def self.intsWithPrefix(behaviour)
-        behaviour["interruption"] ? " [interruption]".red : ""
+    # Waves::interruptionToStringSuffix(wave)
+    def self.interruptionToStringSuffix(wave)
+        wave["interruption"] ? " [interruption]".red : ""
     end
 
-    # Wave::behaviourToString(behaviour)
-    def self.behaviourToString(behaviour)
-        "#{Wave::nx46ToString(behaviour["nx46"]).yellow}#{Wave::intsWithPrefix(behaviour)}"
+    # Waves::toString(item)
+    def self.toString(item)
+        "🌊 #{Waves::nx46ToString(item["nx46"]).yellow} #{item["description"]}#{Waves::interruptionToStringSuffix(item)}"
+    end
+
+    # Waves::performDone(wave)
+    def self.performDone(wave)
+        Items::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        unixtime = Waves::nx46ToNextDisplayUnixtime(wave["nx46"], Time.new.to_i)
+        puts "do not show until #{Time.at(unixtime)}".yellow
+        DoNotShowUntil::doNotShowUntil(wave, unixtime)
     end
 end

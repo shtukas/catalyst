@@ -20,7 +20,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 PolyActions::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
-                Operations::doNotShowUntil(item, unixtime)
+                DoNotShowUntil::doNotShowUntil(item, unixtime)
                 return
             end
         end
@@ -61,7 +61,7 @@ class CommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             PolyActions::stop(item)
-            Operations::doNotShowUntil(item, unixtime)
+            DoNotShowUntil::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -654,21 +654,14 @@ class CommandsAndInterpreters
         end
 
         if input == "wave" then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = Wave::interactivelyMakeNewOrNull()
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = Waves::interactivelyMakeNewOrNull()
             puts JSON.pretty_generate(item)
             return
         end
 
         if input == "waves" then
             Operations::program3(lambda { 
-                Items::mikuType("NxPolymorph")
-                    .select{|item| item["bx42"]["btype"] == "wave" }
+                Items::mikuType("Wave")
                     .sort_by{|item| item["bx42"]["lastDoneUnixtime"] }
             })
             return

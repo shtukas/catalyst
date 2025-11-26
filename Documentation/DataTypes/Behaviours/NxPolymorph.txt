@@ -6,5 +6,4 @@ NxPolymorph:
     - datetime    :
     - description : String
     - bx42                  : TxBehaviour
-    - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
     - nx41        : Nx41

@@ -124,7 +124,7 @@ class Operations
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        Operations::doNotShowUntil(item, unixtime)
+        DoNotShowUntil::doNotShowUntil(item, unixtime)
     end
 
     # Operations::expose(item)
@@ -141,7 +141,7 @@ class Operations
         options = ["postpone to tomorrow (default)", "destroy"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option.nil? or option == "postpone to tomorrow (default)" then
-            Operations::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
         end
         if option == "destroy" then
             Items::deleteObject(item["uuid"])
@@ -156,10 +156,5 @@ class Operations
                 .sort_by{|item| ListingPosition::decideItemListingPositionOrNull(item) || 1 }
         }
         Operations::program3(l)
-    end
-
-    # Operations::doNotShowUntil(item, unixtime)
-    def self.doNotShowUntil(item, unixtime)
-        Items::setAttribute(item["uuid"], "do-not-show-until-51", Time.at(unixtime).utc.iso8601)
     end
 end

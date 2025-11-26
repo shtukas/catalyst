@@ -45,21 +45,17 @@ class FrontPage
         end
     end
 
-    # FrontPage::isVisible(item)
-    def self.isVisible(item)
-        item["do-not-show-until-51"].nil? or item["do-not-show-until-51"] < Time.new.utc.iso8601 
-    end
-
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         [
             Items::mikuType("NxPolymorph").select{|item| item["bx42"]["btype"] != "task" },
             Items::mikuType("NxProject"),
             NxTasks::listingItems(),
-            Items::mikuType("NxPriority")
+            Items::mikuType("NxPriority"),
+            Items::mikuType("Wave")
         ]
             .flatten
-            .select{|item| FrontPage::isVisible(item) }
+            .select{|item| DoNotShowUntil::isVisible(item) }
             .map{|item|
                 {
                     "item" => item,

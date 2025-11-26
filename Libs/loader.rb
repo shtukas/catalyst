@@ -133,6 +133,7 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
+require_relative "DoNotShowUntil.rb"
 
 require_relative "Elizabeth.rb"
 
@@ -172,7 +173,7 @@ require_relative "UxPayloads.rb"
 
 require_relative "ValueCache.rb"
 
-require_relative "Wave.rb"
+require_relative "Waves.rb"
 
 require_relative "XCacheExensions.rb"
 

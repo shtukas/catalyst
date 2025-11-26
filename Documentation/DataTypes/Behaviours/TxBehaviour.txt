@@ -8,12 +8,6 @@ TxBehaviour
     "date": YYYY-MM-DD
 }
 {
-    "btype": "wave"
-    "nx46": Nx46
-    "lastDoneUnixtime" : Integer
-    "interruption" : null or boolean, indicates if the item is interruption
-}
-{
     "btype": "backup"
     "period": Float # period in Days
 }

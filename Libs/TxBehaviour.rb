@@ -9,7 +9,6 @@ class TxBehaviour
         options = [
             "await",
             "ondate",
-            "wave",
             "backup",
             "anniversary"
         ]
@@ -25,9 +24,6 @@ class TxBehaviour
                 "btype" => "ondate",
                 "date" => CommonUtils::interactivelyMakeADate()
             }
-        end
-        if option == "wave" then
-            return Wave::interactivelyMakeNewOrNull()
         end
         if option == "backup" then
             period = LucilleCore::askQuestionAnswerAsString("period (in days): ").to_f
@@ -50,9 +46,6 @@ class TxBehaviour
     def self.behaviourToDescriptionLeft(behaviour)
         if behaviour["btype"] == "ondate" then
             return "(#{behaviour["date"]}) "
-        end
-        if behaviour["btype"] == "wave" then
-            return "#{Wave::behaviourToString(behaviour)} "
         end
         if behaviour["btype"] == "anniversary" then
             return "#{Anniversary::toString(behaviour)} "
@@ -127,15 +120,6 @@ class TxBehaviour
 
     # TxBehaviour::done(behaviour: TxBehaviour) -> null or { "behaviour" => behaviour, "do-not-show-until" => unixtime }
     def self.done(behaviour)
-        if behaviour["btype"] == "wave" then
-            behaviour["lastDoneUnixtime"] = Time.new.to_i
-            unixtime = Wave::nx46ToNextDisplayUnixtime(behaviour["nx46"], Time.new.to_i)
-            puts "do not show until #{Time.at(unixtime)}".yellow
-            return {
-                "behaviour" => behaviour,
-                "do-not-show-until" => unixtime
-            }
-        end
         if behaviour["btype"] == "backup" then
             unixtime = Time.new.to_i + behaviour["period"]*86400
             puts "do not show until #{Time.at(unixtime)}".yellow

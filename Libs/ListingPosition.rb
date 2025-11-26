@@ -29,14 +29,6 @@ class ListingPosition
         if behaviour["btype"] == "backup" then
             return 0.300
         end
-        if behaviour["btype"] == "wave" then
-            if behaviour["interruption"] then
-                return 0.050
-            end
-            hash1 = Digest::SHA1.hexdigest(behaviour.to_s)
-            digits = hash1.gsub(/\D/, '')
-            return 0.100 + 0.8 * "0.#{digits}".to_f
-        end
         if behaviour["btype"] == "anniversary" then
             return 0.150
         end
@@ -82,6 +74,16 @@ class ListingPosition
         end
         if item["mikuType"] == "NxPriority" then
             return item["position-09"]
+        end
+        if item["mikuType"] == "Wave" then
+            if item["random"].nil? then
+                item["random"] = rand
+                Items::setAttribute(item["uuid"], "random", item["random"])
+            end
+            if item["interruption"] then
+                return 0.050 + 0.001 * item["random"]
+            end
+            return 0.600 + 0.3 * Math.sin(Time.new.to_f/86400 + item["random"])
         end
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
     end
