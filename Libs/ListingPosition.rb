@@ -73,7 +73,7 @@ class ListingPosition
             return position
         end
         if item["mikuType"] == "NxPriority" then
-            return item["position-09"]
+            return item["nx41"]["position"]
         end
         if item["mikuType"] == "Wave" then
             if item["random"].nil? then

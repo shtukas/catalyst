@@ -5,4 +5,4 @@ NxPriority:
     - unixtime    :
     - datetime    :
     - description : String
-    - position-09 :
+    - nx41        : Nx41
