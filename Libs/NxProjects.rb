@@ -25,8 +25,7 @@ class NxProjects
 
     # NxProjects::toString(item)
     def self.toString(item)
-        rts = "(rt: #{BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]).round(2)})".yellow
-        "#{NxProjects::icon()} #{item["description"]} #{rts}"
+        "#{NxProjects::icon()} #{item["description"]}"
     end
 
     # NxProjects::computeListingPosition(item)
