@@ -3,7 +3,26 @@ class NxTasks
 
     # NxTasks::nextOrdinal()
     def self.nextOrdinal()
-        1.5
+        computeAverageSeparation = lambda { |values|
+            values.zip(values.drop(1)).take(values.size-1).map{|a1, a2| (a2-a1).abs }.sum.to_f/(values.size-1)
+        }
+        ordinals = Items::mikuType("NxTask")
+                    .sort_by{|item| item["px36-ordinal"] }
+                    .map{|item| item["px36-ordinal"] }
+        if ordinals.size < 5 then
+            return ordinals.last + 1
+        end
+        average_separation = computeAverageSeparation.call(ordinals)
+        loop {
+            if ordinals.size < 5 then
+                return ordinals.last + 1
+            end
+            if computeAverageSeparation.call(ordinals.take(5)) > average_separation.to_f/3 then
+                return ordinals[0] + rand * ( ordinals[1] - ordinals[0] )
+            end
+            ordinals = ordinals.drop(1)
+        }
+        1
     end
 
     # NxTasks::interactivelyIssueNewProjectOrNull()
