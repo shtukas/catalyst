@@ -178,6 +178,7 @@ class PolyActions
         if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
+                NxProjects::alignLx56()
             end
             return
         end

@@ -5,4 +5,4 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
-    - px36-ordinal : Float
+    - px36         : Float # position within tasks

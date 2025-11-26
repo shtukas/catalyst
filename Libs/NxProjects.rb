@@ -1,24 +1,6 @@
 
 class NxProjects
 
-    # NxProjects::printLevelDescriptions()
-    def self.printLevelDescriptions()
-        [
-            "3: high priority (to be done today)",
-            "2: to be worked on seriously (deadlined)",
-            "1: medium priority",
-            "0: low priority"
-        ].each{ |line|
-            puts line
-        }
-    end
-
-    # NxProjects::interactivelyDecidePriority()
-    def self.interactivelyDecidePriority()
-        NxProjects::printLevelDescriptions()
-        LucilleCore::askQuestionAnswerAsString("priority ? : ").to_i
-    end
-
     # NxProjects::interactivelyIssueNewProjectOrNull()
     def self.interactivelyIssueNewProjectOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
@@ -29,7 +11,7 @@ class NxProjects
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
-        Items::setAttribute(uuid, "px21", NxProjects::interactivelyDecidePriority())
+        Items::setAttribute(uuid, "lx56", NxProjects::highestOrdinal() + 1)
         Items::setAttribute(uuid, "mikuType", "NxProject")
         item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
@@ -43,56 +25,67 @@ class NxProjects
 
     # NxProjects::toString(item)
     def self.toString(item)
-        prioritystring = "[#{item["px21"]}]".yellow
         rts = "(rt: #{BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]).round(2)})".yellow
-        "#{NxProjects::icon()} #{prioritystring} #{item["description"]} #{rts}"
+        "#{NxProjects::icon()} #{item["description"]} #{rts}"
     end
 
     # NxProjects::computeListingPosition(item)
     def self.computeListingPosition(item)
-        basePositions = {
-            3 => 0.2,
-            2 => 0.3,
-            1 => 0.5,
-            0 => 0.8
-        }
-        hours = BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])
-        basePosition = basePositions[item["px21"]]
-        basePosition + hours.to_f/2
+        0.2 + 0.001*item["lx56"] + 0.8 * BankDerivedData::recoveredAverageHoursPerDay("projects-25806839").to_f/5
     end
 
     # NxProjects::interactivelySelectProjectOrNull()
     def self.interactivelySelectProjectOrNull()
-        items = Items::mikuType("NxProject").sort_by{|item| item["px21"] }.reverse
+        items = Items::mikuType("NxProject").sort_by{|item| item["lx56"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # NxProjects::lowestOrdinal()
+    def self.lowestOrdinal()
+        ([0] + Items::mikuType("NxProject").map{|item| item["lx56"] }).min
+    end
+
+    # NxProjects::highestOrdinal()
+    def self.highestOrdinal()
+        ([0] + Items::mikuType("NxProject").map{|item| item["lx56"] }).max
     end
 
     # -------------------------------------
     # Ops
 
+    # NxProjects::alignLx56()
+    def self.alignLx56()
+        Items::mikuType("NxProject")
+            .sort_by{|item| item["lx56"]}
+            .each_with_index{|item, indx|
+                Items::setAttribute(item["uuid"], "lx56", indx)
+            }
+    end
+
     # NxProjects::program()
     def self.program()
         loop {
-            elements = Items::mikuType("NxProject")
-                            .sort_by{|item| NxProjects::computeListingPosition(item) }
+            elements = Items::mikuType("NxProject").sort_by{|item| item["lx56"]}
             store = ItemStore.new()
             puts ""
-            NxProjects::printLevelDescriptions()
             elements
                 .each{|item|
                     store.register(item, true)
                     puts FrontPage::toString2(store, item)
                 }
             puts ""
-            puts "project management"
+            puts "sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
-            if input == "project management" then
-                priority = NxProjects::interactivelyDecidePriority()
+            if input == "sort" then
                 projects, _ = LucilleCore::selectZeroOrMore("projects", [], Items::mikuType("NxProject"), lambda{|item| PolyFunctions::toString(item) })
-                projects.each{|project|
-                    Items::setAttribute(project["uuid"], "px21", priority)
+                projects.reverse.each{|project|
+                    Items::setAttribute(project["uuid"], "lx56", NxProjects::lowestOrdinal() - 1)
+                }
+                NxProjects::alignLx56()
+                Items::mikuType("NxProject").each{|item|
+                    Items::setAttribute(item["uuid"], "nx41", nil)
                 }
                 next
             end

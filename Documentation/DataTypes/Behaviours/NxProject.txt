@@ -5,10 +5,7 @@ NxProject:
     - unixtime    :
     - datetime    :
     - description : String
-    - px21        : null or PxProjectPriority
+    - lx56        : positive integer # position within projects
 
-PxProjectPriority :
-    3: high priority # to be completed today
-    2: to be worked on seriously (deadlined)
-    1: medium priority
-    0: low priority
+
+The projects must have all the integers from zero

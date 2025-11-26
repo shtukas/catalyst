@@ -15,8 +15,15 @@ class PolyFunctions
 
         if item["mikuType"] == "NxTask" then
             accounts << {
-                "description" => "task-account-8e7fa41a",
-                "number"      => "task-account-8e7fa41a"
+                "description" => "tasks-8e7fa41a",
+                "number"      => "tasks-8e7fa41a"
+            }
+        end
+
+        if item["mikuType"] == "NxProject" then
+            accounts << {
+                "description" => "projects-25806839",
+                "number"      => "projects-25806839"
             }
         end
 

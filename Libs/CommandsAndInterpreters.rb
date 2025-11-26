@@ -682,7 +682,7 @@ class CommandsAndInterpreters
         if input == "waves" then
             Operations::program3(lambda { 
                 Items::mikuType("Wave")
-                    .sort_by{|item| item["bx42"]["lastDoneUnixtime"] }
+                    .sort_by{|item| item["lastDoneUnixtime"] }
             })
             return
         end

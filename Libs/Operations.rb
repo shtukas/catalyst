@@ -70,7 +70,7 @@ class Operations
                 .each{|item|
                     next if !Dx8Units::attemptRepository()
                     puts "moving #{item["uuid"]} from NxIce to NxTask"
-                    Items::setAttribute(item["uuid"], "px36-ordinal", NxTasks::nextOrdinal())
+                    Items::setAttribute(item["uuid"], "px36", NxTasks::nextPosition())
                     Items::setAttribute(item["uuid"], "mikuType", "NxTask")
                     if item["payload-uuid-1141"] and (payload = Items::objectOrNull(item["payload-uuid-1141"])) then
                         if payload["type"] == "Dx8Unit" then
