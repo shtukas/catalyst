@@ -9,8 +9,8 @@ class ListingPosition
         (2 + Math.atan(x)).to_f/10
     end
 
-    # ListingPosition::firstListingPositionForPriorities()
-    def self.firstListingPositionForPriorities()
+    # ListingPosition::firstNegativeListingPosition()
+    def self.firstNegativeListingPosition()
         positions = Items::objects()
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
@@ -45,6 +45,9 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
+        if item["nx41"] and item["nx41"]["position"] < 0 then
+            return item["nx41"]["position"]
+        end
         if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
             return item["nx41"]["position"]
         end
