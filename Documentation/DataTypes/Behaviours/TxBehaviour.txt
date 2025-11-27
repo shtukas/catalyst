@@ -1,10 +1,6 @@
 
 TxBehaviour
 {
-    "btype": "ondate"
-    "date": YYYY-MM-DD
-}
-{
     "btype": "backup"
     "period": Float # period in Days
 }

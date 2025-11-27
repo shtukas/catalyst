@@ -83,6 +83,14 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxOndate" then
+            return
+        end
+
+        if item["mikuType"] == "NxWait" then
+            return
+        end
+
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 

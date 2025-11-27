@@ -1,0 +1,8 @@
+
+NxOndate:
+    - uuid         : String
+    - mikuType     : "NxOndate"
+    - unixtime     :
+    - datetime     :
+    - description  : String
+    - date         : YYYY-MM-DD

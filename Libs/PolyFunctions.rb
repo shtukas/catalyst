@@ -72,6 +72,9 @@ class PolyFunctions
         if item["mikuType"] == "NxPriority" then
             return NxPriorities::toString(item)
         end
+        if item["mikuType"] == "NxOndate" then
+            return NxOndates::toString(item)
+        end
         if item["mikuType"] == "NxWait" then
             return NxWaits::toString(item)
         end

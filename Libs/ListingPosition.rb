@@ -19,13 +19,6 @@ class ListingPosition
 
     # ListingPosition::decideRatioListingOrNull(behaviour, nx41)
     def self.decideRatioListingOrNull(behaviour, nx41)
-        if behaviour["btype"] == "ondate" then
-            return nil if CommonUtils::today() < behaviour["date"]
-            return 0.200
-        end
-        if behaviour["btype"] == "NxAwait" then
-            return 0.250
-        end
         if behaviour["btype"] == "backup" then
             return 0.300
         end

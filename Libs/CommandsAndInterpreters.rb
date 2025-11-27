@@ -298,31 +298,16 @@ class CommandsAndInterpreters
             date = CommonUtils::selectDateOfNextNonTodayWeekDay(weekdayName)
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = {
-                "btype" => "ondate",
-                "date" => date
-            }
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = NxOndates::interactivelyIssueNewWithDetails(description, date)
             Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("today", input) then
-            date = CommonUtils::today()
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = {
-                "btype" => "ondate",
-                "date" => date
-            }
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = NxOndates::interactivelyIssueNewWithDetails(description, CommonUtils::today())
             Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
@@ -330,43 +315,24 @@ class CommandsAndInterpreters
 
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
-                Items::mikuType("NxPolymorph")
-                    .select{|item| item["bx42"]["btype"] == "ondate" } 
-                    .select{|item| item["bx42"]["date"] <= CommonUtils::today() }
+                Items::mikuType("NxOndate")
+                    .select{|item| item["date"] <= CommonUtils::today() }
                     .sort_by{|item| item["bx42"]["date"] }
             })
             return
         end
 
         if Interpreting::match("tomorrow", input) then
-            date = CommonUtils::tomorrow()
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = {
-                "btype" => "ondate",
-                "date" => date
-            }
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = NxOndates::interactivelyIssueNewWithDetails(description, CommonUtils::tomorrow())
             Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("ondate", input) then
-            date = CommonUtils::interactivelyMakeADate()
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = {
-                "btype" => "ondate",
-                "date" => date
-            }
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = NxOndates::interactivelyIssueNewOrNull()
             Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
@@ -374,9 +340,8 @@ class CommandsAndInterpreters
 
         if Interpreting::match("ondates", input) then
             Operations::program3(lambda { 
-                Items::mikuType("NxPolymorph")
-                    .select{|item| item["bx42"]["btype"] == "ondate" }
-                    .sort_by{|item| item["bx42"]["date"] }
+                Items::mikuType("NxOndate")
+                    .sort_by{|item| item["date"] }
             })
             return
         end

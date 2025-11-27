@@ -7,18 +7,11 @@ class TxBehaviour
     # TxBehaviour::interactivelyMakeBehaviourOrNull()
     def self.interactivelyMakeBehaviourOrNull()
         options = [
-            "ondate",
             "backup",
             "anniversary"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
-        if option == "ondate" then
-            return {
-                "btype" => "ondate",
-                "date" => CommonUtils::interactivelyMakeADate()
-            }
-        end
         if option == "backup" then
             period = LucilleCore::askQuestionAnswerAsString("period (in days): ").to_f
             return {
@@ -38,9 +31,6 @@ class TxBehaviour
 
     # TxBehaviour::behaviourToDescriptionLeft(behaviour)
     def self.behaviourToDescriptionLeft(behaviour)
-        if behaviour["btype"] == "ondate" then
-            return "(#{behaviour["date"]}) "
-        end
         if behaviour["btype"] == "anniversary" then
             return "#{Anniversary::toString(behaviour)} "
         end
@@ -65,9 +55,6 @@ class TxBehaviour
         end
         if behaviour["btype"] == "do-not-show-until" then
             return "🫥"
-        end
-        if behaviour["btype"] == "ondate" then
-            return "🗓️ "
         end
         if behaviour["btype"] == "wave" then
             return "🌊"

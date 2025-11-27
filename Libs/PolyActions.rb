@@ -66,6 +66,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOndate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxPriority" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteObject(item["uuid"])
@@ -168,6 +175,13 @@ class PolyActions
 
         if item["mikuType"] == "NxWait" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteObject(item["uuid"])
             end
             return

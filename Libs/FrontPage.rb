@@ -56,7 +56,8 @@ class FrontPage
             NxTasks::listingItems(),
             Items::mikuType("NxPriority"),
             Items::mikuType("Wave"),
-            NxWaits::listingItems()
+            NxWaits::listingItems(),
+            NxOndates::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
