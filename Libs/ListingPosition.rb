@@ -48,6 +48,7 @@ class ListingPosition
             return item["nx41"]["position"]
         end
         if item["mikuType"] == "NxProject" then
+            position = NxProjects::computeListingPosition(item)
             Items::setAttribute(item["uuid"], "nx41", {
                 "unixtime" => Time.new.to_f,
                 "position" => position
