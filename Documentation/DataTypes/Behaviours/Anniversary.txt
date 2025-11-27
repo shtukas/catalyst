@@ -1,0 +1,10 @@
+
+Anniversary:
+    - uuid              : String
+    - mikuType          : "Anniversary"
+    - unixtime          :
+    - datetime          :
+    - description       : String
+    - startdate"        : YYYY-MM-DD
+    - repeatType"       : "weekly" | "monthly" | "yearly"
+    - next_celebration" : YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.

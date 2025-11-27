@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items) | donation *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress | polymorph | sequence item",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress | sequence item",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | waits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort",
@@ -69,9 +69,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
-            return if behaviour.nil?
-            Items::setAttribute(item["uuid"], "bx42", behaviour)
+            puts "not implemented"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -231,23 +230,15 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("backup", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            period = LucilleCore::askQuestionAnswerAsString("period (in days): ").to_f
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = {
-                "btype" => "backup",
-                "period" => period
-            }
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = NxBackups::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("backups", input) then
-            Operations::program3ItemsWithGivenBehaviour("backup")
+            Operations::program3(lambda { 
+                Items::mikuType("NxBackup")
+            })
             return
         end
 
@@ -378,32 +369,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("polymorph", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
-            if behaviour.nil? then
-                Items::deleteObject(uuid)
-                return
-            end
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("morph *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            behaviour = TxBehaviour::interactivelyMakeBehaviourOrNull()
-            return if behaviour.nil?
-            Items::setAttribute(item["uuid"], "bx42", behaviour)
-            return
-        end
-
         if Interpreting::match("wait", input) then
             item = NxWaits::interactivelyIssueNewOrNull()
             return if item.nil?
@@ -419,41 +384,22 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("anniversary", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            behaviour = Anniversary::makeNew()
-            b1 = {
-                "btype" => "do-not-show-until",
-                "unixtime" => DateTime.parse("#{behaviour["next_celebration"]}T00:00:00Z").to_time.to_i
-            }
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, [b1, behaviour], payload)
+            item = Anniversary::interactivelyIssueNewOrNull()
+            return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("anniversaries", input) then
             Operations::program3(lambda { 
-                Items::mikuType("NxPolymorph")
-                    .select{|item| item["bx42"]["btype"] == "anniversary" }
-                    .sort_by{|item| item["bx42"]["next_celebration"] }
+                Items::mikuType("Anniversary")
             })
             return
         end
 
         if Interpreting::match("todo", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            behaviour = {
-                "btype" => "task",
-                "unixtime" => Time.new.to_i
-            }
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+            item = NxTasks::interactivelyIssueNewOrNull()
+            return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end

@@ -147,14 +147,4 @@ class Operations
             Items::deleteObject(item["uuid"])
         end
     end
-
-    # Operations::program3ItemsWithGivenBehaviour(btype)
-    def self.program3ItemsWithGivenBehaviour(btype)
-        l = lambda { 
-            Items::mikuType("NxPolymorph")
-                .select{|item| item["bx42"]["btype"] == btype }
-                .sort_by{|item| ListingPosition::decideItemListingPositionOrNull(item) || 1 }
-        }
-        Operations::program3(l)
-    end
 end

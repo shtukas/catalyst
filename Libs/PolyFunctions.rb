@@ -57,8 +57,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDeleted" then
             return "NxDeleted: uuid: #{item["uuid"]}"
         end
-        if item["mikuType"] == "NxPolymorph" then
-            return NxPolymorphs::toString(item)
+        if item["mikuType"] == "Anniversary" then
+            return Anniversaries::toString(item)
         end
         if item["mikuType"] == "NxSequenceItem" then
             return NxSequenceItem::toString(item)

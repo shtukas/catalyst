@@ -51,7 +51,6 @@ class FrontPage
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         [
-            Items::mikuType("NxPolymorph").select{|item| item["bx42"]["btype"] != "task" },
             Items::mikuType("NxProject"),
             NxTasks::listingItems(),
             Items::mikuType("NxPriority"),

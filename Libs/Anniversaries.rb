@@ -115,25 +115,42 @@ class Anniversary
     end
 
     # ----------------------------------------------------------------------------------
-    # toString
 
-    # Anniversary::makeNew()
-    def self.makeNew()
+    # Anniversary::makeDetails()
+    def self.makeDetails()
         startdate = LucilleCore::askQuestionAnswerAsString("startdate (YYYY-MM-DD): ")
         repeatType = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("type", ["weekly", "monthly", "yearly"])
         next_celebration = Anniversary::computeNextCelebrationDate(startdate, repeatType)
         {
-            "btype" => "anniversary",
             "startdate" => startdate,
             "repeatType" => repeatType,
             "next_celebration" => next_celebration
         }
     end
 
-    # Anniversary::toString(behaviour)
-    def self.toString(behaviour)
-        difference = Anniversary::difference_between_dates_in_specified_unit(behaviour["startdate"], behaviour["next_celebration"], behaviour["repeatType"])
-        "[#{behaviour["startdate"]}, #{behaviour["next_celebration"]}, #{difference.to_s.rjust(4)}, #{behaviour["repeatType"].ljust(7)}]"
+    # Anniversary::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        return nil if description == ""
+        details = Anniversary::makeDetails()
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "startdate", details["startdate"])
+        Items::setAttribute(uuid, "repeatType", details["repeatType"])
+        Items::setAttribute(uuid, "next_celebration", details["next_celebration"])
+        Items::setAttribute(uuid, "mikuType", "Anniversary")
+        item = Items::objectOrNull(uuid)
+        Fsck::fsckItemOrError(item, false)
+        item
+    end
+
+    # Anniversary::toString(item)
+    def self.toString(item)
+        difference = Anniversary::difference_between_dates_in_specified_unit(item["startdate"], item["next_celebration"], item["repeatType"])
+        "🎂 [#{item["startdate"]}, #{item["next_celebration"]}, #{difference.to_s.rjust(4)}, #{item["repeatType"].ljust(7)}] #{item["description"]}"
     end
 
 end

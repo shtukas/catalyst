@@ -19,12 +19,6 @@ class ListingPosition
 
     # ListingPosition::decideRatioListingOrNull(behaviour, nx41)
     def self.decideRatioListingOrNull(behaviour, nx41)
-        if behaviour["btype"] == "backup" then
-            return 0.300
-        end
-        if behaviour["btype"] == "anniversary" then
-            return 0.150
-        end
         raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
     end
 
@@ -57,19 +51,6 @@ class ListingPosition
         end
         if item["mikuType"] == "NxTask" then
             position = NxTasks::listingPosition(item)
-            Items::setAttribute(item["uuid"], "nx41", {
-                "unixtime" => Time.new.to_f,
-                "position" => position
-            })
-            return position
-        end
-        if item["mikuType"] == "NxPolymorph" then
-            ratio = ListingPosition::decideRatioListingOrNull(item["bx42"], item["nx41"])
-            if ratio.nil? then
-                Items::setAttribute(item["uuid"], "nx41", nil)
-                return nil
-            end
-            position = ratio
             Items::setAttribute(item["uuid"], "nx41", {
                 "unixtime" => Time.new.to_f,
                 "position" => position

@@ -15,10 +15,6 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxPolymorph" then
-            return
-        end
-
         if item["mikuType"] == "NxSequenceItem" then
             return
         end
@@ -88,6 +84,14 @@ class Fsck
         end
 
         if item["mikuType"] == "NxWait" then
+            return
+        end
+
+        if item["mikuType"] == "NxBackup" then
+            return
+        end
+
+        if item["mikuType"] == "Anniversary" then
             return
         end
 

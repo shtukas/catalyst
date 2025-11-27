@@ -21,9 +21,6 @@ class PolyActions
 
     # PolyActions::stop(item)
     def self.stop(item)
-        if item["mikuType"] == "NxPolymorph" then
-            item = NxPolymorphs::stop(item)
-        end
         NxBalls::stop(item)
         ListingPosition::delistItemAndSimilar(item)
     end
@@ -97,13 +94,15 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPolymorph" then
-            NxPolymorphs::done(item)
+        if item["mikuType"] == "NxWait" then
+            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             return
         end
 
-        if item["mikuType"] == "NxWait" then
-            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+        if item["mikuType"] == "Anniversary" then
+            next_celebration = Anniversary::computeNextCelebrationDate(item["startdate"], item["repeatType"])
+            Items::setAttribute(item["uuid"], "next_celebration", next_celebration)
+            DoNotShowUntil::doNotShowUntil(item, Date.parse(next_celebration).to_time.to_i)
             return
         end
 
@@ -166,13 +165,6 @@ class PolyActions
 
         PolyActions::stop(item)
 
-        if item["mikuType"] == "NxPolymorph" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxWait" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
@@ -188,6 +180,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPriority" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "Anniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end

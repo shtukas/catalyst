@@ -1,9 +1,0 @@
-
-NxPolymorph:
-    - uuid        : String
-    - mikuType    : "NxPolymorph"
-    - unixtime    :
-    - datetime    :
-    - description : String
-    - bx42                  : TxBehaviour
-    - nx41        : Nx41

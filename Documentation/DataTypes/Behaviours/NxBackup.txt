@@ -1,0 +1,8 @@
+
+NxBackup:
+    - uuid         : String
+    - mikuType     : "NxBackup"
+    - unixtime     :
+    - datetime     :
+    - description  : String
+    - period       : Float # period in days
