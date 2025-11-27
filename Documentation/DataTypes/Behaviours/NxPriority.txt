@@ -6,3 +6,4 @@ NxPriority:
     - datetime    :
     - description : String
     - nx41        : Nx41
+    - position-09 : Float

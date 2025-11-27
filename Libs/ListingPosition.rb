@@ -37,13 +37,16 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
+        if item["nx41"] and item["nx41"]["position"] < 0 then
+            return item["nx41"]["position"]
+        end
+        if item["mikuType"] == "NxPriority" then
+            return item["position-09"]
+        end
         # interruptions : 0.1
         # projects      : 0.2 -> 1.0 over 5 hours
         # items         : 0.2 -> 1.0 over 2 hours
         # waves         : 0.2 -> 1.0
-        if item["nx41"] and item["nx41"]["position"] < 0 then
-            return item["nx41"]["position"]
-        end
         if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
             return item["nx41"]["position"]
         end
@@ -75,9 +78,6 @@ class ListingPosition
                 "position" => position
             })
             return position
-        end
-        if item["mikuType"] == "NxPriority" then
-            return item["nx41"]["position"]
         end
         if item["mikuType"] == "Wave" then
             if item["random"].nil? then
