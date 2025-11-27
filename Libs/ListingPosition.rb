@@ -34,12 +34,16 @@ class ListingPosition
         # projects      : 0.2 -> 1.0 over 5 hours
         # items         : 0.2 -> 1.0 over 2 hours
         # waves         : 0.2 -> 1.0
+        # ondates       : 0.400
         # waits         : 0.500
         if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
             return item["nx41"]["position"]
         end
         if item["mikuType"] == "NxWait" then
             return 0.5
+        end
+        if item["mikuType"] == "NxOndate" then
+            return 0.4
         end
         if item["mikuType"] == "NxProject" then
             position = NxProjects::computeListingPosition(item)
