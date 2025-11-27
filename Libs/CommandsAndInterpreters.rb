@@ -5,8 +5,8 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items) | donation *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress | sequence item",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | move * (move to sequence) | dive * (only on projects) | donation *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | waits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort",
@@ -139,56 +139,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sequence item", input) then
-            positioning = Sequences::interactivelyDecidePositioningOrNull_ExistingSequence() # {"sequenceuuid", "ordinal"}
-            return if positioning.nil?
-            item = NxSequenceItem::interactivelyIssueNewGetReferenceOrNull(positioning["sequenceuuid"], positioning["ordinal"])
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("lift *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-
-            # creating the new payload
-            payload2uuid = UxPayloads::issueNewSequenceGetReference()
-
-            # If there is an existing payload, we make it a sequence item
-            if item["payload-uuid-1141"] then
-                uuid2 = SecureRandom.uuid
-                Items::init(uuid2)
-                Items::setAttribute(uuid2, "unixtime", Time.new.to_i)
-                Items::setAttribute(uuid2, "datetime", Time.new.utc.iso8601)
-                Items::setAttribute(uuid2, "sequenceuuid", payload2["sequenceuuid"])
-                Items::setAttribute(uuid2, "ordinal", 1)
-                Items::setAttribute(uuid2, "description", "#{item["description"]} (lifted)")
-                Items::setAttribute(uuid2, "payload-uuid-1141", item["payload-uuid-1141"])
-                Items::setAttribute(uuid2, "mikuType", "NxSequenceItem")
-                sequenceItem = Items::objectOrNull(uuid2)
-                puts "sequenceItem: #{JSON.pretty_generate(sequenceItem)}"
-            end
-
-            # We create the carrier
-            Items::setAttribute(item["uuid"], "payload-uuid-1141", payload2uuid)
-            return
-        end
-
-        if Interpreting::match("unlift *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if Sequences::isNonEmptySequence(item) then
-                puts "You cannot unlift a non empty sequence carrier"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)
-            return
-        end
-
         if Interpreting::match("bank data *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -262,16 +212,10 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !Sequences::itemPayloadIsSequenceCarrier(item) then
-                puts "You can only dive a sequence carrier"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            payload = Items::objectOrNull(item["payload-uuid-1141"])
-            sequenceuuid = payload["sequenceuuid"]
+            return if item["mikuType"] != "NxProject"
             lx = lambda {
-                Sequences::sequenceElements(sequenceuuid)
-                    .sort_by{|item| item["ordinal"] }
+                Sequences::sequenceElements(item["uuid"])
+                    .sort_by{|item| item["cx17"]["position"] }
             }
             Operations::program3(lx)
             return

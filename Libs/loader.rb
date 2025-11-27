@@ -152,7 +152,6 @@ require_relative "ListingPosition.rb"
 
 require_relative "NxBalls.rb"
 require_relative "Nx46.rb"
-require_relative "NxSequenceItem.rb"
 require_relative "NxProjects.rb"
 require_relative "NxTasks.rb"
 require_relative "NxPriorities.rb"

@@ -15,10 +15,6 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxSequenceItem" then
-            return
-        end
-
         if item["mikuType"] == "UxPayload" then
             UxPayloads::fsck(item)
             return

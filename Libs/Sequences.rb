@@ -6,111 +6,72 @@ class Sequences
     # ---------------------------------------
     # Data
 
-    # Sequences::sequenceElements(sequenceuuid)
-    def self.sequenceElements(sequenceuuid)
-        Items::mikuType("NxSequenceItem")
-            .select{|item| item["sequenceuuid"] == sequenceuuid }
+    # Sequences::sequenceElements(parentuuid)
+    def self.sequenceElements(parentuuid)
+        Items::mikuType("NxTask") # sequences are limited to NxTasks
+            .select{|item| item["cx17"] }
+            .select{|item| item["cx17"]["parentuuid"] == parentuuid }
     end
 
-    # Sequences::sequenceSize(sequenceuuid)
-    def self.sequenceSize(sequenceuuid)
-        Sequences::sequenceElements(sequenceuuid).size
+    # Sequences::sequenceSize(parentuuid)
+    def self.sequenceSize(parentuuid)
+        Sequences::sequenceElements(parentuuid).size
     end
 
-    # Sequences::firstOrdinalInSequence(sequenceuuid)
-    def self.firstOrdinalInSequence(sequenceuuid)
-        ordinals = Items::mikuType("NxSequenceItem")
-            .select{|item| item["sequenceuuid"] == sequenceuuid }
-            .map{|item| item["ordinal"] }
-        (ordinals + [1]).min
+    # Sequences::firstOrdinalInSequence(parentuuid)
+    def self.firstOrdinalInSequence(parentuuid)
+        positions = Sequences::sequenceElements(parentuuid)
+            .map{|item| item["cx17"]["position"] }
+        (positions + [1]).min
     end
 
-    # Sequences::firstItemInSequenceOrNull(sequenceuuid)
-    def self.firstItemInSequenceOrNull(sequenceuuid)
-        Items::mikuType("NxSequenceItem")
-            .select{|item| item["sequenceuuid"] == sequenceuuid }
-            .first
+    # Sequences::firstItemInSequenceOrNull(parentuuid)
+    def self.firstItemInSequenceOrNull(parentuuid)
+        Sequences::sequenceElements(parentuuid).sort_by{|item| item["cx17"]["position"] }.first
     end
 
-    # Sequences::lastOrdinalInSequence(sequenceuuid)
-    def self.lastOrdinalInSequence(sequenceuuid)
-        ordinals = Items::mikuType("NxSequenceItem")
-            .select{|item| item["sequenceuuid"] == sequenceuuid }
-            .map{|item| item["ordinal"] }
-        (ordinals + [1]).max
-    end
-
-    # Sequences::itemPayloadIsSequenceCarrier(item)
-    def self.itemPayloadIsSequenceCarrier(item)
-        return false if item["payload-uuid-1141"].nil?
-        payload = Items::objectOrNull(item["payload-uuid-1141"])
-        payload and payload["type"] == "sequence"
-    end
-
-    # Sequences::isNonEmptySequence(item)
-    def self.isNonEmptySequence(item)
-        return false if !Sequences::itemPayloadIsSequenceCarrier(item)
-        payload = Items::objectOrNull(item["payload-uuid-1141"])
-        return false if payload.nil?
-        Sequences::sequenceSize(payload["sequenceuuid"]) > 0
+    # Sequences::lastOrdinalInSequence(parentuuid)
+    def self.lastOrdinalInSequence(parentuuid)
+        positions = Sequences::sequenceElements(parentuuid)
+            .map{|item| item["cx17"]["position"] }
+        (positions + [1]).max
     end
 
     # ---------------------------------------
     # Interactive
 
-    # Sequences::interativelydecideOrdinalInSequenceOrNull(sequenceuuid) # ordinal
-    def self.interativelydecideOrdinalInSequenceOrNull(sequenceuuid)
-        items = Items::mikuType("NxSequenceItem")
-            .select{|item| item["sequenceuuid"] == sequenceuuid }
-        if items.empty? then
+    # Sequences::interativelydecideOrdinalInSequenceOrNull(parentuuid) # position
+    def self.interativelydecideOrdinalInSequenceOrNull(parentuuid)
+        elements = Sequences::sequenceElements(parentuuid).sort_by{|item| item["cx17"]["position"] }
+        if elements.empty? then
             return 1
         end
-        items = items.sort_by{|item| item["ordinal"] }
-        items.first(20).each{|item|
-            puts "(ordinal: #{item["ordinal"]}) #{item["description"]}"
+        elements.first(20).each{|item|
+            puts "(position: #{item["cx17"]["position"]}) #{item["description"]}"
         }
-        ordinal = LucilleCore::askQuestionAnswerAsString("ordinal (empty for next): ")
-        if ordinal == "" then
-            return Sequences::lastOrdinalInSequence(sequenceuuid) + 1
+        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        if position == "" then
+            return Sequences::lastOrdinalInSequence(parentuuid) + 1
         end
-        ordinal.to_f
+        position.to_f
     end
 
-    # Sequences::interactivelyDecideSequenceOrNull() # sequenceuuid or null
-    def self.interactivelyDecideSequenceOrNull()
-        items = Items::objects()
-                    .select{|item| item["mikuType"] != "NxDeleted" }
-                    .select{|item| Sequences::itemPayloadIsSequenceCarrier(item) }
-        item = LucilleCore::selectEntityFromListOfEntitiesOrNull("sequence", items, lambda{|item| PolyFunctions::toString(item) })
-        return nil if item.nil?
-        payload  = Item::itemOrNull(item["payload-uuid-1141"])
-        payload["sequenceuuid"]
-    end
-
-    # Sequences::interactivelyDecidePositioningOrNull_ExistingSequence() # {"sequenceuuid", "ordinal"}
-    def self.interactivelyDecidePositioningOrNull_ExistingSequence()
-        sequenceuuid = Sequences::interactivelyDecideSequenceOrNull()
-        return nil if sequenceuuid.nil?
-        ordinal = Sequences::interativelydecideOrdinalInSequenceOrNull(sequenceuuid)
+    # Sequences::interactivelyMakeCx17OrNull() # {"parentuuid", "position"}
+    def self.interactivelyMakeCx17OrNull()
+        parent = NxProjects::interactivelySelectProjectOrNull()
+        return nil if parent.nil?
+        position = Sequences::interativelydecideOrdinalInSequenceOrNull(parent["uuid"])
+        return nil if position.nil?
         {
-            "sequenceuuid" => sequenceuuid,
-            "ordinal" => ordinal
+            "parentuuid" => parentuuid,
+            "position" => position
         }
     end
 
     # Sequences::moveToSequence(item)
     def self.moveToSequence(item)
-        if Sequences::itemPayloadIsSequenceCarrier(item) then
-            puts "You cannot move a sequence carrier"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        positioning = Sequences::interactivelyDecidePositioningOrNull_ExistingSequence()
-        return if positioning.nil?
-        Items::setAttribute(item["uuid"], "sequenceuuid", positioning["sequenceuuid"])
-        Items::setAttribute(item["uuid"], "ordinal", positioning["ordinal"])
-        Items::setAttribute(item["uuid"], "mikuType", "NxSequenceItem")
-        item = Items::objectOrNull(item["uuid"])
-        puts JSON.pretty_generate(item)
+        cx17 = Sequences::interactivelyMakeCx17OrNull()
+        return if cx17.nil?
+        Items::setAttribute(item["uuid"], "cx17", cx17)
     end
 end

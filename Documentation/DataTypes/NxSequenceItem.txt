@@ -1,8 +1,0 @@
-NxSequenceItem:
-    - uuid           : String
-    - mikuType       : "NxSequenceItem"
-    - unixtime       :
-    - datetime       :
-    - sequenceuuid   : String
-    - ordinal        : Float
-    - description    : String

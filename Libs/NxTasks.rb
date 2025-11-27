@@ -55,6 +55,7 @@ class NxTasks
     # NxTasks::listingItems()
     def self.listingItems()
         Items::mikuType("NxTask")
+            .select{|item| item["cx17"].nil? } # not a sequence item
             .sort_by{|item| item["px36"] }
             .first(5)
     end

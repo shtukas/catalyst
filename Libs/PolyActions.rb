@@ -77,13 +77,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSequenceItem" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxDeleted" then
             Items::deleteObject(item["uuid"])
             return
