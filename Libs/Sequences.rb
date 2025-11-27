@@ -74,4 +74,11 @@ class Sequences
         return if cx17.nil?
         Items::setAttribute(item["uuid"], "cx17", cx17)
     end
+
+    # Sequences::suffix(item)
+    def self.suffix(item)
+        size = Sequences::sequenceSize(item["uuid"])
+        return "" if size == 0
+        " (sequence: #{size} elements)"
+    end
 end

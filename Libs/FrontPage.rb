@@ -21,7 +21,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         lps = item["nx41"] ? " (l: #{item["nx41"]["position"]})".yellow : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Donations::donationSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lps}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Sequences::suffix(item)}#{Donations::donationSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{lps}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
