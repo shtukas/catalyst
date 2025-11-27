@@ -6,8 +6,8 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | lift * (promote to sequence carrier) | move * (move to sequence) | dive * (dive sequence items) | donation *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | await | in progress | polymorph | sequence item",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | awaits",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress | polymorph | sequence item",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | waits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort",
         ].join("\n")
@@ -439,22 +439,17 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("await", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = {
-                "btype" => "NxAwait"
-            }
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
+        if Interpreting::match("wait", input) then
+            item = NxWaits::interactivelyIssueNewOrNull()
+            return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("awaits", input) then
-            Operations::program3ItemsWithGivenBehaviour("NxAwait")
+        if Interpreting::match("waits", input) then
+            Operations::program3(lambda { 
+                Items::mikuType("NxWait")
+            })
             return
         end
 
@@ -684,20 +679,6 @@ class CommandsAndInterpreters
                 Items::mikuType("Wave")
                     .sort_by{|item| item["lastDoneUnixtime"] }
             })
-            return
-        end
-
-        if Interpreting::match("await", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            Items::init(uuid)
-            behaviour = {
-                "btype" => "NxAwait"
-            }
-            payload = UxPayloads::makeNewPayloadOrNull()
-            item = NxPolymorphs::issueNew(uuid, description, behaviour, payload)
-            puts JSON.pretty_generate(item)
             return
         end
     end

@@ -1,9 +1,6 @@
 
 TxBehaviour
 {
-    "btype": "NxAwait"
-}
-{
     "btype": "ondate"
     "date": YYYY-MM-DD
 }

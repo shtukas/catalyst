@@ -95,6 +95,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxWait" then
+            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
             return if option.nil?
@@ -155,6 +160,13 @@ class PolyActions
         PolyActions::stop(item)
 
         if item["mikuType"] == "NxPolymorph" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxWait" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end

@@ -7,18 +7,12 @@ class TxBehaviour
     # TxBehaviour::interactivelyMakeBehaviourOrNull()
     def self.interactivelyMakeBehaviourOrNull()
         options = [
-            "await",
             "ondate",
             "backup",
             "anniversary"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("behaviour", options)
         return nil if option.nil?
-        if option == "await" then
-            return {
-                 "btype" => "NxAwait"
-            }
-        end
         if option == "ondate" then
             return {
                 "btype" => "ondate",

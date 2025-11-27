@@ -29,7 +29,7 @@ class FrontPage
             line = line.yellow
         end
         if NxBalls::itemIsActive(item) then
-            line = line.yellow
+            line = line.green
         end
         if NxBalls::itemIsRunning(item) then
             line = line.green
@@ -55,7 +55,8 @@ class FrontPage
             Items::mikuType("NxProject"),
             NxTasks::listingItems(),
             Items::mikuType("NxPriority"),
-            Items::mikuType("Wave")
+            Items::mikuType("Wave"),
+            NxWaits::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
