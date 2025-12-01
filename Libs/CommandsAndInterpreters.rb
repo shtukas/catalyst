@@ -252,7 +252,7 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Items::mikuType("NxOndate")
                     .select{|item| item["date"] <= CommonUtils::today() }
-                    .sort_by{|item| item["bx42"]["date"] }
+                    .sort_by{|item| item["date"] }
             })
             return
         end
