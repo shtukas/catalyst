@@ -1,6 +1,0 @@
-Define the tasks children of a project
-
-Cx17 {
-    "parentuuid" : String
-    "position"   : Float
-}

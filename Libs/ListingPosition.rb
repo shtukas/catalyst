@@ -45,14 +45,6 @@ class ListingPosition
         if item["mikuType"] == "NxOndate" then
             return 0.4
         end
-        if item["mikuType"] == "NxProject" then
-            position = NxProjects::computeListingPosition(item)
-            Items::setAttribute(item["uuid"], "nx41", {
-                "unixtime" => Time.new.to_f,
-                "position" => position
-            })
-            return position
-        end
         if item["mikuType"] == "NxTask" then
             position = NxTasks::listingPosition(item)
             Items::setAttribute(item["uuid"], "nx41", {
@@ -77,11 +69,6 @@ class ListingPosition
     # ListingPosition::delistItemAndSimilar(item)
     def self.delistItemAndSimilar(item)
         Items::setAttribute(item["uuid"], "nx41", nil)
-        if item["mikuType"] == "NxProject" then
-            Items::mikuType("NxProject").each{|item|
-                Items::setAttribute(item["uuid"], "nx41", nil)
-            }
-        end
         if item["mikuType"] == "NxTask" then
             NxTasks::listingItems().each{|item|
                 Items::setAttribute(item["uuid"], "nx41", nil)

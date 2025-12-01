@@ -128,6 +128,7 @@ require_relative "Bank.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
+require_relative "Cx18s.rb"
 
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
@@ -152,7 +153,6 @@ require_relative "ListingPosition.rb"
 
 require_relative "NxBalls.rb"
 require_relative "Nx46.rb"
-require_relative "NxProjects.rb"
 require_relative "NxTasks.rb"
 require_relative "NxPriorities.rb"
 require_relative "NxWaits.rb"
@@ -166,7 +166,6 @@ require_relative "PolyFunctions.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
-require_relative "Sequences.rb"
 
 require_relative "TmpSkip1.rb"
 

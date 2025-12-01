@@ -146,7 +146,7 @@ class UxPayloads
     def self.toString(payload)
         return "" if payload.nil?
         if payload["mikuType"] == "Sequence" then
-            item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            item = Cx18s::firstItem(payload["sequenceuuid"])
             return "(sequence: empty)" if item.nil?
             return "(sequence: next: #{item["description"]})"
         end
@@ -291,7 +291,7 @@ class UxPayloads
             return
         end
         if payload["type"] == "sequence" then
-            item = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            item = Cx18s::firstItem(payload["sequenceuuid"])
             return if item.nil?
             UxPayloads::access(UxPayloads::itemToPayloadOrNull(item))
             return

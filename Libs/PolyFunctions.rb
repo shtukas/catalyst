@@ -20,10 +20,10 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxProject" then
+        if item["cx18"] then
             accounts << {
-                "description" => "projects-25806839",
-                "number"      => "projects-25806839"
+                "description" => item["cx18"]["uuid"],
+                "number"      => "clique: #{item["cx18"]["name"]}"
             }
         end
 
@@ -59,9 +59,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "Anniversary" then
             return Anniversaries::toString(item)
-        end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)

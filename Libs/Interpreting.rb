@@ -17,7 +17,7 @@ Usage:
     break if command == ""
 
     if (indx = Interpreting::readAsIntegerOrNull(command)) then
-        item = projectItems[indx]
+        item = cx18Items[indx]
         next if item.nil?
     end
 

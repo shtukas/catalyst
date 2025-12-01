@@ -3,14 +3,14 @@ class Donations
 
     # Donations::interactivelySelectDonationTargetorNull()
     def self.interactivelySelectDonationTargetorNull()
-        NxProjects::interactivelySelectProjectOrNull()
+        Cx18s::interactivelySelectCx18OrNull()
     end
 
     # Donations::interactivelyAttachDonationOrNothing(item)
     def self.interactivelyAttachDonationOrNothing(item)
-        target = Donations::interactivelySelectDonationTargetorNull()
-        return if target.nil?
-        Items::setAttribute(item["uuid"], "donation-08", target["uuid"])
+        cx18 = Donations::interactivelySelectDonationTargetorNull()
+        return if cx18.nil?
+        Items::setAttribute(item["uuid"], "donation-08", cx18["uuid"])
     end
 
     # Donations::donationSuffix(item)

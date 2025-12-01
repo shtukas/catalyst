@@ -49,19 +49,28 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}"
+        suffix = item["cx18"] ? " (#{item["cx18"]["name"]})".yellow : ""
+        "#{NxTasks::icon()} #{item["description"]}#{suffix}"
     end
 
     # NxTasks::listingItems()
     def self.listingItems()
-        Items::mikuType("NxTask")
-            .select{|item| item["cx17"].nil? } # not a sequence item
+        i1 = Items::mikuType("NxTask")
+            .select{|item| item["cx18"].nil? } # not a sequence item
             .sort_by{|item| item["px36"] }
             .first(5)
+        i2 = Items::mikuType("NxTask")
+            .select{|item| item["cx18"] }
+        i1 + i2
     end
 
     # NxTasks::listingPosition(item)
     def self.listingPosition(item)
-        0.2 + Math.atan(item["px36"]).to_f/1000 + 0.8 * BankDerivedData::recoveredAverageHoursPerDay("tasks-8e7fa41a").to_f/2
+        if item["cx18"] then
+            0.2 + Math.atan(item["px36"]).to_f/1000 + 0.8 * BankDerivedData::recoveredAverageHoursPerDay(item["cx18"]["uuid"]).to_f/2
+        else
+            0.2 + Math.atan(item["px36"]).to_f/1000 + 0.8 * BankDerivedData::recoveredAverageHoursPerDay("tasks-8e7fa41a").to_f/2
+        end
+        
     end
 end

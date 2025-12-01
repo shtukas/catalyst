@@ -43,7 +43,7 @@ class PolyActions
         end
 
         if payload and payload["type"] == "sequence" then
-            sequenceItem = Sequences::firstItemInSequenceOrNull(payload["sequenceuuid"])
+            sequenceItem = Cx18s::firstItem(payload["sequenceuuid"])
             puts JSON.pretty_generate(sequenceItem)
             PolyActions::done(sequenceItem)
             return
@@ -100,18 +100,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
-            return if option.nil?
-            if option == "done for the day (default)" then
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                PolyActions::destroy(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
             return if option.nil?
             if option == "done for the day (default)" then
@@ -186,17 +174,16 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end
             return
         end
 
-        if item["mikuType"] == "NxProject" then
+        if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
-                NxProjects::alignLx56()
             end
             return
         end
@@ -216,6 +203,7 @@ class PolyActions
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
             Bank::insertValue(account["number"], CommonUtils::today(), timeInSeconds)
         }
+        ListingPosition::delistItemAndSimilar(item)
     end
 
     # PolyActions::editDescription(item)

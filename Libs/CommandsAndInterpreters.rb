@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | move * (move to sequence) | dive * (only on projects) | donation *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | move * (move to sequence) | donation *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | waits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -207,20 +207,6 @@ class CommandsAndInterpreters
             return
         end
 
-
-        if Interpreting::match("dive *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["mikuType"] != "NxProject"
-            lx = lambda {
-                Sequences::sequenceElements(item["uuid"])
-                    .sort_by{|item| item["cx17"]["position"] }
-            }
-            Operations::program3(lx)
-            return
-        end
-
         if Interpreting::match("fsck", input) then
             Fsck::fsckAll()
             LucilleCore::pressEnterToContinue()
@@ -348,15 +334,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("project", input) then
-            item = NxProjects::interactivelyIssueNewProjectOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if Interpreting::match("projects", input) then
-            NxProjects::program()
+            Cx18s::generalDive()
             return
         end
 

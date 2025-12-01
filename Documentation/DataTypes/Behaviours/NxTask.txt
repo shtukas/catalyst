@@ -5,5 +5,10 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
-    - px36         : Float # position within tasks
-    - cx17         : null or Cx17 # Defines the tasks children of a project
+    - px36         : Float # position within tasks, also with a Cx18 clique
+    - cx18         : null or Cx18
+
+Cx18 {
+    "uuid"     : String
+    "name"     : String
+}
