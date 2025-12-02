@@ -145,11 +145,6 @@ class UxPayloads
     # UxPayloads::toString(payload)
     def self.toString(payload)
         return "" if payload.nil?
-        if payload["mikuType"] == "Sequence" then
-            item = Cx18s::firstItem(payload["sequenceuuid"])
-            return "(sequence: empty)" if item.nil?
-            return "(sequence: next: #{item["description"]})"
-        end
         if payload["mikuType"] == "URL" then
             return "(url)"
         end
@@ -288,12 +283,6 @@ class UxPayloads
             return if payload["lines"].empty?
             puts payload["lines"]
             LucilleCore::pressEnterToContinue()
-            return
-        end
-        if payload["type"] == "sequence" then
-            item = Cx18s::firstItem(payload["sequenceuuid"])
-            return if item.nil?
-            UxPayloads::access(UxPayloads::itemToPayloadOrNull(item))
             return
         end
         raise "(error: e0040ec0-1c8f) type: #{payload["type"]}"

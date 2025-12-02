@@ -11,12 +11,16 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxIce" then
+        if item["mikuType"] == "UxPayload" then
+            UxPayloads::fsck(item)
             return
         end
 
-        if item["mikuType"] == "UxPayload" then
-            UxPayloads::fsck(item)
+        if item["mikuType"] == "NxInfinity" then
+            return
+        end
+
+        if item["mikuType"] == "NxHappening" then
             return
         end
 
@@ -75,7 +79,7 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxWait" then
+        if item["mikuType"] == "NxHappening" then
             return
         end
 

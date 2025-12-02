@@ -80,25 +80,6 @@ class Waves
         Items::mikuType("Wave").select{|item| DoNotShowUntil::isVisible(item) }
     end
 
-    # Waves::listingPosition(item)
-    def self.listingPosition(item)
-        if item["random"].nil? then
-            item["random"] = rand
-            Items::setAttribute(item["uuid"], "random", item["random"])
-        end
-        # (copy of listing position table)
-        # interruptions : 0.100
-        # waves         : 1.350          (over 1.5 hours), then [1.8 ,  1.9]
-        if item["interruption"] then
-            return 0.100 + 0.001 * item["random"]
-        end
-        if BankDerivedData::recoveredAverageHoursPerDay("waves-5f12b835") < 1.5 then
-            return 1.350 + 0.05 * Math.sin(Time.new.to_f/86400 + item["random"])
-        else
-            return 1.850 + 0.05 * Math.sin(Time.new.to_f/86400 + item["random"])
-        end
-    end
-
     # Waves::performDone(wave)
     def self.performDone(wave)
         Items::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)

@@ -128,14 +128,12 @@ require_relative "Bank.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
-require_relative "Cx18s.rb"
 
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
 require_relative "DoNotShowUntil.rb"
-require_relative "Donations.rb"
 
 require_relative "Elizabeth.rb"
 
@@ -155,9 +153,10 @@ require_relative "NxBalls.rb"
 require_relative "Nx46.rb"
 require_relative "NxTasks.rb"
 require_relative "NxPriorities.rb"
-require_relative "NxWaits.rb"
+require_relative "NxHappenings.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
+require_relative "NxInfinities.rb"
 
 require_relative "Operations.rb"
 

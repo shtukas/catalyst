@@ -7,9 +7,6 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
-        if item["mikuType"] == "NxOndate" and item["donation-08"].nil? then
-            Donations::interactivelyAttachDonationOrNothing(item)
-        end
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
@@ -42,13 +39,6 @@ class PolyActions
             return
         end
 
-        if payload and payload["type"] == "sequence" then
-            sequenceItem = Cx18s::firstItem(payload["sequenceuuid"])
-            puts JSON.pretty_generate(sequenceItem)
-            PolyActions::done(sequenceItem)
-            return
-        end
-
         PolyActions::stop(item)
 
         if item["mikuType"] == "DesktopTx1" then
@@ -57,6 +47,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "DropBox" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                DropBox::done(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "Infinity" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 DropBox::done(item["uuid"])
             end
@@ -87,7 +84,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxWait" then
+        if item["mikuType"] == "NxHappening" then
             DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             return
         end
@@ -146,8 +143,15 @@ class PolyActions
 
         PolyActions::stop(item)
 
-        if item["mikuType"] == "NxWait" then
+        if item["mikuType"] == "NxHappening" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxInfinity" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteObject(item["uuid"])
             end
             return

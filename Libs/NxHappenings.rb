@@ -1,7 +1,7 @@
 
-class NxWaits
+class NxHappenings
 
-    # NxWaits::interactivelyIssueNewOrNull()
+    # NxHappenings::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
@@ -11,28 +11,28 @@ class NxWaits
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
-        Items::setAttribute(uuid, "mikuType", "NxWait")
+        Items::setAttribute(uuid, "mikuType", "NxHappening")
         item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
 
-    # NxWaits::icon()
+    # NxHappenings::icon()
     def self.icon()
         "🪔"
     end
 
-    # NxWaits::toString(item)
+    # NxHappenings::toString(item)
     def self.toString(item)
-        "#{NxWaits::icon()} #{item["description"]}"
+        "#{NxHappenings::icon()} #{item["description"]}"
     end
 
-    # NxWaits::listingItems()
+    # NxHappenings::listingItems()
     def self.listingItems()
-        Items::mikuType("NxWait")
+        Items::mikuType("NxHappening")
     end
 
-    # NxWaits::listingPosition(item)
+    # NxHappenings::listingPosition(item)
     def self.listingPosition(item)
         0.500
     end

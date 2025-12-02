@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | move * (move to sequence) | donation *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | waits",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | waits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | morning",
         ].join("\n")
@@ -84,17 +84,14 @@ class CommandsAndInterpreters
                     "position" => rand,
                 })
             }
-            # projects
-            Cx18s::cx18s().each{|cx18|
-                puts "clique: #{cx18["name"]}"
-                Cx18s::cx18Items(cx18["uuid"])
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Cx18s::cx18Items(cx18["uuid"]), lambda{|i| PolyFunctions::toString(i) })
-                selected.each{|item|
-                    Items::setAttribute(item["uuid"], "nx41", {
-                        "type"     => "override",
-                        "position" => rand,
-                    })
-                }
+            # NxTasks
+            puts "select tasks"
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], Items::mikuType("NxTask"), lambda{|i| PolyFunctions::toString(i) })
+            selected.each{|item|
+                Items::setAttribute(item["uuid"], "nx41", {
+                    "type"     => "override",
+                    "position" => rand,
+                })
             }
             # waves
             puts "select waves"
@@ -126,36 +123,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
             Items::setAttribute(item["uuid"], "nx41", nil)
-            return
-        end
-
-        if Interpreting::match("move", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Sequences::moveToSequence(item)
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Sequences::moveToSequence(item)
-            return
-        end
-
-        if Interpreting::match("donation", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Donations::interactivelyAttachDonationOrNothing(item)
-            return
-        end
-
-        if Interpreting::match("donation *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Donations::interactivelyAttachDonationOrNothing(item)
             return
         end
 
@@ -254,7 +221,6 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             item = NxOndates::interactivelyIssueNewWithDetails(description, date)
-            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -263,7 +229,6 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             item = NxOndates::interactivelyIssueNewWithDetails(description, CommonUtils::today())
-            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -281,14 +246,12 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             item = NxOndates::interactivelyIssueNewWithDetails(description, CommonUtils::tomorrow())
-            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("ondate", input) then
             item = NxOndates::interactivelyIssueNewOrNull()
-            Donations::interactivelyAttachDonationOrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -334,7 +297,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("wait", input) then
-            item = NxWaits::interactivelyIssueNewOrNull()
+            item = NxHappenings::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -342,7 +305,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("waits", input) then
             Operations::program3(lambda { 
-                Items::mikuType("NxWait")
+                Items::mikuType("NxHappening")
             })
             return
         end
@@ -365,11 +328,6 @@ class CommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("projects", input) then
-            Cx18s::generalDive()
             return
         end
 

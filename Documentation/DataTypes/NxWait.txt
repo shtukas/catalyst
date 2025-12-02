@@ -1,7 +1,7 @@
 
-NxWait:
+NxHappening:
     - uuid         : String
-    - mikuType     : "NxWait"
+    - mikuType     : "NxHappening"
     - unixtime     :
     - datetime     :
     - description  : String

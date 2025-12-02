@@ -1,0 +1,8 @@
+
+NxInfinity:
+    - uuid         : String
+    - mikuType     : "NxInfinity"
+    - unixtime     :
+    - datetime     :
+    - description  : String
+    - px36         : Float # position within NxInfinities

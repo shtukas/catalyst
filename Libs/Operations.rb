@@ -56,35 +56,6 @@ class Operations
         Bank::maintenance()
         puts "Items::maintenance()"
         Items::maintenance()
-
-        count = Items::mikuType("NxTask").size
-        puts "task count: #{count}"
-        if count < 50 then
-            iced = Items::mikuType("NxIce")
-            if iced.size == 0 then
-                puts "[5b2268ae] We do not have any NxIce left, please remove"
-                exit
-            end
-            iced
-                .take(100)
-                .each{|item|
-                    next if !Dx8Units::attemptRepository()
-                    puts "moving #{item["uuid"]} from NxIce to NxTask"
-                    Items::setAttribute(item["uuid"], "px36", NxTasks::nextPosition())
-                    Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-                    if item["payload-uuid-1141"] and (payload = Items::objectOrNull(item["payload-uuid-1141"])) then
-                        if payload["type"] == "Dx8Unit" then
-                            unitId = payload["id"]
-                            location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
-                            puts "unit location: #{location}"
-                            payload2 = UxPayloads::locationToPayload(location)
-                            Items::commitObject(payload2)
-                            Items::setAttribute(item["uuid"], "payload-uuid-1141", payload2["uuid"])
-                            LucilleCore::removeFileSystemLocation(location)
-                        end
-                    end
-                }
-        end
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()

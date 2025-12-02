@@ -13,41 +13,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["mikuType"] == "Wave" then
-            accounts << {
-                "description" => "waves-5f12b835",
-                "number"      => "waves-5f12b835"
-            }
-        end
-
-        if item["mikuType"] == "NxTask" then
-            accounts << {
-                "description" => "tasks-8e7fa41a",
-                "number"      => "tasks-8e7fa41a"
-            }
-        end
-
-        if item["cx18"] then
-            accounts << {
-                "description" => item["cx18"]["uuid"],
-                "number"      => "clique: #{item["cx18"]["name"]}"
-            }
-            accounts << {
-                "description" => "cliques",
-                "number"      => "cliques-85331fa6"
-            }
-        end
-
-        if item["donation-08"] then
-            target = Items::objectOrNull(item["donation-08"])
-            if target then
-                accounts << {
-                    "description" => target["description"],
-                    "number"      => target["uuid"]
-                }
-            end
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -80,11 +45,11 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxWait" then
-            return NxWaits::toString(item)
+        if item["mikuType"] == "NxHappening" then
+            return NxHappenings::toString(item)
         end
-        if item["mikuType"] == "NxIce" then
-            return "[iced] #{item["description"]}"
+        if item["mikuType"] == "NxInfinity" then
+            return NxInfinities::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
