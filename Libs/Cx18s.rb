@@ -76,7 +76,7 @@ class Cx18s
     # Cx18s::interactivelySelectCx18OrNull()
     def self.interactivelySelectCx18OrNull()
         cx18s = Cx18s::cx18s()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", cx18s, lambda{|cx18| "#{cx18["name"]} (#{Cx18s::cx18Size(cx18["uuid"])})" })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", cx18s, lambda{|cx18| "#{cx18["name"].green} (#{Cx18s::cx18Size(cx18["uuid"])})" })
     end
 
     # Cx18s::generalDive()
