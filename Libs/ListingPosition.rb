@@ -24,44 +24,45 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
-        if item["nx41"] and item["nx41"]["position"] < 0 then
+        if item["nx41"] and item["nx41"]["type"] == "override" then
             return item["nx41"]["position"]
         end
+        if item["nx41"] and item["nx41"]["type"] == "natural" and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600*2 then
+            return item["nx41"]["position"]
+        end
+        # mornings      : 0.500
+        # interruptions : 1.100
+        # ondates       : 1.150
+        # waits         : 1.190
+        # waves         : 1.350          (over 1.5 hours), then [1.8 ,  1.9]
+        # projects      : 1.400 -> 1.500 (over 3.0 hours), then  1.8 -> 1.9  (over 3 hours)
+        # items         : 1.500 -> 1.600 (over 2.0 hours), then  1.8 -> 1.9  (over 3 hours)
         if item["mikuType"] == "NxPriority" then
             return item["position-09"]
         end
-        # interruptions : 0.1
-        # projects      : 0.2 -> 1.0 over 5 hours
-        # items         : 0.2 -> 1.0 over 2 hours
-        # waves         : 0.2 -> 1.0
-        # ondates       : 0.400
-        # waits         : 0.500
-        if item["nx41"] and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600 then
-            return item["nx41"]["position"]
-        end
         if item["mikuType"] == "NxWait" then
-            return 0.5
+            return 1.190
         end
         if item["mikuType"] == "NxOndate" then
-            return 0.4
+            return 1.150
         end
         if item["mikuType"] == "NxTask" then
             position = NxTasks::listingPosition(item)
             Items::setAttribute(item["uuid"], "nx41", {
-                "unixtime" => Time.new.to_f,
+                "type"     => "natural",
+                "unixtime" => Time.new.to_i,
                 "position" => position
             })
             return position
         end
         if item["mikuType"] == "Wave" then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
-            if item["interruption"] then
-                return 0.100 + 0.001 * item["random"]
-            end
-            return 0.600 + 0.4 * Math.sin(Time.new.to_f/86400 + item["random"])
+            position = Waves::listingPosition(item)
+            Items::setAttribute(item["uuid"], "nx41", {
+                "type"     => "natural",
+                "unixtime" => Time.new.to_i,
+                "position" => position
+            })
+            return position
         end
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
     end
@@ -71,6 +72,15 @@ class ListingPosition
         Items::setAttribute(item["uuid"], "nx41", nil)
         if item["mikuType"] == "NxTask" then
             NxTasks::listingItems().each{|item|
+                next if item["nx41"].nil?
+                next if item["nx41"]["type"] == "override"
+                Items::setAttribute(item["uuid"], "nx41", nil)
+            }
+        end
+        if item["mikuType"] == "Wave" then
+            Waves::wavesListingItems().each{|item|
+                next if item["nx41"].nil?
+                next if item["nx41"]["type"] == "override"
                 Items::setAttribute(item["uuid"], "nx41", nil)
             }
         end

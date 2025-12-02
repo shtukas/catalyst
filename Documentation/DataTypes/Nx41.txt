@@ -1,5 +1,10 @@
 Nx41
 {
-    "unixtime": integer
+    "type"    : "natural"
+    "unixtime": Float # they naturally expiry after 2 hours for refreshing
     "position": Float
+}
+{
+    "type"    : "override" 
+    "position": Float # this position never expires
 }

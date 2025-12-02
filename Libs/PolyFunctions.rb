@@ -13,6 +13,13 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        if item["mikuType"] == "Wave" then
+            accounts << {
+                "description" => "waves-5f12b835",
+                "number"      => "waves-5f12b835"
+            }
+        end
+
         if item["mikuType"] == "NxTask" then
             accounts << {
                 "description" => "tasks-8e7fa41a",
@@ -24,6 +31,10 @@ class PolyFunctions
             accounts << {
                 "description" => item["cx18"]["uuid"],
                 "number"      => "clique: #{item["cx18"]["name"]}"
+            }
+            accounts << {
+                "description" => "cliques",
+                "number"      => "cliques-85331fa6"
             }
         end
 

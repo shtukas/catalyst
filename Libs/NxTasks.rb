@@ -66,11 +66,22 @@ class NxTasks
 
     # NxTasks::listingPosition(item)
     def self.listingPosition(item)
+        # (copy of listing position table)
+        # projects      : 1.400 -> 1.500 (over 3.0 hours), then  1.8 -> 1.9  (over 3 hours)
+        # items         : 1.500 -> 1.600 (over 2.0 hours), then  1.8 -> 1.9  (over 3 hours)
         if item["cx18"] then
-            0.2 + Math.atan(item["px36"]).to_f/1000 + 0.8 * BankDerivedData::recoveredAverageHoursPerDay(item["cx18"]["uuid"]).to_f/2
-        else
-            0.2 + Math.atan(item["px36"]).to_f/1000 + 0.8 * BankDerivedData::recoveredAverageHoursPerDay("tasks-8e7fa41a").to_f/2
+            rt = BankDerivedData::recoveredAverageHoursPerDay("cliques-85331fa6")
+            if rt < 3.0 then
+                return 1.400 + 0.6 * BankDerivedData::recoveredAverageHoursPerDay(item["cx18"]["uuid"]).to_f/3 + Math.atan(item["px36"]).to_f/1000
+            else
+                return 1.800 + 0.6 * BankDerivedData::recoveredAverageHoursPerDay(item["cx18"]["uuid"]).to_f/3 + Math.atan(item["px36"]).to_f/1000
+            end
         end
-        
+        rt = BankDerivedData::recoveredAverageHoursPerDay("tasks-8e7fa41a")
+        if rt < 3.0 then
+            return 1.500 + Math.atan(item["px36"]).to_f/1000 + 0.6 * rt.to_f/3
+        else
+            return 1.800 + Math.atan(item["px36"]).to_f/1000 + 0.6 * rt.to_f/3
+        end
     end
 end

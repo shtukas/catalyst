@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | projects | waits",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | maintenance | sort",
+            "misc          : search | commands | fsck | maintenance | sort | morning",
         ].join("\n")
     end
 
@@ -74,12 +74,46 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("morning", input) then
+            # ondates
+            puts "select ondates"
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxOndates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+            selected.each{|item|
+                Items::setAttribute(item["uuid"], "nx41", {
+                    "type"     => "override",
+                    "position" => rand,
+                })
+            }
+            # projects
+            Cx18s::cx18s().each{|cx18|
+                puts "clique: #{cx18["name"]}"
+                Cx18s::cx18Items(cx18["uuid"])
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Cx18s::cx18Items(cx18["uuid"]), lambda{|i| PolyFunctions::toString(i) })
+                selected.each{|item|
+                    Items::setAttribute(item["uuid"], "nx41", {
+                        "type"     => "override",
+                        "position" => rand,
+                    })
+                }
+            }
+            # waves
+            puts "select waves"
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], Waves::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+            selected.each{|item|
+                Items::setAttribute(item["uuid"], "nx41", {
+                    "type"     => "override",
+                    "position" => rand,
+                })
+            }
+            return
+        end
+
         if Interpreting::match("sort", input) then
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
-                    "unixtime" => Time.new.to_f,
+                    "type"     => "override",
                     "position" => ListingPosition::firstNegativeListingPosition() - 1,
                 })
             }
