@@ -423,11 +423,6 @@ class UxPayloads
 
     # UxPayloads::payloadProgram(item)
     def self.payloadProgram(item)
-        if Sequences::isNonEmptySequence(item) then
-            puts "You cannot payload program a sequence carrier that is not empty"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
         payload = UxPayloads::itemToPayloadOrNull(item)
         if payload.nil? then
             Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
