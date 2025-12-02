@@ -87,10 +87,10 @@ class Waves
             Items::setAttribute(item["uuid"], "random", item["random"])
         end
         # (copy of listing position table)
-        # interruptions : 1.100
+        # interruptions : 0.100
         # waves         : 1.350          (over 1.5 hours), then [1.8 ,  1.9]
         if item["interruption"] then
-            return 1.100 + 0.001 * item["random"]
+            return 0.100 + 0.001 * item["random"]
         end
         if BankDerivedData::recoveredAverageHoursPerDay("waves-5f12b835") < 1.5 then
             return 1.350 + 0.05 * Math.sin(Time.new.to_f/86400 + item["random"])

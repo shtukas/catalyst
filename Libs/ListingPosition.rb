@@ -30,8 +30,8 @@ class ListingPosition
         if item["nx41"] and item["nx41"]["type"] == "natural" and (Time.new.to_i - item["nx41"]["unixtime"]) < 3600*2 then
             return item["nx41"]["position"]
         end
-        # mornings      : 0.500
-        # interruptions : 1.100
+        # interruptions : 0.100
+        # priorities    : 0.500
         # ondates       : 1.150
         # waits         : 1.190
         # waves         : 1.350          (over 1.5 hours), then [1.8 ,  1.9]
