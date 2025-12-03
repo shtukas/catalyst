@@ -50,7 +50,14 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Infinity" then
+        if item["mikuType"] == "NxToday" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                DropBox::done(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxInfinity" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 DropBox::done(item["uuid"])
             end
@@ -154,6 +161,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxInfinity" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxToday" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteObject(item["uuid"])
             end

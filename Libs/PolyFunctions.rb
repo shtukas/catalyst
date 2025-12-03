@@ -39,6 +39,9 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
+        if item["mikuType"] == "NxToday" then
+            return NxTodays::toString(item)
+        end
         if item["mikuType"] == "NxPriority" then
             return NxPriorities::toString(item)
         end

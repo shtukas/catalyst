@@ -33,6 +33,7 @@ class ListingPosition
         # (sorted)       : (negative)
         # interruptions  : 0.100
         # day priorities : 0.500
+        # today          : 1.140
         # ondates        : 1.150
         # NxHappening    : 1.190
         # Wave           : 1.350
@@ -41,6 +42,13 @@ class ListingPosition
         if item["mikuType"] == "NxPriority" then
             return item["position-09"]
         end
+        if item["mikuType"] == "NxToday" then
+            if item["random"].nil? then
+                item["random"] = rand
+                Items::setAttribute(item["uuid"], "random", item["random"])
+            end
+            return 1.140 + item["random"].to_f/1000
+        end
         if item["mikuType"] == "NxHappening" then
             return 1.190
         end
@@ -48,7 +56,11 @@ class ListingPosition
             return 2.000
         end
         if item["mikuType"] == "NxOndate" then
-            return 1.150
+            if item["random"].nil? then
+                item["random"] = rand
+                Items::setAttribute(item["uuid"], "random", item["random"])
+            end
+            return 1.150 + item["random"].to_f/1000
         end
         if item["mikuType"] == "NxTask" then
             if item["random"].nil? then
