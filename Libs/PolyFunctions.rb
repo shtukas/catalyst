@@ -42,6 +42,9 @@ class PolyFunctions
         if item["mikuType"] == "NxPriority" then
             return NxPriorities::toString(item)
         end
+        if item["mikuType"] == "NxSubline" then
+            return NxSublines::toString(item)
+        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end

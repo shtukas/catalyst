@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | project | wait | in progress",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | waits",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | done+ (*) (done the first subline) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | insert into * | dive *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | happening",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | happenings",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | morning",
         ].join("\n")
@@ -117,6 +117,15 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("dive *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            puts "diving into #{PolyFunctions::toString(item)}"
+            Operations::dive(item)
+            return
+        end
+
         if Interpreting::match("delist *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -128,6 +137,14 @@ class CommandsAndInterpreters
 
         if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
+            return
+        end
+
+        if Interpreting::match("insert into *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxSublines::insert(item)
             return
         end
 
@@ -233,6 +250,13 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("tasks", input) then
+            Operations::program3(lambda { 
+                Items::mikuType("NxTask")
+            })
+            return
+        end
+
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxOndate")
@@ -296,14 +320,14 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("wait", input) then
+        if Interpreting::match("happening", input) then
             item = NxHappenings::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("waits", input) then
+        if Interpreting::match("happenings", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxHappening")
             })
@@ -369,6 +393,16 @@ class CommandsAndInterpreters
 
         if Interpreting::match("desktop", input) then
             system("open '#{Desktop::filepath()}'")
+            return
+        end
+
+        if Interpreting::match("done+", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxSublines::itemsForParentInOrder(item["uuid"]).each{|subline|
+                PolyActions::destroy(subline)
+                return # We just do the first one
+            }
             return
         end
 

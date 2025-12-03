@@ -41,6 +41,9 @@ class Operations
                 .each{|item|
                     store.register(item, FrontPage::canBeDefault(item))
                     puts FrontPage::toString2(store, item)
+                    FrontPage::additionalLines(item).each{|line|
+                        puts " " * FrontPage::additionalLinesShift(item) + line
+                    }
                 }
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
@@ -117,5 +120,10 @@ class Operations
         if option == "destroy" then
             Items::deleteObject(item["uuid"])
         end
+    end
+
+    # Operations::dive(item)
+    def self.dive(item)
+        NxSublines::dive(item)
     end
 end

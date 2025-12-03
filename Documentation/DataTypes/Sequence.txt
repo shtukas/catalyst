@@ -1,5 +1,0 @@
-{
-    "uuid"         : String
-    "mikuType"     : "Sequence"
-    "sequenceuuid" : String
-}

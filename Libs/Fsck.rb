@@ -48,10 +48,6 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "Sequence" then
-            return
-        end
-
         if item["mikuType"] == "Text" then
             if item["text"].nil? then
                 raise "could not find `text` attribute for item #{item}"
@@ -88,6 +84,10 @@ class Fsck
         end
 
         if item["mikuType"] == "Anniversary" then
+            return
+        end
+
+        if item["mikuType"] == "NxSubline" then
             return
         end
 

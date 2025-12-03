@@ -157,6 +157,7 @@ require_relative "NxHappenings.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxInfinities.rb"
+require_relative "NxSublines.rb"
 
 require_relative "Operations.rb"
 

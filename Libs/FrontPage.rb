@@ -8,7 +8,19 @@ class FrontPage
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
         return false if TmpSkip1::isSkipped(item)
+        return false if item["mikuType"] == "NxHappening"
         true
+    end
+
+    # FrontPage::additionalLines(item)
+    def self.additionalLines(item)
+        sublines = NxSublines::itemsForParentInOrder(item["uuid"])
+        sublines.map{|s| NxSublines::toString(s) }
+    end
+
+    # FrontPage::additionalLinesShift(item)
+    def self.additionalLinesShift(item)
+        9
     end
 
     # FrontPage::isInterruption(item)
@@ -92,27 +104,35 @@ class FrontPage
 
         displayeduuids = []
 
-        FrontPage::itemsForListing()
-            .each{|item|
-                displayeduuids << item["uuid"]
-                store.register(item, FrontPage::canBeDefault(item))
-                line = FrontPage::toString2(store, item)
-                puts line
-                sheight = sheight - (line.size/swidth + 1)
-                break if sheight <= 3
-            }
-
         activePackets = NxBalls::activePackets()
         activePackets
             .sort_by{|packet| packet["startunixtime"] }
             .reverse
             .map{|packet| packet["item"] }
             .each{|item|
-                next if displayeduuids.include?(item["uuid"])
+                displayeduuids << item["uuid"]
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)
                 puts line.green
                 sheight = sheight - (line.size/swidth + 1)
+                FrontPage::additionalLines(item).each{|line|
+                    puts " " * FrontPage::additionalLinesShift(item) + line
+                    sheight = sheight - (line.size/swidth + 1)
+                }
+            }
+
+        FrontPage::itemsForListing()
+            .each{|item|
+                next if displayeduuids.include?(item["uuid"])
+                store.register(item, FrontPage::canBeDefault(item))
+                line = FrontPage::toString2(store, item)
+                puts line
+                sheight = sheight - (line.size/swidth + 1)
+                FrontPage::additionalLines(item).each{|line|
+                    puts " " * FrontPage::additionalLinesShift(item) + line
+                    sheight = sheight - (line.size/swidth + 1)
+                }
+                break if sheight <= 3
             }
 
         t2 = Time.new.to_f

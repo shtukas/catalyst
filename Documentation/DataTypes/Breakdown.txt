@@ -1,5 +1,0 @@
-{
-    "uuid"     : String
-    "mikuType" : "Breakdown"
-    "lines"    : Array[String]
-}

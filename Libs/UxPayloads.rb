@@ -9,9 +9,7 @@ class UxPayloads
         [
             "text",
             "url",
-            "breakdown",
             "aion-point",
-            "sequence",
             "todo-text-file-by-name-fragment",
             "open cycle",
             "unique-string",
@@ -25,15 +23,6 @@ class UxPayloads
     # UxPayloads::interactivelySelectTypeOrNull()
     def self.interactivelySelectTypeOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayloads::types())
-    end
-
-    # UxPayloads::interactivelyMakeBreakdownPayload()
-    def self.interactivelyMakeBreakdownPayload()
-        {
-            "uuid"     => SecureRandom.uuid,
-            "mikuType" => "Breakdown",
-            "lines"    => Operations::interactivelyGetLinesUsingTextEditor()
-        }
     end
 
     # UxPayloads::locationToPayload(location)
@@ -98,13 +87,6 @@ class UxPayloads
                 "uniquestring" => uniquestring
             }
         end
-        if type == "sequence" then
-            return {
-                "uuid"         => SecureRandom.uuid,
-                "mikuType"     => "Sequence",
-                "sequenceuuid" => SecureRandom.hex
-            }
-        end
         if type == "open cycle" then
             name1 = LucilleCore::askQuestionAnswerAsString("name (empty to abort): ")
             return nil if name1 == ""
@@ -114,9 +96,6 @@ class UxPayloads
                 "name"     => name1
             }
         end
-        if type == "breakdown" then
-            return UxPayloads::interactivelyMakeBreakdownPayload()
-        end
         raise "(error: 9dc106ff-44c6)"
     end
 
@@ -124,17 +103,6 @@ class UxPayloads
     def self.interactivelyIssueNewGetReferenceOrNull()
         payload = UxPayloads::makeNewPayloadOrNull()
         return nil if payload.nil?
-        Items::commitObject(payload)
-        payload["uuid"]
-    end
-
-    # UxPayloads::issueNewSequenceGetReference() # issues the new sequence and return a uuid
-    def self.issueNewSequenceGetReference()
-        payload = {
-            "uuid"         => SecureRandom.uuid,
-            "mikuType"     => "Sequence",
-            "sequenceuuid" => SecureRandom.hex
-        }
         Items::commitObject(payload)
         payload["uuid"]
     end
@@ -150,9 +118,6 @@ class UxPayloads
         end
         if payload["mikuType"] == "AionPoint" then
             return "(aion-point)"
-        end
-        if payload["mikuType"] == "Breakdown" then
-            return "(breakdown)"
         end
         if payload["mikuType"] == "Dx8Unit" then
             return "(Dx8Unit)"
@@ -279,12 +244,6 @@ class UxPayloads
             end
             return
         end
-        if payload["type"] == "breakdown" then
-            return if payload["lines"].empty?
-            puts payload["lines"]
-            LucilleCore::pressEnterToContinue()
-            return
-        end
         raise "(error: e0040ec0-1c8f) type: #{payload["type"]}"
     end
 
@@ -346,11 +305,6 @@ class UxPayloads
             Items::commitObject(payload)
             return
         end
-        if payload["type"] == "breakdown" then
-            payload["lines"] = Operations::interactivelyRecompileLines(payload["lines"])
-            Items::commitObject(payload)
-            return
-        end
         raise "(error: 9dc106ff-44c6)"
     end
 
@@ -399,12 +353,6 @@ class UxPayloads
             return
         end
         if payload["type"] == "open cycle" then
-            return
-        end
-        if payload["type"] == "breakdown" then
-            return
-        end
-        if payload["type"] == "sequence" then
             return
         end
         raise "unkown payload type: #{payload["type"]} at #{payload}"
