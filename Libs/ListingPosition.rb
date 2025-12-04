@@ -71,7 +71,7 @@ class ListingPosition
             # wave morning
             Items::setAttribute(item["uuid"], "nx41", {
                 "type"     => "override",
-                "position" => 0.5 * (1 + ListingPosition::firstPriorityListingPosition()),
+                "position" => ListingPosition::firstPriorityListingPosition()/2,
             })
         end
 
