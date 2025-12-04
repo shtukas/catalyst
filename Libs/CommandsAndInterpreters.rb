@@ -124,7 +124,7 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "type"     => "override",
-                    "position" => ListingPosition::firstNegativeListingPosition() - 1,
+                    "position" => ListingPosition::firstPriorityListingPosition() - 1,
                 })
             }
             return
@@ -187,8 +187,8 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
-            position = (option == "top") ? ( ListingPosition::firstNegativeListingPosition() - 1 ) : (ListingPosition::lastNegativeListingPosition().to_f / 2)
-            NxLines::issue(description, ListingPosition::firstNegativeListingPosition() - 1)
+            position = (option == "top") ? ( ListingPosition::firstPriorityListingPosition() - 1 ) : (ListingPosition::lastPriorityListingPosition().to_f / 2)
+            NxLines::issue(description, ListingPosition::firstPriorityListingPosition() - 1)
             return
         end
 

@@ -9,16 +9,16 @@ class ListingPosition
         (2 + Math.atan(x)).to_f/10
     end
 
-    # ListingPosition::firstNegativeListingPosition()
-    def self.firstNegativeListingPosition()
+    # ListingPosition::firstPriorityListingPosition()
+    def self.firstPriorityListingPosition()
         positions = Items::objects()
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
         ([-1] + positions).min
     end
 
-    # ListingPosition::lastNegativeListingPosition()
-    def self.lastNegativeListingPosition()
+    # ListingPosition::lastPriorityListingPosition()
+    def self.lastPriorityListingPosition()
         positions = Items::objects()
             .select{|item| item["nx41"] }
             .select{|item| item["nx41"]["position"] < 0 }
@@ -51,9 +51,6 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
-        if item["uuid"] == "2eed73e7-8424-4b4c-af01-14ccac76b300" then
-            return ListingPosition::firstNegativeListingPosition() - 1
-        end
         if item["nx41"] and item["nx41"]["type"] == "override" then
             return item["nx41"]["position"]
         end
@@ -69,6 +66,15 @@ class ListingPosition
         # Wave           : 1.350
         # NxTask         : 1.400
         # NxInfinity     : 1.600
+
+        if item["uuid"] == "2eed73e7-8424-4b4c-af01-14ccac76b300" then
+            # wave morning
+            Items::setAttribute(item["uuid"], "nx41", {
+                "type"     => "override",
+                "position" => 0.5 * (1 + ListingPosition::firstPriorityListingPosition()),
+            })
+        end
+
         if item["mikuType"] == "NxLine" then
             # should have been handled above as they are born with a never expire Nx41
             raise "(064142) how did this happen ? item: #{item}"
