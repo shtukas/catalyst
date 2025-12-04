@@ -77,8 +77,8 @@ class CommandsAndInterpreters
         if Interpreting::match("morning", input) then
             # ondates
             puts "select ondates"
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxOndates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-            selected.each{|item|
+            selected1, _ = LucilleCore::selectZeroOrMore("elements", [], NxOndates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+            selected1.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "type"     => "override",
                     "position" => rand,
@@ -86,8 +86,8 @@ class CommandsAndInterpreters
             }
             # NxTasks
             puts "select tasks"
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], Items::mikuType("NxTask"), lambda{|i| PolyFunctions::toString(i) })
-            selected.each{|item|
+            selected2, _ = LucilleCore::selectZeroOrMore("elements", [], Items::mikuType("NxTask"), lambda{|i| PolyFunctions::toString(i) })
+            selected2.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "type"     => "override",
                     "position" => rand,
@@ -95,13 +95,26 @@ class CommandsAndInterpreters
             }
             # waves
             puts "select waves"
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], Waves::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-            selected.each{|item|
+            selected3, _ = LucilleCore::selectZeroOrMore("elements", [], Waves::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+            selected3.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "type"     => "override",
                     "position" => rand,
                 })
             }
+
+            puts "Morning/Today ordering"
+            sleep 1
+
+            items = selected1 + selected2 + selected3 + Items::mikuType("NxLine")
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|item|
+                Items::setAttribute(item["uuid"], "nx41", {
+                    "type"     => "override",
+                    "position" => 0.5 * (1 + ListingPosition::firstTodayListingPosition()),
+                })
+            }
+
             return
         end
 
@@ -173,6 +186,8 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
+            position = (option == "top") ? ( ListingPosition::firstNegativeListingPosition() - 1 ) : (ListingPosition::lastNegativeListingPosition().to_f / 2)
             NxLines::issue(description, ListingPosition::firstNegativeListingPosition() - 1)
             return
         end
@@ -225,7 +240,9 @@ class CommandsAndInterpreters
         if Interpreting::match("today", input) then
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
-            item = NxOndates::interactivelyIssueNewWithDetails(description, CommonUtils::today())
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
+            position = (option == "top") ? ListingPosition::firstTodayListingPosition().to_f/2 : (ListingPosition::lastTodaytListingPosition().to_f + 1).to_f/2
+            item = NxLines::issue(description, position)
             puts JSON.pretty_generate(item)
             return
         end

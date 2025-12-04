@@ -17,6 +17,33 @@ class ListingPosition
         ([-1] + positions).min
     end
 
+    # ListingPosition::lastNegativeListingPosition()
+    def self.lastNegativeListingPosition()
+        positions = Items::objects()
+            .select{|item| item["nx41"] }
+            .select{|item| item["nx41"]["position"] < 0 }
+            .map{|item| item["nx41"]["position"] }
+        ([-1] + positions).max
+    end
+
+    # ListingPosition::firstTodayListingPosition()
+    def self.firstTodayListingPosition()
+        positions = Items::objects()
+            .select{|item| item["nx41"] }
+            .select{|item| 0 < item["nx41"]["position"] and item["nx41"]["position"] < 1 }
+            .map{|item| item["nx41"]["position"] }
+        ([0.5] + positions).min
+    end
+
+    # ListingPosition::lastTodayListingPosition()
+    def self.lastTodayListingPosition()
+        positions = Items::objects()
+            .select{|item| item["nx41"] }
+            .select{|item| 0 < item["nx41"]["position"] and item["nx41"]["position"] < 1 }
+            .map{|item| item["nx41"]["position"] }
+        ([0.5] + positions).max
+    end
+
     # ListingPosition::decideRatioListingOrNull(behaviour, nx41)
     def self.decideRatioListingOrNull(behaviour, nx41)
         raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
