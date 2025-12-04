@@ -103,26 +103,10 @@ class FrontPage
 
         displayeduuids = []
 
-        activePackets = NxBalls::activePackets()
-        activePackets
-            .sort_by{|packet| packet["startunixtime"] }
-            .reverse
-            .map{|packet| packet["item"] }
-            .each{|item|
-                displayeduuids << item["uuid"]
-                store.register(item, FrontPage::canBeDefault(item))
-                line = FrontPage::toString2(store, item)
-                puts line.green
-                sheight = sheight - (line.size/swidth + 1)
-                FrontPage::additionalLines(item).each{|line|
-                    puts " " * FrontPage::additionalLinesShift(item) + line
-                    sheight = sheight - (line.size/swidth + 1)
-                }
-            }
-
         FrontPage::itemsForListing()
             .each{|item|
                 next if displayeduuids.include?(item["uuid"])
+                displayeduuids << item["uuid"]
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item)
                 puts line
@@ -132,6 +116,24 @@ class FrontPage
                     sheight = sheight - (line.size/swidth + 1)
                 }
                 break if sheight <= 3
+            }
+
+        activePackets = NxBalls::activePackets()
+        activePackets
+            .sort_by{|packet| packet["startunixtime"] }
+            .reverse
+            .map{|packet| packet["item"] }
+            .each{|item|
+                next if displayeduuids.include?(item["uuid"])
+                displayeduuids << item["uuid"]
+                store.register(item, FrontPage::canBeDefault(item))
+                line = FrontPage::toString2(store, item)
+                puts line.green
+                sheight = sheight - (line.size/swidth + 1)
+                FrontPage::additionalLines(item).each{|line|
+                    puts " " * FrontPage::additionalLinesShift(item) + line
+                    sheight = sheight - (line.size/swidth + 1)
+                }
             }
 
         t2 = Time.new.to_f
