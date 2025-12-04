@@ -20,7 +20,7 @@ class NxLines
 
     # NxLines::icon()
     def self.icon()
-        "🖋️ "
+        "👩🏻‍💻"
     end
 
     # NxLines::toString(item)

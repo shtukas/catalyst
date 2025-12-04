@@ -156,7 +156,7 @@ class UxPayloads
     # UxPayloads::access(payload)
     def self.access(payload)
         return if payload.nil?
-        if payload["type"] == "text" then
+        if payload["mikuType"] == "Text" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file (also does edit)"])
             return if option.nil?
             if option == "in terminal" then
@@ -173,7 +173,7 @@ class UxPayloads
             end
             return
         end
-        if payload["type"] == "todo-text-file-by-name-fragment" then
+        if payload["mikuType"] == "TodoTextFileByNameFragment" then
             name1 = payload["name"]
             location = CommonUtils::locateGalaxyFileByNameFragment(name1)
             if location.nil? then
@@ -186,7 +186,7 @@ class UxPayloads
             LucilleCore::pressEnterToContinue()
             return
         end
-        if payload["type"] == "aion-point" then
+        if payload["mikuType"] == "AionPoint" then
             nhash = payload["nhash"]
             puts "accessing aion point: #{nhash}"
             exportId = SecureRandom.hex(4)
@@ -198,20 +198,20 @@ class UxPayloads
             LucilleCore::pressEnterToContinue()
             return
         end
-        if payload["type"] == "Dx8Unit" then
+        if payload["mikuType"] == "Dx8Unit" then
             unitId = payload["id"]
             Dx8Units::access(unitId)
             LucilleCore::pressEnterToContinue()
             return
         end
-        if payload["type"] == "url" then
+        if payload["mikuType"] == "URL" then
             url = payload["url"]
             puts "url: #{url}"
             CommonUtils::openUrlUsingChrome(url)
             LucilleCore::pressEnterToContinue()
             return
         end
-        if payload["type"] == "unique-string" then
+        if payload["mikuType"] == "UniqueString" then
             uniquestring = payload["uniquestring"]
             puts "accessing unique string: #{uniquestring}"
             location = Atlas::uniqueStringToLocationOrNull(uniquestring)
@@ -230,7 +230,7 @@ class UxPayloads
             end
             return
         end
-        if payload["type"] == "open cycle" then
+        if payload["mikuType"] == "OpenCycle" then
             name1 = payload["name"]
             puts "accessing open cycle: #{name1}"
             location = Atlas::uniqueStringToLocationOrNull(name1)
@@ -244,7 +244,7 @@ class UxPayloads
             end
             return
         end
-        raise "(error: e0040ec0-1c8f) type: #{payload["type"]}"
+        raise "(error: e0040ec0-1c8f) type: #{payload["mikuType"]}"
     end
 
     # UxPayloads::edit(payload)

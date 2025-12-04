@@ -241,7 +241,7 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
-            position = (option == "top") ? ListingPosition::firstTodayListingPosition().to_f/2 : (ListingPosition::lastTodaytListingPosition().to_f + 1).to_f/2
+            position = (option == "top") ? ListingPosition::firstTodayListingPosition().to_f/2 : (ListingPosition::lastTodayListingPosition().to_f + 1).to_f/2
             item = NxLines::issue(description, position)
             puts JSON.pretty_generate(item)
             return
