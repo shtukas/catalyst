@@ -40,7 +40,8 @@ class ListingPosition
         # NxTask         : 1.400
         # NxInfinity     : 1.600
         if item["mikuType"] == "NxPriority" then
-            return item["position-09"]
+            # should have been handled above as they are born with a never expire Nx41
+            raise "(064142) how did this happen ? item: #{item}"
         end
         if item["mikuType"] == "NxToday" then
             if item["random"].nil? then

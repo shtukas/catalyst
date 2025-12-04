@@ -8,7 +8,10 @@ class NxPriorities
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "position-09", position)
+        Items::setAttribute(uuid, "nx41", {
+            "type"     => "override",
+            "position" => position
+        })
         Items::setAttribute(uuid, "mikuType", "NxPriority")
         item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)

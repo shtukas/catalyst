@@ -5,5 +5,4 @@ NxPriority:
     - unixtime    :
     - datetime    :
     - description : String
-    - nx41        : Nx41
-    - position-09 : Float
+    - nx41        : Nx41 # override to never expire
