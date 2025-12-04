@@ -173,7 +173,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            NxPriorities::issue(description, ListingPosition::firstNegativeListingPosition() - 1)
+            NxLines::issue(description, ListingPosition::firstNegativeListingPosition() - 1)
             return
         end
 
@@ -186,7 +186,7 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    item = NxPriorities::issue(line, ListingPosition::firstNegativeListingPosition() - 1)
+                    item = NxLines::issue(line, ListingPosition::firstNegativeListingPosition() - 1)
                     last_item = item
                 }
             if last_item then

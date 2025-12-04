@@ -1,7 +1,7 @@
 
-class NxPriorities
+class NxLines
 
-    # NxPriorities::issue(description, position)
+    # NxLines::issue(description, position)
     def self.issue(description, position)
         uuid = SecureRandom.uuid
         Items::init(uuid)
@@ -12,19 +12,19 @@ class NxPriorities
             "type"     => "override",
             "position" => position
         })
-        Items::setAttribute(uuid, "mikuType", "NxPriority")
+        Items::setAttribute(uuid, "mikuType", "NxLine")
         item = Items::objectOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
 
-    # NxPriorities::icon()
+    # NxLines::icon()
     def self.icon()
         "🖋️ "
     end
 
-    # NxPriorities::toString(item)
+    # NxLines::toString(item)
     def self.toString(item)
-        "#{NxPriorities::icon()} #{item["description"]}"
+        "#{NxLines::icon()} #{item["description"]}"
     end
 end

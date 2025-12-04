@@ -42,7 +42,7 @@ class ListingPosition
         # Wave           : 1.350
         # NxTask         : 1.400
         # NxInfinity     : 1.600
-        if item["mikuType"] == "NxPriority" then
+        if item["mikuType"] == "NxLine" then
             # should have been handled above as they are born with a never expire Nx41
             raise "(064142) how did this happen ? item: #{item}"
         end

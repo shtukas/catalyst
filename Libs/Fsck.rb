@@ -24,11 +24,15 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxLine" then
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             return
         end
 
-        if item["mikuType"] == "NxPriority" then
+        if item["mikuType"] == "NxLine" then
             return
         end
 
