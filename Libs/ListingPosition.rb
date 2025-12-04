@@ -13,7 +13,7 @@ class ListingPosition
     def self.firstPriorityListingPosition()
         positions = Items::objects()
             .select{|item| item["nx41"] }
-            .map{|item| item["nx41"]["position"] }
+            .select{|item| item["nx41"]["position"] < 0 }
         ([-1] + positions).min
     end
 

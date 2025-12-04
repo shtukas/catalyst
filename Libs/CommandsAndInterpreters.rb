@@ -188,7 +188,7 @@ class CommandsAndInterpreters
             return if description == ""
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
             position = (option == "top") ? ( ListingPosition::firstPriorityListingPosition() - 1 ) : (ListingPosition::lastPriorityListingPosition().to_f / 2)
-            NxLines::issue(description, ListingPosition::firstPriorityListingPosition() - 1)
+            NxLines::issue(description, position)
             return
         end
 
