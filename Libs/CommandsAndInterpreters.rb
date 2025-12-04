@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | done+ (*) (done the first subline) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | insert into * | dive *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | priorities | happening",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | happening",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | happenings | tasks",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | morning",
@@ -174,26 +174,6 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             NxLines::issue(description, ListingPosition::firstNegativeListingPosition() - 1)
-            return
-        end
-
-        if Interpreting::match("priorities", input) then
-            NxBalls::activeItems().each{|item| 
-                NxBalls::pause(item)
-            }
-            last_item = nil
-            Operations::interactivelyGetLinesUsingTextEditor()
-                .reverse
-                .each{|line|
-                    puts "processing: #{line}".green
-                    item = NxLines::issue(line, ListingPosition::firstNegativeListingPosition() - 1)
-                    last_item = item
-                }
-            if last_item then
-                if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
-                    PolyActions::start(last_item)
-                end
-            end
             return
         end
 
