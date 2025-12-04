@@ -14,6 +14,7 @@ class ListingPosition
         positions = Items::objects()
             .select{|item| item["nx41"] }
             .select{|item| item["nx41"]["position"] < 0 }
+            .map{|item| item["nx41"]["position"] }
         ([-1] + positions).min
     end
 

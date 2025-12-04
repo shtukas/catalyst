@@ -28,11 +28,31 @@ class FrontPage
         item["interruption"]
     end
 
+    # FrontPage::rewriteIcon(line, position)
+    def self.rewriteIcon(line, position)
+        replacement = (lambda{
+            return '🔺' if position < 0
+            return '⏱️ ' if position < 1
+            nil
+        }).call()
+        return line if replacement.nil?
+        [
+            '🔹',
+            '🌊',
+            '🗓️ ',
+            '✒️ '
+        ].each{|icon|
+            line = line.sub(icon, "#{replacement} #{icon}")
+        }
+        line
+    end
+
     # FrontPage::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
+        line = FrontPage::rewriteIcon(line, ListingPosition::decideItemListingPositionOrNull(item))
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
