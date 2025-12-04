@@ -24,6 +24,9 @@ class ListingPosition
 
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
+        if item["uuid"] == "2eed73e7-8424-4b4c-af01-14ccac76b300" then
+            return ListingPosition::firstNegativeListingPosition() - 1
+        end
         if item["nx41"] and item["nx41"]["type"] == "override" then
             return item["nx41"]["position"]
         end
