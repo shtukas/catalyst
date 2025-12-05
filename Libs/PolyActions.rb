@@ -19,7 +19,7 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        ListingPosition::delistItemAndSimilar(item)
+        ListingPosition::delistNonOverridenItem(item)
     end
 
     # PolyActions::done(item)
@@ -231,7 +231,7 @@ class PolyActions
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
             Bank::insertValue(account["number"], CommonUtils::today(), timeInSeconds)
         }
-        ListingPosition::delistItemAndSimilar(item)
+        ListingPosition::delistNonOverridenItem(item)
     end
 
     # PolyActions::editDescription(item)

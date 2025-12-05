@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | done+ (*) (done the first subline) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | insert into * | dive *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | happening",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | happenings | tasks",
+            "divings       : anniversaries | ondates | waves | desktop | backups | todays | tomorrows | happenings | tasks",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | morning",
         ].join("\n")
@@ -242,7 +242,7 @@ class CommandsAndInterpreters
             return if description == ""
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
             position = (option == "top") ? ListingPosition::firstTodayListingPosition().to_f/2 : (ListingPosition::lastTodayListingPosition().to_f + 1).to_f/2
-            item = NxLines::issue(description, position)
+            item = NxLines::issueNewInteractivelyDecidesPayload(description, position)
             puts JSON.pretty_generate(item)
             return
         end
@@ -259,6 +259,14 @@ class CommandsAndInterpreters
                 Items::mikuType("NxOndate")
                     .select{|item| item["date"] <= CommonUtils::today() }
                     .sort_by{|item| item["date"] }
+            })
+            return
+        end
+
+        if Interpreting::match("tomorrows", input) then
+            Operations::program3(lambda { 
+                Items::mikuType("NxOndate")
+                    .select{|item| item["date"] == CommonUtils::tomorrow() }
             })
             return
         end

@@ -60,7 +60,7 @@ class ListingPosition
         end
         # (sorted)       : (negative)
         # interruptions  : 0.100
-        # day priorities : 0.500
+        # priorities     : 0.500
         # today          : 1.140
         # ondates        : 1.150
         # NxHappening    : 1.190
@@ -112,6 +112,9 @@ class ListingPosition
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
+            if item["interruption"] then
+                return 0.100 + item["random"].to_f/1000
+            end
             return 1.350 + item["random"].to_f/1000
         end
         if item["mikuType"] == "NxInfinity" then
@@ -124,22 +127,10 @@ class ListingPosition
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
     end
 
-    # ListingPosition::delistItemAndSimilar(item)
-    def self.delistItemAndSimilar(item)
+    # ListingPosition::delistNonOverridenItem(item)
+    def self.delistNonOverridenItem(item)
+        return if item["nx41"].nil?
+        return if item["nx41"]["type"] == "override"
         Items::setAttribute(item["uuid"], "nx41", nil)
-        if item["mikuType"] == "NxTask" then
-            NxTasks::listingItems().each{|item|
-                next if item["nx41"].nil?
-                next if item["nx41"]["type"] == "override"
-                Items::setAttribute(item["uuid"], "nx41", nil)
-            }
-        end
-        if item["mikuType"] == "Wave" then
-            Waves::listingItems().each{|item|
-                next if item["nx41"].nil?
-                next if item["nx41"]["type"] == "override"
-                Items::setAttribute(item["uuid"], "nx41", nil)
-            }
-        end
     end
 end

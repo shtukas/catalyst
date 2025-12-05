@@ -18,6 +18,24 @@ class NxLines
         item
     end
 
+    # NxLines::issueNewInteractivelyDecidesPayload(description, position)
+    def self.issueNewInteractivelyDecidesPayload(description, position)
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
+        Items::setAttribute(uuid, "nx41", {
+            "type"     => "override",
+            "position" => position
+        })
+        Items::setAttribute(uuid, "mikuType", "NxLine")
+        item = Items::objectOrNull(uuid)
+        Fsck::fsckItemOrError(item, false)
+        item
+    end
+
     # NxLines::icon()
     def self.icon()
         "✒️ "
