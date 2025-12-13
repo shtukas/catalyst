@@ -44,13 +44,54 @@ class NxOndates
         "#{NxOndates::icon()} [#{item["date"]}] #{item["description"]}"
     end
 
-    # NxOndates::listingItems()
-    def self.listingItems()
-        Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
+    # NxOndates::transmutePastDays()
+    def self.transmutePastDays()
+
+        # return true if there has been a successful transform
+        performUpdate = lambda{|item|
+            string = "#{PolyFunctions::toString(item).green}#{UxPayloads::suffixString(item)}"
+            puts "past day transform: #{string.green}"
+            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "description", "payload", "redate", "NxTask"])
+            if choice == "access" then
+                PolyActions::access(item)
+                return false
+            end
+            if choice == "description" then
+                description = LucilleCore::askQuestionAnswerAsString("description: ")
+                Items::setAttribute(item["uuid"], "description", description)
+                return false
+            end
+            if choice == "payload" then
+                UxPayloads::payloadProgram(item)
+                return false
+            end
+            if choice == "redate" then
+                date = CommonUtils::interactivelyMakeADate()
+                Items::setAttribute(item["uuid"], "date", date)
+                return true
+            end
+            Transmute::transmuteTo(item, choice)
+            true
+        }
+
+        past_days = Items::mikuType("NxOndate")
+                        .select{|item| item["date"] < CommonUtils::today() }
+                        .sort_by{|item| item["unixtime"] }
+
+        return if past_days.empty?
+
+        past_days.each{|item|
+            loop {
+                item = Items::objectOrNull(item["uuid"])
+                status = performUpdate.call(item)
+                break if status
+            }
+        }
     end
 
-    # NxOndates::listingPosition(item)
-    def self.listingPosition(item)
-        0.300
+    # NxOndates::listingItems()
+    def self.listingItems()
+        NxOndates::transmutePastDays()
+        Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
     end
 end

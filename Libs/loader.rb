@@ -169,6 +169,7 @@ require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
 
 require_relative "TmpSkip1.rb"
+require_relative "Transmute.rb"
 
 require_relative "UxPayloads.rb"
 
