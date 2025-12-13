@@ -399,20 +399,40 @@ class Bank
     end
 end
 
+$BankDerivedDataMemory = {}
+# { unixtime, value }
+
 class BankDerivedData
 
-    # BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan = 0)
+    # BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n)
     # n = 0 corresponds to today
-    def self.averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan = 0)
+    def self.averageHoursPerDayOverThePastNDays(uuid, n)
         range = (0..n)
-        totalInSeconds = range.map{|indx| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) + (indx==0 ? runningTimespan : 0) }.inject(0, :+)
+        totalInSeconds = range.map{|indx| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) }.inject(0, :+)
         totalInHours = totalInSeconds.to_f/3600
         average = totalInHours.to_f/(n+1)
         average
     end
 
-    # BankDerivedData::recoveredAverageHoursPerDay(uuid, runningTimespan = 0)
-    def self.recoveredAverageHoursPerDay(uuid, runningTimespan = 0)
-        (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, runningTimespan) }.max
+    # BankDerivedData::recoveredAverageHoursPerDay(uuid)
+    def self.recoveredAverageHoursPerDay(uuid)
+        (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n) }.max
+    end
+
+    # BankDerivedData::recoveredAverageHoursPerDayCached(uuid)
+    def self.recoveredAverageHoursPerDayCached(uuid)
+        data = $BankDerivedDataMemory[uuid]
+        if data then
+            if (Time.new.to_f - data["unixtime"]) < 2 then
+                return data["value"]
+            end
+        end
+        value = BankDerivedData::recoveredAverageHoursPerDay(uuid)
+        data = {
+            "unixtime" => Time.new.to_f,
+            "value" => value
+        }
+        $BankDerivedDataMemory[uuid] = data
+        value
     end
 end

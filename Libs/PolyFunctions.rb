@@ -13,6 +13,27 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        if item["mikuType"] == "Wave" then
+            accounts << {
+                "description" => "wave general",
+                "number"      => "wave-general-fd3c4ac4-1300"
+            }
+        end
+
+        if item["mikuType"] == "NxTask" then
+            accounts << {
+                "description" => "task general",
+                "number"      => "task-general-5f03ccc7-2b00"
+            }
+        end
+
+        if item["mikuType"] == "NxInfinity" then
+            accounts << {
+                "description" => "infinity general",
+                "number"      => "infinity-general-b8618ad8-a5ec"
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
