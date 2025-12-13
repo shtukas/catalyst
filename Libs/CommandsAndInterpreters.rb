@@ -143,6 +143,10 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if item["mikuType"] == "NxLine" then
+                puts "You cannot delist a NxLine"
+                LucilleCore::pressEnterToContinue()
+            end
             puts "delisting #{PolyFunctions::toString(item)}"
             Items::setAttribute(item["uuid"], "nx41", nil)
             return

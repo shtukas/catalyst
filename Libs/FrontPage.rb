@@ -86,7 +86,8 @@ class FrontPage
             Items::mikuType("NxLine"),
             Waves::listingItems(),
             NxHappenings::listingItems(),
-            NxOndates::listingItems()
+            NxOndates::listingItems(),
+            NxInfinities::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
