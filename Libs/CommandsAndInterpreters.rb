@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | happening | cliques",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | tomorrows | happenings | tasks",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | maintenance | sort | morning",
+            "misc          : search | commands | fsck | maintenance | sort | morning | numbers",
         ].join("\n")
     end
 
@@ -74,6 +74,13 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("numbers", input) then
+            puts "wave general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")}"
+            puts "task general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00")}"
+            puts "infinity general: #{BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec")}"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
         if Interpreting::match("morning", input) then
             # ondates
             puts "select ondates"
