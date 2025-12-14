@@ -5,8 +5,8 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | done+ (*) (done the first subline) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | insert into * | dive *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | happening",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | clique *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | happening | cliques",
             "divings       : anniversaries | ondates | waves | desktop | backups | todays | tomorrows | happenings | tasks",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | morning",
@@ -111,7 +111,7 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "type"     => "override",
-                    "position" => 0.5 * (1 + ListingPosition::firstTodayListingPosition()),
+                    "position" => 1.147,
                 })
             }
 
@@ -124,18 +124,22 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "type"     => "override",
-                    "position" => ListingPosition::firstPriorityListingPosition() - 1,
+                    "position" => 0.95 * ListingPosition::firstListingPosition(),
                 })
             }
             return
         end
 
-        if Interpreting::match("dive *", input) then
+        if Interpreting::match("clique *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts "diving into #{PolyFunctions::toString(item)}"
-            Operations::dive(item)
+            Cliques::itemProgram(item)
+            return
+        end
+
+        if Interpreting::match("cliques", input) then
+            Cliques::generalDive()
             return
         end
 
@@ -154,14 +158,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
-            return
-        end
-
-        if Interpreting::match("insert into *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxSublines::insert(item)
             return
         end
 
@@ -190,9 +186,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
-            position = (option == "top") ? ( ListingPosition::firstPriorityListingPosition() - 1 ) : (ListingPosition::lastPriorityListingPosition().to_f / 2)
-            NxLines::issue(description, position)
+            NxLines::issue(description, 0.95 * ListingPosition::firstListingPosition())
             return
         end
 
@@ -245,8 +239,7 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
-            position = (option == "top") ? ListingPosition::firstTodayListingPosition().to_f/2 : (ListingPosition::lastTodayListingPosition().to_f + 1).to_f/2
-            item = NxLines::issueNewInteractivelyDecidesPayload(description, position)
+            item = NxLines::issueNewInteractivelyDecidesPayload(description, 1.147)
             puts JSON.pretty_generate(item)
             return
         end
@@ -402,16 +395,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("desktop", input) then
             system("open '#{Desktop::filepath()}'")
-            return
-        end
-
-        if Interpreting::match("done+", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxSublines::itemsForParentInOrder(item["uuid"]).each{|subline|
-                PolyActions::destroy(subline)
-                return # We just do the first one
-            }
             return
         end
 

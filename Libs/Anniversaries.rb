@@ -142,7 +142,7 @@ class Anniversary
         Items::setAttribute(uuid, "repeatType", details["repeatType"])
         Items::setAttribute(uuid, "next_celebration", details["next_celebration"])
         Items::setAttribute(uuid, "mikuType", "Anniversary")
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

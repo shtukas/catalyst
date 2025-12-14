@@ -9,40 +9,12 @@ class ListingPosition
         (2 + Math.atan(x)).to_f/10
     end
 
-    # ListingPosition::firstPriorityListingPosition()
-    def self.firstPriorityListingPosition()
+    # ListingPosition::firstListingPosition()
+    def self.firstListingPosition()
         positions = Items::objects()
             .select{|item| item["nx41"] }
-            .select{|item| item["nx41"]["position"] < 0 }
             .map{|item| item["nx41"]["position"] }
-        ([-1] + positions).min
-    end
-
-    # ListingPosition::lastPriorityListingPosition()
-    def self.lastPriorityListingPosition()
-        positions = Items::objects()
-            .select{|item| item["nx41"] }
-            .select{|item| item["nx41"]["position"] < 0 }
-            .map{|item| item["nx41"]["position"] }
-        ([-1] + positions).max
-    end
-
-    # ListingPosition::firstTodayListingPosition()
-    def self.firstTodayListingPosition()
-        positions = Items::objects()
-            .select{|item| item["nx41"] }
-            .select{|item| 0 < item["nx41"]["position"] and item["nx41"]["position"] < 1 }
-            .map{|item| item["nx41"]["position"] }
-        ([0.5] + positions).min
-    end
-
-    # ListingPosition::lastTodayListingPosition()
-    def self.lastTodayListingPosition()
-        positions = Items::objects()
-            .select{|item| item["nx41"] }
-            .select{|item| 0 < item["nx41"]["position"] and item["nx41"]["position"] < 1 }
-            .map{|item| item["nx41"]["position"] }
-        ([0.5] + positions).max
+        ([0.500] + positions).min
     end
 
     # ListingPosition::decideRatioListingOrNull(behaviour, nx41)
@@ -59,13 +31,14 @@ class ListingPosition
             return item["nx41"]["position"]
         end
 
-        # (sorted)       : (negative)
+        # (sorted)       : (smaller positives)
 
-        # interruptions  : 0.100
-        # priorities     : 0.500
-        # today          : 1.140
-        # ondates        : 1.150
-        # NxHappening    : 1.190
+        # priorities     : 0.000 -> 0.500
+        # interruptions  : 0.000 -> 0.500
+
+        # today          : 1.147 # exact number for search and replace
+        # ondates        : 1.151 # exact number for search and replace
+        # NxHappening    : 1.198 # exact number for search and replace
 
         # Wave           : 2.000 -> 3.000 over 2.0 hours
         # NxTask         : 2.000 -> 3.000 over 5.0 hours
@@ -75,7 +48,7 @@ class ListingPosition
             # wave morning
             Items::setAttribute(item["uuid"], "nx41", {
                 "type"     => "override",
-                "position" => ListingPosition::firstPriorityListingPosition()/2
+                "position" => 0.95 * ListingPosition::firstListingPosition()
             })
         end
 
@@ -88,20 +61,17 @@ class ListingPosition
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            return 1.140 + item["random"].to_f/1000
+            return 1.147 # exact number for search and replace + item["random"].to_f/1000
         end
         if item["mikuType"] == "NxHappening" then
-            return 1.190
-        end
-        if item["mikuType"] == "NxInfinity" then
-            return 2.000
+            return 1.198 # 
         end
         if item["mikuType"] == "NxOndate" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            return 1.150 + item["random"].to_f/1000
+            return 1.151 + item["random"].to_f/1000
         end
         if item["mikuType"] == "NxTask" then
             if item["random"].nil? then
@@ -117,7 +87,7 @@ class ListingPosition
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
             if item["interruption"] then
-                return 0.100 + item["random"].to_f/1000
+                return 0.500 + item["random"].to_f/1000
             end
             base = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.0
             return 2 + base + item["random"].to_f/1000

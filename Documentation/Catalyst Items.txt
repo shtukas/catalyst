@@ -11,3 +11,8 @@ Cross types conventions (all optional):
     - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
     - nx41                  : Nx41 # Positioning
     - donation-08           : null or uuid of a donation target
+    - cliques-128           : null of Array[Clique]
+
+Clique
+    "name"     : String
+    "position" : Float

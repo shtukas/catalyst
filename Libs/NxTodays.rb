@@ -12,7 +12,7 @@ class NxTodays
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         Items::setAttribute(uuid, "mikuType", "NxToday")
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

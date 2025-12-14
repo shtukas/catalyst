@@ -26,15 +26,6 @@ class PolyActions
     def self.done(item)
 
         payload = UxPayloads::itemToPayloadOrNull(item)
-        sublines = NxSublines::itemsForParentInOrder(item["uuid"])
-
-        if sublines.size > 0 then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["default item done (default)", "destroy first subline"])
-            if option == "destroy first subline" then
-                PolyActions::destroy(sublines.first)
-                return
-            end
-        end
 
         PolyActions::stop(item)
 
@@ -145,12 +136,6 @@ class PolyActions
     # PolyActions::destroy(item)
     def self.destroy(item)
 
-        if NxSublines::itemsForParentInOrder(item["uuid"]).size > 0 then
-            puts "You cannot destroy an items which has active sublines"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxHappening" then
@@ -196,13 +181,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxSubline" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end

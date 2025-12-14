@@ -128,6 +128,7 @@ require_relative "Bank.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
+require_relative "Cliques.rb"
 
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
@@ -157,7 +158,6 @@ require_relative "NxHappenings.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxInfinities.rb"
-require_relative "NxSublines.rb"
 require_relative "NxTodays.rb"
 
 require_relative "Operations.rb"

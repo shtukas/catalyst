@@ -13,7 +13,7 @@ class NxLines
             "position" => position
         })
         Items::setAttribute(uuid, "mikuType", "NxLine")
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
@@ -31,7 +31,7 @@ class NxLines
             "position" => position
         })
         Items::setAttribute(uuid, "mikuType", "NxLine")
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

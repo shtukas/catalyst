@@ -12,17 +12,6 @@ class FrontPage
         true
     end
 
-    # FrontPage::additionalLines(item)
-    def self.additionalLines(item)
-        sublines = NxSublines::itemsForParentInOrder(item["uuid"])
-        sublines.map{|s| NxSublines::toString(s) }
-    end
-
-    # FrontPage::additionalLinesShift(item)
-    def self.additionalLinesShift(item)
-        9
-    end
-
     # FrontPage::isInterruption(item)
     def self.isInterruption(item)
         item["interruption"]
@@ -51,7 +40,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Cliques::cliquesSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
         line = FrontPage::rewriteIcon(line, ListingPosition::decideItemListingPositionOrNull(item))
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -132,10 +121,6 @@ class FrontPage
                 line = FrontPage::toString2(store, item)
                 puts line
                 sheight = sheight - (line.size/swidth + 1)
-                FrontPage::additionalLines(item).each{|line|
-                    puts " " * FrontPage::additionalLinesShift(item) + line
-                    sheight = sheight - (line.size/swidth + 1)
-                }
                 break if sheight <= 3
             }
 
@@ -151,10 +136,6 @@ class FrontPage
                 line = FrontPage::toString2(store, item)
                 puts line.green
                 sheight = sheight - (line.size/swidth + 1)
-                FrontPage::additionalLines(item).each{|line|
-                    puts " " * FrontPage::additionalLinesShift(item) + line
-                    sheight = sheight - (line.size/swidth + 1)
-                }
             }
 
         t2 = Time.new.to_f

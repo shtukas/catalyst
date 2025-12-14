@@ -66,9 +66,6 @@ class PolyFunctions
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
-        if item["mikuType"] == "NxSubline" then
-            return NxSublines::toString(item)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
@@ -86,7 +83,7 @@ class PolyFunctions
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
     def self.get_name_of_donation_target_or_identity(donation_target_id)
-        target = Items::objectOrNull(donation_target_id)
+        target = Items::itemOrNull(donation_target_id)
         if target then
             return target["description"]
         end

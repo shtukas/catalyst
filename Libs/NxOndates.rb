@@ -14,7 +14,7 @@ class NxOndates
         Items::setAttribute(uuid, "date", date)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         Items::setAttribute(uuid, "mikuType", "NxOndate")
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
@@ -29,7 +29,7 @@ class NxOndates
         Items::setAttribute(uuid, "date", date)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         Items::setAttribute(uuid, "mikuType", "NxOndate")
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
@@ -82,7 +82,7 @@ class NxOndates
 
         past_days.each{|item|
             loop {
-                item = Items::objectOrNull(item["uuid"])
+                item = Items::itemOrNull(item["uuid"])
                 status = performUpdate.call(item)
                 break if status
             }

@@ -14,7 +14,7 @@ class NxBackups
         Items::setAttribute(uuid, "period", period)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
         Items::setAttribute(uuid, "mikuType", "NxBackup")
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end

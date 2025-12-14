@@ -220,7 +220,7 @@ class Items
 
     # Items::init(uuid)
     def self.init(uuid)
-        if Items::objectOrNull(uuid) then
+        if Items::itemOrNull(uuid) then
             raise "(error: 0e16c053) this uuid is already in use, you cannot init it"
         end
         item = {
@@ -230,8 +230,8 @@ class Items
         Items::commitObject(item)
     end
 
-    # Items::objectOrNull(uuid)
-    def self.objectOrNull(uuid)
+    # Items::itemOrNull(uuid)
+    def self.itemOrNull(uuid)
         entry = Items::entryOrNull(uuid)
         if entry.nil? then
             return nil
@@ -248,7 +248,7 @@ class Items
 
     # Items::setAttribute(uuid, attrname, attrvalue) -> updated item
     def self.setAttribute(uuid, attrname, attrvalue)
-        item = Items::objectOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         if item.nil? then
             raise "(error: ce53d4c7) you are trying to set an attribute of an non existant item, uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
         end
