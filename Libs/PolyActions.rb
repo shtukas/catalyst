@@ -41,7 +41,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxToday" then
+        if item["mikuType"] == "AbsolutelyToday" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteObject(item["uuid"])
             end
@@ -152,7 +152,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxToday" then
+        if item["mikuType"] == "AbsolutelyToday" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteObject(item["uuid"])
             end

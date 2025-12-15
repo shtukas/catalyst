@@ -78,20 +78,12 @@ class CommandsAndInterpreters
             puts "wave general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")}"
             puts "task general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00")}"
             puts "infinity general: #{BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec")}"
+            puts "soon general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("soon-general-45bca48d")}"
             LucilleCore::pressEnterToContinue()
             return
         end
+
         if Interpreting::match("morning", input) then
-            # ondates
-            puts "select ondates"
-            selected1, _ = LucilleCore::selectZeroOrMore("elements", [], NxOndates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-            selected1.each{|item|
-                Items::setAttribute(item["uuid"], "nx41", {
-                    "type"     => "override",
-                    "position" => rand,
-                })
-            }
-            # NxTasks
             puts "select tasks"
             selected2, _ = LucilleCore::selectZeroOrMore("elements", [], Items::mikuType("NxTask"), lambda{|i| PolyFunctions::toString(i) })
             selected2.each{|item|
@@ -100,20 +92,7 @@ class CommandsAndInterpreters
                     "position" => rand,
                 })
             }
-            # waves
-            puts "select waves"
-            selected3, _ = LucilleCore::selectZeroOrMore("elements", [], Waves::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-            selected3.each{|item|
-                Items::setAttribute(item["uuid"], "nx41", {
-                    "type"     => "override",
-                    "position" => rand,
-                })
-            }
-
-            puts "Morning/Today ordering"
-            sleep 1
-
-            items = selected1 + selected2 + selected3 + Items::mikuType("NxLine")
+            items = selected2 + Items::mikuType("NxLine")
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
@@ -121,7 +100,6 @@ class CommandsAndInterpreters
                     "position" => 1.147,
                 })
             }
-
             return
         end
 

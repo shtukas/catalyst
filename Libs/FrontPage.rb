@@ -72,7 +72,8 @@ class FrontPage
             Waves::listingItems(),
             NxHappenings::listingItems(),
             NxOndates::listingItems(),
-            NxInfinities::listingItems()
+            NxInfinities::listingItems(),
+            Soons::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

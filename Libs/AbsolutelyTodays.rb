@@ -1,7 +1,7 @@
 
-class NxTodays
+class AbsolutelyTodays
 
-    # NxTodays::interactivelyIssueNewOrNull()
+    # AbsolutelyTodays::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
@@ -11,24 +11,24 @@ class NxTodays
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
-        Items::setAttribute(uuid, "mikuType", "NxToday")
+        Items::setAttribute(uuid, "mikuType", "AbsolutelyToday")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
 
-    # NxTodays::icon()
+    # AbsolutelyTodays::icon()
     def self.icon()
         "🥐"
     end
 
-    # NxTodays::toString(item)
+    # AbsolutelyTodays::toString(item)
     def self.toString(item)
-        "#{NxTodays::icon()} #{item["description"]}"
+        "#{AbsolutelyTodays::icon()} #{item["description"]}"
     end
 
-    # NxTodays::listingItems()
+    # AbsolutelyTodays::listingItems()
     def self.listingItems()
-        Items::mikuType("NxToday")
+        Items::mikuType("AbsolutelyToday")
     end
 end

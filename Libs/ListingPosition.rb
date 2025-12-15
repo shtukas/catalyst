@@ -36,10 +36,11 @@ class ListingPosition
         # priorities     : 0.000 -> 0.500
         # interruptions  : 0.000 -> 0.500
 
-        # today          : 1.147 # exact number for search and replace
-        # ondates        : 1.151 # exact number for search and replace
-        # NxHappening    : 1.198 # exact number for search and replace
+        # absolutely today : 1.147 # exact number for search and replace
 
+        # NxHappening      : 1.198 # exact number for search and replace
+
+        # soon           : 2.000 -> 3.000 over 1.0 hours
         # Wave           : 2.000 -> 3.000 over 2.0 hours
         # NxTask         : 2.000 -> 3.000 over 5.0 hours
         # NxInfinity     : 2.000 -> 3.000 over 1.0 hours
@@ -56,7 +57,7 @@ class ListingPosition
             # should have been handled above as they are born with a never expire Nx41
             raise "(064142) how did this happen ? item: #{item}"
         end
-        if item["mikuType"] == "NxToday" then
+        if item["mikuType"] == "AbsolutelyToday" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
@@ -100,6 +101,15 @@ class ListingPosition
             base = BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec").to_f/1.5
             return 2 + base + item["random"].to_f/1000
         end
+        if item["mikuType"] == "Soon" then
+            if item["random"].nil? then
+                item["random"] = rand
+                Items::setAttribute(item["uuid"], "random", item["random"])
+            end
+            base = BankDerivedData::recoveredAverageHoursPerDayCached("soon-general-45bca48d").to_f
+            return 2 + base + item["random"].to_f/1000
+        end
+
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
     end
 

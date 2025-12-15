@@ -1,7 +1,7 @@
 
-NxToday:
+AbsolutelyToday:
     - uuid         : String
-    - mikuType     : "NxToday"
+    - mikuType     : "AbsolutelyToday"
     - unixtime     :
     - datetime     :
     - description  : String

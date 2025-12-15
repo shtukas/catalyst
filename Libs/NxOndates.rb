@@ -51,10 +51,14 @@ class NxOndates
         performUpdate = lambda{|item|
             string = "#{PolyFunctions::toString(item).green}#{UxPayloads::suffixString(item)}"
             puts "past day transform: #{string.green}"
-            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "description", "payload", "redate", "NxTask"])
+            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "absolutely today", "soon", "NxTask"])
             if choice == "access" then
                 PolyActions::access(item)
                 return false
+            end
+            if choice == "done" then
+                PolyActions::done(item)
+                return true
             end
             if choice == "description" then
                 description = LucilleCore::askQuestionAnswerAsString("description: ")
@@ -64,6 +68,14 @@ class NxOndates
             if choice == "payload" then
                 UxPayloads::payloadProgram(item)
                 return false
+            end
+            if choice == "absolutely today" then
+                Items::setAttribute(item["uuid"], "mikuType", "AbsolutelyToday")
+                return true
+            end
+            if choice == "soon" then
+                Items::setAttribute(item["uuid"], "mikuType", "Soon")
+                return true
             end
             if choice == "redate" then
                 date = CommonUtils::interactivelyMakeADate()

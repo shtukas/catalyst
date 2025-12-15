@@ -32,6 +32,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "Soon" then
+            return
+        end
+
         if item["mikuType"] == "NxLine" then
             return
         end

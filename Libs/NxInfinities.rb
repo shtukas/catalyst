@@ -3,7 +3,7 @@ class NxInfinities
 
     # NxInfinities::icon()
     def self.icon()
-        "🫆"
+        "👩🏻‍💻"
     end
 
     # NxInfinities::toString(item)

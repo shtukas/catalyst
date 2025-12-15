@@ -158,7 +158,7 @@ require_relative "NxHappenings.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxInfinities.rb"
-require_relative "NxTodays.rb"
+require_relative "AbsolutelyTodays.rb"
 
 require_relative "Operations.rb"
 
@@ -167,6 +167,7 @@ require_relative "PolyFunctions.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
+require_relative "Soons.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmute.rb"

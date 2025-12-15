@@ -34,6 +34,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "Soon" then
+            accounts << {
+                "description" => "soon general",
+                "number"      => "soon-general-45bca48d"
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -60,14 +67,17 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "NxToday" then
-            return NxTodays::toString(item)
+        if item["mikuType"] == "AbsolutelyToday" then
+            return AbsolutelyTodays::toString(item)
         end
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
+        end
+        if item["mikuType"] == "Soon" then
+            return Soons::toString(item)
         end
         if item["mikuType"] == "NxHappening" then
             return NxHappenings::toString(item)
