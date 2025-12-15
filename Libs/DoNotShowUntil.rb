@@ -2,7 +2,9 @@
 class DoNotShowUntil
     # DoNotShowUntil::doNotShowUntil(item, unixtime)
     def self.doNotShowUntil(item, unixtime)
-        Items::setAttribute(item["uuid"], "do-not-show-until-51", Time.at(unixtime).utc.iso8601)
+        datetime = Time.at(unixtime).utc.iso8601
+        puts "do not show #{PolyFunctions::toString(item).green} until #{datetime.green}"
+        Items::setAttribute(item["uuid"], "do-not-show-until-51", datetime)
     end
 
     # DoNotShowUntil::isVisible(item)

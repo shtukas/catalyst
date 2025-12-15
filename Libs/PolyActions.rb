@@ -74,8 +74,7 @@ class PolyActions
 
         if item["mikuType"] == "NxHappening" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
-            return if option.nil?
-            if option == "dismiss for the day (default)" then
+            if option.nil? or option == "dismiss for the day (default)" then
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -93,8 +92,7 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
-            return if option.nil?
-            if option == "done for the day (default)" then
+            if option.nil? or option == "done for the day (default)" then
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
