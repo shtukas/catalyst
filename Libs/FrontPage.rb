@@ -68,7 +68,6 @@ class FrontPage
     def self.itemsForListing()
         [
             NxTasks::listingItems(),
-            Items::mikuType("NxLine"),
             Waves::listingItems(),
             NxHappenings::listingItems(),
             NxOndates::listingItems(),

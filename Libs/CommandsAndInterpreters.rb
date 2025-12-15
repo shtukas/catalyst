@@ -92,7 +92,7 @@ class CommandsAndInterpreters
                     "position" => rand,
                 })
             }
-            items = selected2 + Items::mikuType("NxLine")
+            items = selected2
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
@@ -132,10 +132,6 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxLine" then
-                puts "You cannot delist a NxLine"
-                LucilleCore::pressEnterToContinue()
-            end
             puts "delisting #{PolyFunctions::toString(item)}"
             Items::setAttribute(item["uuid"], "nx41", nil)
             return
@@ -169,9 +165,12 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("priority", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            NxLines::issue(description, 0.95 * ListingPosition::firstListingPosition())
+            item = AbsolutelyTodays::interactivelyIssueNewOrNull()
+            return if item.nil?
+            Items::setAttribute(item["uuid"], "nx41", {
+                "type"     => "override",
+                "position" => 0.95 * ListingPosition::firstListingPosition()
+            })
             return
         end
 
@@ -221,10 +220,8 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if description == ""
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top", "bottom (default)"])
-            item = NxLines::issueNewInteractivelyDecidesPayload(description, 1.147)
+            item = AbsolutelyTodays::interactivelyIssueNewOrNull()
+            return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end

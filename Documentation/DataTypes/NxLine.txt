@@ -1,8 +1,0 @@
-
-NxLine:
-    - uuid        : String
-    - mikuType    : "NxLine"
-    - unixtime    :
-    - datetime    :
-    - description : String
-    - nx41        : Nx41 # override to never expire

@@ -20,11 +20,11 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxHappening" then
+        if item["mikuType"] == "AbsolutelyToday" then
             return
         end
 
-        if item["mikuType"] == "NxLine" then
+        if item["mikuType"] == "NxHappening" then
             return
         end
 
@@ -33,10 +33,6 @@ class Fsck
         end
 
         if item["mikuType"] == "Soon" then
-            return
-        end
-
-        if item["mikuType"] == "NxLine" then
             return
         end
 

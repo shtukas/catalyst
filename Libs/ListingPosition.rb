@@ -52,11 +52,6 @@ class ListingPosition
                 "position" => 0.95 * ListingPosition::firstListingPosition()
             })
         end
-
-        if item["mikuType"] == "NxLine" then
-            # should have been handled above as they are born with a never expire Nx41
-            raise "(064142) how did this happen ? item: #{item}"
-        end
         if item["mikuType"] == "AbsolutelyToday" then
             if item["random"].nil? then
                 item["random"] = rand
