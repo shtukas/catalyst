@@ -8,7 +8,6 @@ class FrontPage
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
         return false if TmpSkip1::isSkipped(item)
-        return false if item["mikuType"] == "NxHappening"
         true
     end
 
