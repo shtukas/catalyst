@@ -19,7 +19,7 @@ class Soons
 
     # Soons::icon()
     def self.icon()
-        "🍗"
+        "✨"
     end
 
     # Soons::toString(item)
