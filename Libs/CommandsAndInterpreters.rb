@@ -109,7 +109,7 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx41", {
                     "type"     => "override",
-                    "position" => 0.95 * ListingPosition::firstListingPosition(),
+                    "position" => ListingPosition::firstNegativeListingPosition() - 1,
                 })
             }
             return
@@ -169,7 +169,7 @@ class CommandsAndInterpreters
             return if item.nil?
             Items::setAttribute(item["uuid"], "nx41", {
                 "type"     => "override",
-                "position" => 0.95 * ListingPosition::firstListingPosition()
+                "position" => ListingPosition::firstNegativeListingPosition() - 1
             })
             return
         end
@@ -235,9 +235,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
-                Items::mikuType("NxOndate")
-                    .select{|item| item["date"] <= CommonUtils::today() }
-                    .sort_by{|item| item["date"] }
+                Items::mikuType("AbsolutelyToday")
             })
             return
         end

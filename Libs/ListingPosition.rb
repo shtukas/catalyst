@@ -9,8 +9,16 @@ class ListingPosition
         (2 + Math.atan(x)).to_f/10
     end
 
-    # ListingPosition::firstListingPosition()
-    def self.firstListingPosition()
+    # ListingPosition::firstNegativeListingPosition()
+    def self.firstNegativeListingPosition()
+        positions = Items::objects()
+            .select{|item| item["nx41"] }
+            .map{|item| item["nx41"]["position"] }
+        ([-1] + positions).min
+    end
+
+    # ListingPosition::firstPositiveListingPosition()
+    def self.firstPositiveListingPosition()
         positions = Items::objects()
             .select{|item| item["nx41"] }
             .map{|item| item["nx41"]["position"] }
@@ -31,25 +39,24 @@ class ListingPosition
             return item["nx41"]["position"]
         end
 
-        # (sorted)       : (smaller positives)
+        # (sorted)        : (negatives)
+        # priorities      : (negatives)
 
-        # priorities     : 0.000 -> 0.500
-        # interruptions  : 0.000 -> 0.500
+        # interruptions   : 0.300
 
-        # absolutely today : 1.147 # exact number for search and replace
+        # AbsolutelyToday : 1.147 # exact number for search and replace
+        # NxHappening     : 1.198 # exact number for search and replace
 
-        # NxHappening      : 1.198 # exact number for search and replace
-
-        # soon           : 2.000 -> 3.000 over 1.0 hours
-        # Wave           : 2.000 -> 3.000 over 2.0 hours
-        # NxTask         : 2.000 -> 3.000 over 5.0 hours
-        # NxInfinity     : 2.000 -> 3.000 over 1.0 hours
+        # soon            : 2.000 -> 3.000 over 1.0 hours
+        # Wave            : 2.000 -> 3.000 over 2.0 hours
+        # NxTask          : 2.000 -> 3.000 over 5.0 hours
+        # NxInfinity      : 2.000 -> 3.000 over 1.0 hours
 
         if item["uuid"] == "2eed73e7-8424-4b4c-af01-14ccac76b300" then
             # wave morning
             Items::setAttribute(item["uuid"], "nx41", {
                 "type"     => "override",
-                "position" => 0.95 * ListingPosition::firstListingPosition()
+                "position" => 0.95 * ListingPosition::firstPositiveListingPosition()
             })
         end
         if item["mikuType"] == "AbsolutelyToday" then
@@ -83,7 +90,7 @@ class ListingPosition
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
             if item["interruption"] then
-                return 0.500 + item["random"].to_f/1000
+                return 0.300 + item["random"].to_f/1000
             end
             base = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.0
             return 2 + base + item["random"].to_f/1000
