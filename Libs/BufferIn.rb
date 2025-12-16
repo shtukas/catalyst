@@ -3,12 +3,7 @@ class BufferIn
 
     # BufferIn::listingItems()
     def self.listingItems()
-        [
-            {
-                "uuid" => "0a8ca68f-d931-4110-825c-8fd290ad7853",
-                "mikuType" => "BufferIn"
-            }
-        ]
+        [Items::itemOrNull("0a8ca68f-d931-4110-825c-8fd290ad7853")]
     end
 
     # BufferIn::toString(item)

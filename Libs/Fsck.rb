@@ -16,6 +16,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "BufferIn" then
+            return
+        end
+
         if item["mikuType"] == "NxInfinity" then
             return
         end
