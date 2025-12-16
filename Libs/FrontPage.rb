@@ -16,27 +16,11 @@ class FrontPage
         item["interruption"]
     end
 
-    # FrontPage::rewriteIcon(line)
-    def self.rewriteIcon(line)
-        [
-            '🔹',
-            '🌊',
-            '🗓️ ',
-            '✒️ '
-        ].each{|icon|
-            line = line.sub(icon, '🔺')
-        }
-        line
-    end
-
     # FrontPage::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Cliques::cliquesSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
-        if ListingPosition::decideItemListingPositionOrNull(item) < 1 then
-            line = FrontPage::rewriteIcon(line)
-        end
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -82,6 +66,7 @@ class FrontPage
                 }
             }
             .select{|packet| packet["position"] }
+            .select{|packet| packet["position"] < 3 }
             .sort_by{|packet| packet["position"] }
             .map{|packet| packet["item"] }
     end
