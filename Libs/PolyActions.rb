@@ -90,9 +90,20 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "Soon" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
+            if option.nil? or option == "dismiss for the day (default)" then
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                PolyActions::destroy(item)
+            end
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["done for the day (default)", "destroy"])
-            if option.nil? or option == "done for the day (default)" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
+            if option.nil? or option == "dismiss for the day (default)" then
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -172,6 +183,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteObject(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "Soon" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end
