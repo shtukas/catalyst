@@ -55,7 +55,8 @@ class FrontPage
             NxHappenings::listingItems(),
             NxOndates::listingItems(),
             NxInfinities::listingItems(),
-            Soons::listingItems()
+            Soons::listingItems(),
+            BufferIn::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

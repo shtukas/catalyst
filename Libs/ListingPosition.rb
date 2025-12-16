@@ -47,6 +47,7 @@ class ListingPosition
         # AbsolutelyToday : 1.147 # exact number for search and replace
         # NxHappening     : 1.198 # exact number for search and replace
 
+        # BufferIn        : 2.000 -> 3.000 over 1.0 hours
         # soon            : 2.000 -> 3.000 over 1.0 hours
         # Wave            : 2.000 -> 3.000 over 2.0 hours
         # NxTask          : 2.000 -> 3.000 over 5.0 hours
@@ -75,6 +76,9 @@ class ListingPosition
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
             return 1.151 + item["random"].to_f/1000
+        end
+        if item["mikuType"] == "BufferIn" then
+            return 2 + BankDerivedData::recoveredAverageHoursPerDayCached("0a8ca68f-d931-4110-825c-8fd290ad7853")
         end
         if item["mikuType"] == "NxTask" then
             if item["random"].nil? then

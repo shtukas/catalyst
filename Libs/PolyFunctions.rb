@@ -70,6 +70,9 @@ class PolyFunctions
         if item["mikuType"] == "AbsolutelyToday" then
             return AbsolutelyTodays::toString(item)
         end
+        if item["mikuType"] == "BufferIn" then
+            return BufferIn::toString(item)
+        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
