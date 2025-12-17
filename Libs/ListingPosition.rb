@@ -49,7 +49,7 @@ class ListingPosition
 
         # BufferIn        : 2.000 -> 3.000 over 1.0 hours
         # soon            : 2.000 -> 3.000 over 1.0 hours
-        # Wave            : 2.000 -> 3.000 over 2.0 hours
+        # Wave            : 2.000 -> 3.000 over 2.5 hours
         # NxTask          : 2.000 -> 3.000 over 5.0 hours
         # NxInfinity      : 2.000 -> 3.000 over 1.0 hours
 
@@ -96,7 +96,7 @@ class ListingPosition
             if item["interruption"] then
                 return 0.300 + item["random"].to_f/1000
             end
-            base = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.0
+            base = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.5
             return 2 + base + item["random"].to_f/1000
         end
         if item["mikuType"] == "NxInfinity" then
