@@ -5,3 +5,13 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
+    - taskpos-49   : Float
+    - focus-23     : null or String
+
+focus-23:
+    "priority"
+    "happening"
+    "today"
+    "short-project-with-deadline"
+    "short-project"
+    "long-project"

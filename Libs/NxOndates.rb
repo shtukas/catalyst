@@ -69,12 +69,8 @@ class NxOndates
                 UxPayloads::payloadProgram(item)
                 return false
             end
-            if choice == "absolutely today" then
-                Items::setAttribute(item["uuid"], "mikuType", "AbsolutelyToday")
-                return true
-            end
             if choice == "soon" then
-                Items::setAttribute(item["uuid"], "mikuType", "Soon")
+                Items::setAttribute(item["uuid"], "mikuType", "NxProject")
                 return true
             end
             if choice == "redate" then

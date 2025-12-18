@@ -6,8 +6,8 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | clique *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | happening | cliques",
-            "divings       : anniversaries | ondates | waves | desktop | backups | todays | tomorrows | happenings | tasks",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | cliques",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | morning | numbers",
         ].join("\n")
@@ -78,7 +78,7 @@ class CommandsAndInterpreters
             puts "wave general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")}"
             puts "task general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00")}"
             puts "infinity general: #{BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec")}"
-            puts "soon general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("soon-general-45bca48d")}"
+            puts "soon general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("nxproject-general-45bca48d")}"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -165,7 +165,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("priority", input) then
-            item = AbsolutelyTodays::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             Items::setAttribute(item["uuid"], "nx41", {
                 "type"     => "override",
@@ -220,7 +220,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            item = AbsolutelyTodays::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -229,13 +229,6 @@ class CommandsAndInterpreters
         if Interpreting::match("tasks", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxTask")
-            })
-            return
-        end
-
-        if Interpreting::match("todays", input) then
-            Operations::program3(lambda { 
-                Items::mikuType("AbsolutelyToday")
             })
             return
         end
@@ -299,20 +292,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::access(item)
-            return
-        end
-
-        if Interpreting::match("happening", input) then
-            item = NxHappenings::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("happenings", input) then
-            Operations::program3(lambda { 
-                Items::mikuType("NxHappening")
-            })
             return
         end
 

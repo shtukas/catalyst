@@ -52,10 +52,8 @@ class FrontPage
         [
             NxTasks::listingItems(),
             Waves::listingItems(),
-            NxHappenings::listingItems(),
             NxOndates::listingItems(),
-            NxInfinities::listingItems(),
-            Soons::listingItems(),
+            NxProjects::listingItems(),
             BufferIn::listingItems()
         ]
             .flatten

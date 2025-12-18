@@ -20,23 +20,14 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxInfinity" then
-            return
-        end
-
-        if item["mikuType"] == "AbsolutelyToday" then
-            return
-        end
-
-        if item["mikuType"] == "NxHappening" then
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
+            if item["taskpos-49"].nil? then
+                raise "NxTask: #{item} is missing taskpos-49"
+            end
             return
         end
 
-        if item["mikuType"] == "Soon" then
+        if item["mikuType"] == "NxProject" then
             return
         end
 
@@ -80,10 +71,6 @@ class Fsck
         end
 
         if item["mikuType"] == "NxOndate" then
-            return
-        end
-
-        if item["mikuType"] == "NxHappening" then
             return
         end
 

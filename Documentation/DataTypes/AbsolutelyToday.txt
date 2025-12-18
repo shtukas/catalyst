@@ -1,7 +1,0 @@
-
-AbsolutelyToday:
-    - uuid         : String
-    - mikuType     : "AbsolutelyToday"
-    - unixtime     :
-    - datetime     :
-    - description  : String

@@ -41,20 +41,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "AbsolutelyToday" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxInfinity" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteObject(item["uuid"])
@@ -72,17 +58,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxHappening" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
-            if option.nil? or option == "dismiss for the day (default)" then
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                PolyActions::destroy(item)
-            end
-            return
-        end
-
         if item["mikuType"] == "Anniversary" then
             next_celebration = Anniversary::computeNextCelebrationDate(item["startdate"], item["repeatType"])
             Items::setAttribute(item["uuid"], "next_celebration", next_celebration)
@@ -90,7 +65,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Soon" then
+        if item["mikuType"] == "NxProject" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
             if option.nil? or option == "dismiss for the day (default)" then
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
@@ -147,27 +122,6 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxHappening" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxInfinity" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "AbsolutelyToday" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteObject(item["uuid"])
@@ -189,7 +143,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Soon" then
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end

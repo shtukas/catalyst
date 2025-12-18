@@ -20,6 +20,21 @@ class PolyFunctions
             }
         end
 
+        if item["focus-23"] then
+            if item["focus-23"] == "short-project" then
+                accounts << {
+                    "description" => "nxtask short project general",
+                    "number"      => "nxtask-short-project-general-f2b27a1f"
+                }
+            end
+            if item["focus-23"] == "long-project" then
+                accounts << {
+                    "description" => "nxtask long project general",
+                    "number"      => "nxtask-long-project-general-a4b09369"
+                }
+            end
+        end
+
         if item["mikuType"] == "NxTask" then
             accounts << {
                 "description" => "task general",
@@ -27,17 +42,10 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxInfinity" then
+        if item["mikuType"] == "NxProject" then
             accounts << {
-                "description" => "infinity general",
-                "number"      => "infinity-general-b8618ad8-a5ec"
-            }
-        end
-
-        if item["mikuType"] == "Soon" then
-            accounts << {
-                "description" => "soon general",
-                "number"      => "soon-general-45bca48d"
+                "description" => "nxproject general",
+                "number"      => "nxproject-general-45bca48d"
             }
         end
 
@@ -67,23 +75,14 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "AbsolutelyToday" then
-            return AbsolutelyTodays::toString(item)
-        end
         if item["mikuType"] == "BufferIn" then
             return BufferIn::toString(item)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "Soon" then
-            return Soons::toString(item)
-        end
-        if item["mikuType"] == "NxHappening" then
-            return NxHappenings::toString(item)
-        end
-        if item["mikuType"] == "NxInfinity" then
-            return NxInfinities::toString(item)
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

@@ -44,15 +44,19 @@ class ListingPosition
 
         # Interruptions   : 0.300
 
-        # Wave            : 1.000 -> 2.500 over 2.5 hours
+        # Wave               : 1.000 -> 2.500 over 2.5 hours
+        # NxTask & NxProject
+        #    priority        : 0.500
+        #    happening       : 0.600
+        #    today           : 1.500
+        #    short-project-with-deadline
+        #                    : 1.700
+        #    short-project   : 2.000 -> 3.000 over 1.0 hours
+        #    long-project    : 2.500 -> 3.500 over 1.0 hours
 
-        # AbsolutelyToday : 1.147 # exact number for search and replace
-        # NxHappening     : 1.198 # exact number for search and replace
-
-        # BufferIn        : 2.000 -> 3.000 over 1.0 hours
-        # soon            : 2.000 -> 3.000 over 1.0 hours
-        # NxTask          : 2.000 -> 3.000 over 5.0 hours
-        # NxInfinity      : 2.000 -> 3.000 over 1.0 hours
+        # BufferIn           : 2.000 -> 3.000 over 1.0 hours
+        # NxTask             : 2.000 -> 3.000 over 2.5 hours
+        # NxProject no focus : 3.000 -> 4.000 over 2.5 hours
 
         if item["uuid"] == "2eed73e7-8424-4b4c-af01-14ccac76b300" then
             # wave morning
@@ -60,16 +64,6 @@ class ListingPosition
                 "type"     => "override",
                 "position" => 0.95 * ListingPosition::firstPositiveListingPosition()
             })
-        end
-        if item["mikuType"] == "AbsolutelyToday" then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
-            return 1.147 + item["random"].to_f/1000 # exact number for search and replace 
-        end
-        if item["mikuType"] == "NxHappening" then
-            return 1.198 # 
         end
         if item["mikuType"] == "NxOndate" then
             if item["random"].nil? then
@@ -81,14 +75,6 @@ class ListingPosition
         if item["mikuType"] == "BufferIn" then
             return 2 + BankDerivedData::recoveredAverageHoursPerDayCached("0a8ca68f-d931-4110-825c-8fd290ad7853")
         end
-        if item["mikuType"] == "NxTask" then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
-            shift = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00").to_f/5.0
-            return 2 + shift + item["random"].to_f/1000
-        end
         if item["mikuType"] == "Wave" then
             if item["random"].nil? then
                 item["random"] = rand
@@ -97,23 +83,45 @@ class ListingPosition
             if item["interruption"] then
                 return 0.300 + item["random"].to_f/1000
             end
-            shift = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.5
+            shift = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.500
             return 1.000 + shift*1.5 + item["random"].to_f/1000
         end
-        if item["mikuType"] == "NxInfinity" then
+        if item["focus-23"] then
+            if item["focus-23"] == "priority" then
+                return 0.500 + item["random"].to_f/1000
+            end
+            if item["focus-23"] == "happening" then
+                return 0.600 + item["random"].to_f/1000
+            end
+            if item["focus-23"] == "today" then
+                return 1.500 + item["random"].to_f/1000
+            end
+            if item["focus-23"] == "short-project-with-deadline" then
+                return 1.700 + item["random"].to_f/1000
+            end
+            if item["focus-23"] == "short-project" then
+                shift = BankDerivedData::recoveredAverageHoursPerDayCached("nxtask-short-project-general-f2b27a1f").to_f
+                return 2 + shift + item["random"].to_f/1000
+            end
+            if item["focus-23"] == "long-project" then
+                shift = BankDerivedData::recoveredAverageHoursPerDayCached("nxtask-long-project-general-a4b09369").to_f
+                return 2.500 + shift + item["random"].to_f/1000
+            end
+        end
+        if item["mikuType"] == "NxTask" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            shift = BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec").to_f/1.5
+            shift = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00").to_f/2.500
             return 2 + shift + item["random"].to_f/1000
         end
-        if item["mikuType"] == "Soon" then
+        if item["mikuType"] == "NxProject" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            shift = BankDerivedData::recoveredAverageHoursPerDayCached("soon-general-45bca48d").to_f
+            shift = BankDerivedData::recoveredAverageHoursPerDayCached("nxproject-general-45bca48d").to_f/2.500
             return 2 + shift + item["random"].to_f/1000
         end
 

@@ -1,7 +1,7 @@
 
-class Soons
+class NxProjects
 
-    # Soons::interactivelyIssueNewOrNull()
+    # NxProjects::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
@@ -11,24 +11,24 @@ class Soons
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
-        Items::setAttribute(uuid, "mikuType", "Soon")
+        Items::setAttribute(uuid, "mikuType", "NxProject")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
 
-    # Soons::icon()
+    # NxProjects::icon()
     def self.icon()
         "✨"
     end
 
-    # Soons::toString(item)
+    # NxProjects::toString(item)
     def self.toString(item)
-        "#{Soons::icon()} #{item["description"]}"
+        "#{NxProjects::icon()} #{item["description"]}"
     end
 
-    # Soons::listingItems()
+    # NxProjects::listingItems()
     def self.listingItems()
-        Items::mikuType("Soon")
+        Items::mikuType("NxProject")
     end
 end

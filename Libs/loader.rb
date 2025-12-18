@@ -123,7 +123,6 @@ require_relative "Config.rb"
 
 require_relative "Atlas.rb"
 require_relative "Anniversaries.rb"
-require_relative "AbsolutelyTodays.rb"
 
 require_relative "Bank.rb"
 require_relative "BufferIn.rb"
@@ -155,10 +154,8 @@ require_relative "ListingPosition.rb"
 require_relative "NxBalls.rb"
 require_relative "Nx46.rb"
 require_relative "NxTasks.rb"
-require_relative "NxHappenings.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
-require_relative "NxInfinities.rb"
 
 require_relative "Operations.rb"
 
@@ -167,7 +164,7 @@ require_relative "PolyFunctions.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
-require_relative "Soons.rb"
+require_relative "NxProjects.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmute.rb"

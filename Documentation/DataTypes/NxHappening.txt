@@ -1,7 +1,0 @@
-
-NxHappening:
-    - uuid         : String
-    - mikuType     : "NxHappening"
-    - unixtime     :
-    - datetime     :
-    - description  : String
