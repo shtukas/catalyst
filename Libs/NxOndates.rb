@@ -44,8 +44,8 @@ class NxOndates
         "#{NxOndates::icon()} [#{item["date"]}] #{item["description"]}"
     end
 
-    # NxOndates::transmutePastDays()
-    def self.transmutePastDays()
+    # NxOndates::transmutePastDaysAndToday()
+    def self.transmutePastDaysAndToday()
 
         # return true if there has been a successful transform
         performUpdate = lambda{|item|
@@ -83,7 +83,7 @@ class NxOndates
         }
 
         past_days = Items::mikuType("NxOndate")
-                        .select{|item| item["date"] < CommonUtils::today() }
+                        .select{|item| item["date"] <= CommonUtils::today() }
                         .sort_by{|item| item["unixtime"] }
 
         return if past_days.empty?
@@ -95,11 +95,5 @@ class NxOndates
                 break if status
             }
         }
-    end
-
-    # NxOndates::listingItems()
-    def self.listingItems()
-        NxOndates::transmutePastDays()
-        Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
     end
 end

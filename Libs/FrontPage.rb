@@ -49,12 +49,12 @@ class FrontPage
 
     # FrontPage::itemsForListing()
     def self.itemsForListing()
+        NxOndates::transmutePastDaysAndToday()
         [
-            NxTasks::listingItems(),
             Waves::listingItems(),
-            NxOndates::listingItems(),
-            NxProjects::listingItems(),
-            BufferIn::listingItems()
+            BufferIn::listingItems(),
+            NxTasks::listingItems(),
+            NxProjects::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
