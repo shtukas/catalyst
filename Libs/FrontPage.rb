@@ -103,7 +103,6 @@ class FrontPage
                 }
             }
             .select{|packet| packet["position"] }
-            .select{|packet| packet["position"] < 3 }
             .sort_by{|packet| packet["position"] }
             .map{|packet| packet["item"] }
     end
