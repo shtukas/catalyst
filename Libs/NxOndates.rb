@@ -50,8 +50,8 @@ class NxOndates
         # return true if there has been a successful transform
         performUpdate = lambda{|item|
             string = "#{PolyFunctions::toString(item).green}#{UxPayloads::suffixString(item)}"
-            puts "past day transform: #{string.green}"
-            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "absolutely today", "soon", "NxTask"])
+            puts "ondate transform: #{string.green}"
+            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "to task", "to project"])
             if choice == "access" then
                 PolyActions::access(item)
                 return false
@@ -69,13 +69,23 @@ class NxOndates
                 UxPayloads::payloadProgram(item)
                 return false
             end
-            if choice == "soon" then
-                Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-                return true
-            end
             if choice == "redate" then
                 date = CommonUtils::interactivelyMakeADate()
                 Items::setAttribute(item["uuid"], "date", date)
+                return true
+            end
+            if choice == "to task" then
+                focus = Focus23::interactivelyDecideFocus23OrNull()
+                Items::setAttribute(item["uuid"], "focus-23", focus)
+                Items::setAttribute(item["uuid"], "taskpos-49", rand)
+                Items::setAttribute(item["uuid"], "mikuType", "NxTask")
+                return true
+            end
+            if choice == "to project" then
+                focus = Focus23::interactivelyDecideFocus23OrNull()
+                Items::setAttribute(item["uuid"], "focus-23", focus)
+                Items::setAttribute(item["uuid"], "taskpos-49", rand)
+                Items::setAttribute(item["uuid"], "mikuType", "NxProject")
                 return true
             end
             Transmute::transmuteTo(item, choice)

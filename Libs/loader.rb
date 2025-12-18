@@ -141,6 +141,7 @@ require_relative "Elizabeth.rb"
 
 require_relative "Fsck.rb"
 require_relative "FrontPage.rb"
+require_relative "Focus23.rb"
 
 require_relative "Galaxy.rb"
 

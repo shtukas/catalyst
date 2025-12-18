@@ -37,28 +37,4 @@ class NxTasks
             .sort_by{|item| item["taskpos-49"] }
             .first(5)
     end
-
-    # NxTasks::interactivelyDecideFocus23OrNull()
-    def self.interactivelyDecideFocus23OrNull()
-        options = [
-            "priority",
-            "happening",
-            "today",
-            "short-project-with-deadline",
-            "short-project",
-            "long-project"
-        ]
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("focus", options)
-    end
-
-    # ----------------------
-    # Ops
-
-    # NxTasks::interactivelySetFocus23OrNothing(item)
-    def self.interactivelySetFocus23OrNothing(item)
-        focus = NxTasks::interactivelyDecideFocus23OrNull()
-        return if focus.nil?
-        Items::setAttribute(item["uuid"], "focus-23", focus)
-    end
-
 end

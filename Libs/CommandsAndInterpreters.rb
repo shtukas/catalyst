@@ -6,10 +6,10 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | clique *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | cliques",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | cliques | project",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | maintenance | sort | morning | numbers",
+            "misc          : search | commands | fsck | maintenance | sort | morning",
         ].join("\n")
     end
 
@@ -70,15 +70,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "not implemented"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("numbers", input) then
-            puts "wave general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")}"
-            puts "task general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00")}"
-            puts "infinity general: #{BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec")}"
-            puts "soon general    : #{BankDerivedData::recoveredAverageHoursPerDayCached("nxproject-general-45bca48d")}"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -310,8 +301,17 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
+            item = NxProjects::interactivelyIssueNewOrNull()
+            return if item.nil?
+            Focus23::interactivelySetFocus23OrNothing(item)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("project", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
+            Focus23::interactivelySetFocus23OrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end

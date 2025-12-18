@@ -49,14 +49,14 @@ class ListingPosition
         #    priority        : 0.500
         #    happening       : 0.600
         #    today           : 1.500
-        #    short-project-with-deadline
+        #    short-run-with-deadline
         #                    : 1.700
-        #    short-project   : 2.000 -> 3.000 over 1.0 hours
-        #    long-project    : 2.500 -> 3.500 over 1.0 hours
+        #    short-run       : 2.000 -> 3.000 over 1.0 hours
+        #    long-run        : 2.500 -> 3.500 over 1.0 hours
 
         # BufferIn           : 2.000 -> 3.000 over 1.0 hours
         # NxTask             : 2.000 -> 3.000 over 2.5 hours
-        # NxProject no focus : 3.000 -> 4.000 over 2.5 hours
+        # NxProject          : 3.000 -> 4.000 over 2.5 hours
 
         if item["uuid"] == "2eed73e7-8424-4b4c-af01-14ccac76b300" then
             # wave morning
@@ -96,15 +96,15 @@ class ListingPosition
             if item["focus-23"] == "today" then
                 return 1.500 + item["random"].to_f/1000
             end
-            if item["focus-23"] == "short-project-with-deadline" then
+            if item["focus-23"] == "short-run-with-deadline" then
                 return 1.700 + item["random"].to_f/1000
             end
-            if item["focus-23"] == "short-project" then
-                shift = BankDerivedData::recoveredAverageHoursPerDayCached("nxtask-short-project-general-f2b27a1f").to_f
+            if item["focus-23"] == "short-run" then
+                shift = BankDerivedData::recoveredAverageHoursPerDayCached("short-run-general-f2b27a1f").to_f
                 return 2 + shift + item["random"].to_f/1000
             end
-            if item["focus-23"] == "long-project" then
-                shift = BankDerivedData::recoveredAverageHoursPerDayCached("nxtask-long-project-general-a4b09369").to_f
+            if item["focus-23"] == "long-run" then
+                shift = BankDerivedData::recoveredAverageHoursPerDayCached("long-run-general-a4b09369").to_f
                 return 2.500 + shift + item["random"].to_f/1000
             end
         end

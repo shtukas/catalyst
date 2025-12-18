@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Cliques::cliquesSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Focus23::suffix(item)}#{Cliques::cliquesSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -38,6 +38,44 @@ class FrontPage
 
     # -----------------------------------------
     # Ops
+
+    # FrontPage::printNumbers()
+    def self.printNumbers()
+        [
+            {
+                "label" => "wave general     ",
+                "id"    => "wave-general-fd3c4ac4-1300"
+            },
+            {
+                "label" => "BufferIn         ",
+                "id"    => "0a8ca68f-d931-4110-825c-8fd290ad7853"
+            },
+            {
+                "label" => "short runs       ",
+                "id"    => "short-run-general-f2b27a1f"
+            },
+            {
+                "label" => "long runs        ",
+                "id"    => "long-run-general-a4b09369"
+            },
+            {
+                "label" => "task general     ",
+                "id"    => "task-general-5f03ccc7-2b00"
+            },
+            {
+                "label" => "nxproject general",
+                "id"    => "nxproject-general-45bca48d"
+            },
+        ].map{|packet|
+            rt = BankDerivedData::recoveredAverageHoursPerDayCached(packet["id"])
+            packet["rt"] =  rt
+            packet
+        }
+        .sort_by{|packet| packet["rt"] }
+        .each{|packet|
+            puts "#{packet["label"]} : #{packet["rt"]}"
+        }
+    end
 
     # FrontPage::preliminaries(initialCodeTrace)
     def self.preliminaries(initialCodeTrace)
@@ -116,6 +154,8 @@ class FrontPage
                 puts line.green
                 sheight = sheight - (line.size/swidth + 1)
             }
+
+        FrontPage::printNumbers()
 
         t2 = Time.new.to_f
         renderingTime = t2-t1

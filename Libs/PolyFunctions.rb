@@ -21,16 +21,16 @@ class PolyFunctions
         end
 
         if item["focus-23"] then
-            if item["focus-23"] == "short-project" then
+            if item["focus-23"] == "short-run" then
                 accounts << {
                     "description" => "nxtask short project general",
-                    "number"      => "nxtask-short-project-general-f2b27a1f"
+                    "number"      => "short-run-general-f2b27a1f"
                 }
             end
-            if item["focus-23"] == "long-project" then
+            if item["focus-23"] == "long-run" then
                 accounts << {
                     "description" => "nxtask long project general",
-                    "number"      => "nxtask-long-project-general-a4b09369"
+                    "number"      => "long-run-general-a4b09369"
                 }
             end
         end

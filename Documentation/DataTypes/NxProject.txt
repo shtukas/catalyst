@@ -1,9 +1,8 @@
 
-NxTask:
+NxProject:
     - uuid         : String
-    - mikuType     : "NxTask"
+    - mikuType     : "NxProject"
     - unixtime     :
     - datetime     :
     - description  : String
-    - taskpos-49   : Float
     - focus-23     : null or Focus23
