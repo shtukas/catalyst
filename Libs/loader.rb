@@ -123,6 +123,7 @@ require_relative "Config.rb"
 
 require_relative "Atlas.rb"
 require_relative "Anniversaries.rb"
+require_relative "AbsolutelyTodays.rb"
 
 require_relative "Bank.rb"
 require_relative "BufferIn.rb"
@@ -158,7 +159,6 @@ require_relative "NxHappenings.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxInfinities.rb"
-require_relative "AbsolutelyTodays.rb"
 
 require_relative "Operations.rb"
 

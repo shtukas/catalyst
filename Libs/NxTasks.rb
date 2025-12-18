@@ -19,7 +19,7 @@ class NxTasks
 
     # NxTasks::icon()
     def self.icon()
-        "⭐️"
+        "🔹"
     end
 
     # NxTasks::toString(item)

@@ -42,7 +42,7 @@ class ListingPosition
         # (sorted)        : (negatives)
         # priorities      : (negatives)
 
-        # interruptions   : 0.300
+        # Interruptions   : 0.300
 
         # Wave            : 1.000 -> 2.500 over 2.5 hours
 
@@ -66,7 +66,7 @@ class ListingPosition
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            return 1.147 # exact number for search and replace + item["random"].to_f/1000
+            return 1.147 + item["random"].to_f/1000 # exact number for search and replace 
         end
         if item["mikuType"] == "NxHappening" then
             return 1.198 # 
@@ -86,8 +86,8 @@ class ListingPosition
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            base = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00").to_f/5.0
-            return 2 + base + item["random"].to_f/1000
+            shift = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00").to_f/5.0
+            return 2 + shift + item["random"].to_f/1000
         end
         if item["mikuType"] == "Wave" then
             if item["random"].nil? then
@@ -97,24 +97,24 @@ class ListingPosition
             if item["interruption"] then
                 return 0.300 + item["random"].to_f/1000
             end
-            base = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.5
-            return 1.000 + base*1.5 + item["random"].to_f/1000
+            shift = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.5
+            return 1.000 + shift*1.5 + item["random"].to_f/1000
         end
         if item["mikuType"] == "NxInfinity" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            base = BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec").to_f/1.5
-            return 2 + base + item["random"].to_f/1000
+            shift = BankDerivedData::recoveredAverageHoursPerDayCached("infinity-general-b8618ad8-a5ec").to_f/1.5
+            return 2 + shift + item["random"].to_f/1000
         end
         if item["mikuType"] == "Soon" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            base = BankDerivedData::recoveredAverageHoursPerDayCached("soon-general-45bca48d").to_f
-            return 2 + base + item["random"].to_f/1000
+            shift = BankDerivedData::recoveredAverageHoursPerDayCached("soon-general-45bca48d").to_f
+            return 2 + shift + item["random"].to_f/1000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
