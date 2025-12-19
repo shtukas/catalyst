@@ -20,10 +20,6 @@ class PolyActions
     def self.stop(item)
         NxBalls::stop(item)
         ListingPosition::delistNonOverridenItem(item)
-        if ["NxTask", "NxProject"].include?(item["mikuType"]) and item["focus-23"].nil? then
-            puts "You have stopped a #{item["mikuType"]} with no focus, setting one..."
-            Focus23::interactivelySetFocus23OrNothing(item)
-        end
     end
 
     # PolyActions::done(item)
@@ -32,6 +28,11 @@ class PolyActions
         payload = UxPayloads::itemToPayloadOrNull(item)
 
         PolyActions::stop(item)
+
+        if ["NxTask", "NxProject"].include?(item["mikuType"]) and item["focus-23"].nil? then
+            puts "You have stopped a #{item["mikuType"]} with no focus, setting one..."
+            Focus23::interactivelySetFocus23OrNothing(item)
+        end
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
