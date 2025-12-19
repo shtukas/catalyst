@@ -29,11 +29,6 @@ class PolyActions
 
         PolyActions::stop(item)
 
-        if ["NxTask", "NxProject"].include?(item["mikuType"]) and item["focus-23"].nil? then
-            puts "You have stopped a #{item["mikuType"]} with no focus, setting one..."
-            Focus23::interactivelySetFocus23OrNothing(item)
-        end
-
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
             return
@@ -73,6 +68,10 @@ class PolyActions
         if item["mikuType"] == "NxProject" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
             if option.nil? or option == "dismiss for the day (default)" then
+
+                puts "You have stopped a #{item["mikuType"]} with no focus, setting one..."
+                Focus23::interactivelySetFocus23OrNothing(item)
+
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -84,6 +83,10 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
             if option.nil? or option == "dismiss for the day (default)" then
+
+                puts "You have stopped a #{item["mikuType"]} with no focus, setting one..."
+                Focus23::interactivelySetFocus23OrNothing(item)
+
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
