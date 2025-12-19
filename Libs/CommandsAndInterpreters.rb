@@ -309,7 +309,7 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
-            Focus23::interactivelySetFocus23OrNothing(item)
+            item = Focus23::interactivelySetFocus23OrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -317,7 +317,7 @@ class CommandsAndInterpreters
         if Interpreting::match("project", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            Focus23::interactivelySetFocus23OrNothing(item)
+            item = Focus23::interactivelySetFocus23OrNothing(item)
             puts JSON.pretty_generate(item)
             return
         end
