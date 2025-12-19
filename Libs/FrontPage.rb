@@ -154,7 +154,7 @@ class FrontPage
                 sheight = sheight - (line.size/swidth + 1)
             }
 
-        FrontPage::printNumbers()
+        # FrontPage::printNumbers()
 
         t2 = Time.new.to_f
         renderingTime = t2-t1

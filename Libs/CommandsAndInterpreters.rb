@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | cliques | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | maintenance | sort | morning",
+            "misc          : search | commands | fsck | maintenance | sort | morning | numbers",
         ].join("\n")
     end
 
@@ -91,6 +91,12 @@ class CommandsAndInterpreters
                     "position" => 1.147,
                 })
             }
+            return
+        end
+
+        if Interpreting::match("numbers", input) then
+            FrontPage::printNumbers()
+            LucilleCore::pressEnterToContinue()
             return
         end
 
