@@ -77,7 +77,7 @@ class FrontPage
     def self.itemsForListing()
         NxOndates::transmutePastDaysAndToday()
         [
-            #Waves::listingItems(),
+            Waves::listingItems(),
             BufferIn::listingItems(),
             NxTasks::listingItems(),
         ]
