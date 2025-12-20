@@ -27,7 +27,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}"
+        "#{NxTasks::icon()} #{item["description"]}#{Focus24::suffix(item)}"
     end
 
     # NxTasks::listingItems()
