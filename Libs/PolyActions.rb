@@ -22,6 +22,26 @@ class PolyActions
         ListingPosition::delistNonOverridenItem(item)
     end
 
+    # PolyActions::dismiss(item)
+    def self.dismiss(item)
+
+        PolyActions::stop(item)
+
+        if item["mikuType"] == "NxTask" then
+            if item["focus-24"].nil? then
+                puts "You are stopping a #{item["mikuType"]} with no focus, setting one..."
+                Focus24::interactivelyUpdateItemWithNewFocus(item)
+            else
+                Focus24::interactivelyUpdateFocus24AsPartOfDismissalOrNothing(item)
+            end
+            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            return
+        end
+
+        puts "I do not know how to PolyActions::dismiss(#{JSON.pretty_generate(item)})"
+        LucilleCore::pressEnterToContinue()
+    end
+
     # PolyActions::done(item)
     def self.done(item)
 
@@ -64,20 +84,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
-            if option.nil? or option == "dismiss for the day (default)" then
-                if item["focus-24"].nil? then
-                    puts "You are stopping a #{item["mikuType"]} with no focus, setting one..."
-                    Focus24::interactivelyUpdateItemWithNewFocus(item)
-                else
-                    Focus24::interactivelyUpdateFocus24AsPartOfDismissalOrNothing(item)
-                end
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-                return
-            end
-            if option == "destroy" then
-                PolyActions::destroy(item)
-            end
+            puts "You cannot `done` a NxTask, you can either dismiss or destroy them"
+            LucilleCore::pressEnterToContinue()
             return
         end
 

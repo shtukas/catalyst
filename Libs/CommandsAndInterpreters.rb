@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | dismiss *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -349,6 +349,21 @@ class CommandsAndInterpreters
 
         if Interpreting::match("desktop", input) then
             system("open '#{Desktop::filepath()}'")
+            return
+        end
+
+        if Interpreting::match("dismiss", input) then
+            item = store.getDefault()
+            return if item.nil?
+            PolyActions::dismiss(item)
+            return
+        end
+
+        if Interpreting::match("dismiss *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            PolyActions::dismiss(item)
             return
         end
 
