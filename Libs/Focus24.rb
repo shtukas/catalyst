@@ -84,12 +84,13 @@ class Focus24
     def self.interactivelyUpdateItemWithNewFocus(item)
         focus = Focus24::interactivelyDecideFocus()
         Items::setAttribute(item["uuid"], "focus-24", focus)
-        Items::itemOrNull(item["uuid"])
     end
 
     # Focus24::interactivelyUpdateFocus24AsPartOfDismissalOrNothing(item)
     def self.interactivelyUpdateFocus24AsPartOfDismissalOrNothing(item)
         focus = item["focus-24"]
+        puts "I do not have special directives to handle focus: #{focus}"
+        sleep 1
     end
 
     # Focus24::toString(focus)

@@ -25,11 +25,6 @@ class ListingPosition
         ([0.500] + positions).min
     end
 
-    # ListingPosition::decideRatioListingOrNull(behaviour, nx41)
-    def self.decideRatioListingOrNull(behaviour, nx41)
-        raise "(error d8e9d7a7) I do not know how to compute ratio for behaviour: #{behaviour}"
-    end
-
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
         if item["nx41"] and item["nx41"]["type"] == "override" then
@@ -126,7 +121,7 @@ class ListingPosition
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
             shift = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.500
-            return 1.000 + shift*1.5 + item["random"].to_f/10000
+            return 1.000 + shift * 1.5 + item["random"].to_f/10000
         end
 
         if item["mikuType"] == "BufferIn" then
@@ -145,10 +140,8 @@ class ListingPosition
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
     end
 
-    # ListingPosition::delistNonOverridenItem(item)
-    def self.delistNonOverridenItem(item)
-        return if item["nx41"].nil?
-        return if item["nx41"]["type"] == "override"
+    # ListingPosition::delist(item)
+    def self.delist(item)
         Items::setAttribute(item["uuid"], "nx41", nil)
     end
 end

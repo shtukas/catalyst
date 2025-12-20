@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | dismiss *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | dismiss * | focus *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -155,6 +155,9 @@ class CommandsAndInterpreters
                 "type"     => "override",
                 "position" => ListingPosition::firstNegativeListingPosition() - 1
             })
+            Items::setAttribute(item["uuid"], "focus-24", {
+                "type"  => "priority"
+            })
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
@@ -170,6 +173,27 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Items::mikuType("NxBackup")
             })
+            return
+        end
+
+        if Interpreting::match("focus", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Focus24::interactivelyUpdateItemWithNewFocus(item)
+            ListingPosition::delist(item)
+            item = Items::itemOrNull(item["uuid"])
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("focus *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Focus24::interactivelyUpdateItemWithNewFocus(item)
+            ListingPosition::delist(item)
+            item = Items::itemOrNull(item["uuid"])
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -303,7 +327,8 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            item = Focus24::interactivelyUpdateItemWithNewFocus(item)
+            Focus24::interactivelyUpdateItemWithNewFocus(item)
+            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
@@ -311,7 +336,8 @@ class CommandsAndInterpreters
         if Interpreting::match("project", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            item = Focus24::interactivelyUpdateItemWithNewFocus(item)
+            Focus24::interactivelyUpdateItemWithNewFocus(item)
+            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end

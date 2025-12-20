@@ -75,8 +75,7 @@ class NxOndates
                 return true
             end
             if choice == "to task" then
-                focus = Focus24::interactivelyUpdateItemWithNewFocus()
-                Items::setAttribute(item["uuid"], "focus-24", focus)
+                Focus24::interactivelyUpdateItemWithNewFocus(item)
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")
                 return true
             end

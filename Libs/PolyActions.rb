@@ -19,7 +19,7 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        ListingPosition::delistNonOverridenItem(item)
+        ListingPosition::delist(item)
     end
 
     # PolyActions::dismiss(item)
@@ -84,7 +84,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            puts "You cannot `done` a NxTask, you can either dismiss or destroy them"
+            puts "You cannot `done` a NxTask, you can either `dismiss` or `destroy` them"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -167,7 +167,6 @@ class PolyActions
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
             Bank::insertValue(account["number"], CommonUtils::today(), timeInSeconds)
         }
-        ListingPosition::delistNonOverridenItem(item)
     end
 
     # PolyActions::editDescription(item)
