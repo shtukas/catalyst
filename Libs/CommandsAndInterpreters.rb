@@ -208,6 +208,11 @@ class CommandsAndInterpreters
         if Interpreting::match("today", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
+            Items::setAttribute(item["uuid"], "focus-24", {
+                "type"  => "today",
+                "unixtime" => Time.new.to_f
+            })
+            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end

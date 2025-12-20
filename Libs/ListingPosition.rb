@@ -60,12 +60,20 @@ class ListingPosition
         # BufferIn    : 2.000 -> 3.000 over 1.0 hours
         # NxTask      : 2.000 -> 3.000 over 2.5 hours
 
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            if item["random"].nil? then
+                item["random"] = rand
+                Items::setAttribute(item["uuid"], "random", item["random"])
+            end
+            return 0.300 + item["random"].to_f/10000
+        end
+
         if item["mikuType"] == "NxOndate" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            return 1.151 + item["random"].to_f/1000
+            return 1.151 + item["random"].to_f/10000
         end
 
         if item["mikuType"] == "NxTask" and item["focus-24"] then
@@ -74,7 +82,7 @@ class ListingPosition
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
             focus = item["focus-24"]
-            base = 0
+            base = nil
             if focus["type"] == "priority" then
                 base = 0.400
             end
@@ -105,7 +113,11 @@ class ListingPosition
             if focus["type"] == "project:long-run" then
                 base = 0.900
             end
-            return base + item["random"].to_f/1000
+            if base.nil? then
+                raise "I do not know how to listing position NxTask with focus '#{focus}'"
+                exit
+            end
+            return base + item["random"].to_f/10000
         end
 
         if item["mikuType"] == "Wave" then
@@ -113,11 +125,8 @@ class ListingPosition
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            if item["interruption"] then
-                return 0.300 + item["random"].to_f/1000
-            end
             shift = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.500
-            return 1.000 + shift*1.5 + item["random"].to_f/1000
+            return 1.000 + shift*1.5 + item["random"].to_f/10000
         end
 
         if item["mikuType"] == "BufferIn" then
@@ -130,7 +139,7 @@ class ListingPosition
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
             shift = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00").to_f/2.500
-            return 2 + shift + item["random"].to_f/1000
+            return 2 + shift + item["random"].to_f/10000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
