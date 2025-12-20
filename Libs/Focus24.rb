@@ -92,9 +92,14 @@ class Focus24
         focus = item["focus-24"]
     end
 
+    # Focus24::toString(focus)
+    def self.toString(focus)
+        focus["type"]
+    end
+
     # Focus24::suffix(item)
     def self.suffix(item)
         return "" if item["focus-24"].nil?
-        " [#{item["focus-24"]}]".red
+        " [#{Focus24::toString(item["focus-24"])}]".yellow
     end
 end
