@@ -5,5 +5,4 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
-    - taskpos-49   : Float
-    - focus-23     : null or Focus23
+    - focus-24     : null or Focus24

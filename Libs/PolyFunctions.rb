@@ -20,32 +20,10 @@ class PolyFunctions
             }
         end
 
-        if item["focus-23"] then
-            if item["focus-23"] == "short-run" then
-                accounts << {
-                    "description" => "nxtask short project general",
-                    "number"      => "short-run-general-f2b27a1f"
-                }
-            end
-            if item["focus-23"] == "long-run" then
-                accounts << {
-                    "description" => "nxtask long project general",
-                    "number"      => "long-run-general-a4b09369"
-                }
-            end
-        end
-
         if item["mikuType"] == "NxTask" then
             accounts << {
                 "description" => "task general",
                 "number"      => "task-general-5f03ccc7-2b00"
-            }
-        end
-
-        if item["mikuType"] == "NxProject" then
-            accounts << {
-                "description" => "nxproject general",
-                "number"      => "nxproject-general-45bca48d"
             }
         end
 
@@ -80,9 +58,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
-        end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

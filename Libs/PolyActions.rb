@@ -13,7 +13,7 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        UxPayloads::access(UxPayloads::itemToPayloadOrNull(item))
+        UxPayloads::access(item["payload-37"])
     end
 
     # PolyActions::stop(item)
@@ -24,8 +24,6 @@ class PolyActions
 
     # PolyActions::done(item)
     def self.done(item)
-
-        payload = UxPayloads::itemToPayloadOrNull(item)
 
         PolyActions::stop(item)
 
@@ -65,29 +63,17 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
-            if option.nil? or option == "dismiss for the day (default)" then
-
-                puts "You have stopped a #{item["mikuType"]} with no focus, setting one..."
-                Focus23::interactivelySetFocus23OrNothing(item)
-
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                PolyActions::destroy(item)
-            end
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option",["dismiss for the day (default)", "destroy"])
             if option.nil? or option == "dismiss for the day (default)" then
-
-                puts "You have stopped a #{item["mikuType"]} with no focus, setting one..."
-                Focus23::interactivelySetFocus23OrNothing(item)
-
+                if item["focus-24"].nil? then
+                    puts "You are stopping a #{item["mikuType"]} with no focus, setting one..."
+                    Focus24::interactivelyUpdateItemWithNewFocus(item)
+                else
+                    Focus24::interactivelyUpdateFocus24AsPartOfDismissalOrNothing(item)
+                end
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+                return
             end
             if option == "destroy" then
                 PolyActions::destroy(item)
@@ -145,13 +131,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteObject(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteObject(item["uuid"])
             end

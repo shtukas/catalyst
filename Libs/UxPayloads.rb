@@ -99,14 +99,6 @@ class UxPayloads
         raise "(error: 9dc106ff-44c6)"
     end
 
-    # UxPayloads::interactivelyIssueNewGetReferenceOrNull() # issues the new payload and return a uuid
-    def self.interactivelyIssueNewGetReferenceOrNull()
-        payload = UxPayloads::makeNewPayloadOrNull()
-        return nil if payload.nil?
-        Items::commitObject(payload)
-        payload["uuid"]
-    end
-
     # ---------------------------------------
     # Data
 
@@ -138,16 +130,8 @@ class UxPayloads
 
     # UxPayloads::suffixString(item)
     def self.suffixString(item)
-        return "" if item["payload-uuid-1141"].nil?
-        payload = Items::itemOrNull(item["payload-uuid-1141"])
-        return "" if payload.nil?
-        " #{UxPayloads::toString(payload)}".green
-    end
-
-    # UxPayloads::itemToPayloadOrNull(item)
-    def self.itemToPayloadOrNull(item)
-        return nil if item["payload-uuid-1141"].nil?
-        Items::itemOrNull(item["payload-uuid-1141"])
+        return "" if item["payload-37"].nil?
+        " #{UxPayloads::toString(item["payload-37"])}".green
     end
 
     # ---------------------------------------
@@ -360,9 +344,9 @@ class UxPayloads
 
     # UxPayloads::payloadProgram(item)
     def self.payloadProgram(item)
-        payload = UxPayloads::itemToPayloadOrNull(item)
+        payload = UxPayloads::makeNewPayloadOrNull()
         if payload.nil? then
-            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
+            Items::setAttribute(item["uuid"], "payload-37", payload)
             return
         end
         options = ["access", "edit", "make new (default)", "delete existing payload"]
@@ -374,10 +358,10 @@ class UxPayloads
             UxPayloads::edit(payload)
         end
         if option.nil? or option == "make new (default)" then
-            Items::setAttribute(item["uuid"], "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
+            Items::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull())
         end
         if option == "delete existing payload" then
-            Items::setAttribute(item["uuid"], "payload-uuid-1141", nil)
+            Items::setAttribute(item["uuid"], "payload-37", nil)
         end
     end
 end

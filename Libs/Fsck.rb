@@ -21,13 +21,6 @@ class Fsck
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["taskpos-49"].nil? then
-                raise "NxTask: #{item} is missing taskpos-49"
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
             return
         end
 

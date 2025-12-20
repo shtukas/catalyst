@@ -10,8 +10,7 @@ class NxTasks
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
-        Items::setAttribute(uuid, "taskpos-49", rand)
+        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
@@ -34,7 +33,5 @@ class NxTasks
     # NxTasks::listingItems()
     def self.listingItems()
         Items::mikuType("NxTask")
-            .sort_by{|item| item["taskpos-49"] }
-            .first(5)
     end
 end

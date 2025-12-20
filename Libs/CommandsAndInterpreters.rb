@@ -5,8 +5,8 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | clique *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | cliques | project",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | morning | numbers",
@@ -112,19 +112,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("clique *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Cliques::itemProgram(item)
-            return
-        end
-
-        if Interpreting::match("cliques", input) then
-            Cliques::generalDive()
-            return
-        end
-
         if Interpreting::match("delist *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -168,6 +155,8 @@ class CommandsAndInterpreters
                 "type"     => "override",
                 "position" => ListingPosition::firstNegativeListingPosition() - 1
             })
+            item = Items::itemOrNull(item["uuid"])
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -307,9 +296,9 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            item = NxProjects::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            item = Focus23::interactivelySetFocus23OrNothing(item)
+            item = Focus24::interactivelyUpdateItemWithNewFocus(item)
             puts JSON.pretty_generate(item)
             return
         end
@@ -317,7 +306,7 @@ class CommandsAndInterpreters
         if Interpreting::match("project", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            item = Focus23::interactivelySetFocus23OrNothing(item)
+            item = Focus24::interactivelyUpdateItemWithNewFocus(item)
             puts JSON.pretty_generate(item)
             return
         end

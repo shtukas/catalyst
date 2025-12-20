@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Focus23::suffix(item)}#{Cliques::cliquesSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Focus24::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -51,20 +51,8 @@ class FrontPage
                 "id"    => "0a8ca68f-d931-4110-825c-8fd290ad7853"
             },
             {
-                "label" => "short runs       ",
-                "id"    => "short-run-general-f2b27a1f"
-            },
-            {
-                "label" => "long runs        ",
-                "id"    => "long-run-general-a4b09369"
-            },
-            {
                 "label" => "task general     ",
                 "id"    => "task-general-5f03ccc7-2b00"
-            },
-            {
-                "label" => "nxproject general",
-                "id"    => "nxproject-general-45bca48d"
             },
         ].map{|packet|
             rt = BankDerivedData::recoveredAverageHoursPerDayCached(packet["id"])
@@ -89,10 +77,9 @@ class FrontPage
     def self.itemsForListing()
         NxOndates::transmutePastDaysAndToday()
         [
-            Waves::listingItems(),
+            #Waves::listingItems(),
             BufferIn::listingItems(),
             NxTasks::listingItems(),
-            NxProjects::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

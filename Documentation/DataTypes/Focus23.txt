@@ -1,7 +1,0 @@
-Focus23:
-    "priority"
-    "happening"
-    "today"
-    "short-run-with-deadline"
-    "short-run"
-    "long-run"

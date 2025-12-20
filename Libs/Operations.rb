@@ -11,7 +11,7 @@ class Operations
 
     # Operations::editItemPayload(item)
     def self.editItemPayload(item)
-        payload = UxPayloads::itemToPayloadOrNull(item)
+        payload = item["payload-37"]
         return payload.nil?
         UxPayloads::edit(payload)
     end

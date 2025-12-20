@@ -4,7 +4,6 @@ class Transmute
     # Transmute::transmuteTo(item, targetType)
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            Items::setAttribute(item["uuid"], "taskpos-49", rand)
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end

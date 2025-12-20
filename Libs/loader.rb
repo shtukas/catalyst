@@ -129,7 +129,6 @@ require_relative "BufferIn.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
-require_relative "Cliques.rb"
 
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
@@ -141,7 +140,7 @@ require_relative "Elizabeth.rb"
 
 require_relative "Fsck.rb"
 require_relative "FrontPage.rb"
-require_relative "Focus23.rb"
+require_relative "Focus24.rb"
 
 require_relative "Galaxy.rb"
 
@@ -165,7 +164,6 @@ require_relative "PolyFunctions.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
-require_relative "NxProjects.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmute.rb"

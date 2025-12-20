@@ -14,7 +14,7 @@ class Waves
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
+        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
         Items::setAttribute(uuid, "nx46", nx46)
         Items::setAttribute(uuid, "lastDoneUnixtime", 0)
         Items::setAttribute(uuid, "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))

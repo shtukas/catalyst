@@ -1,8 +1,0 @@
-
-NxProject:
-    - uuid         : String
-    - mikuType     : "NxProject"
-    - unixtime     :
-    - datetime     :
-    - description  : String
-    - focus-23     : null or Focus23

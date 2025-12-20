@@ -12,7 +12,7 @@ class NxOndates
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "date", date)
-        Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
+        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
         Items::setAttribute(uuid, "mikuType", "NxOndate")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
@@ -27,7 +27,7 @@ class NxOndates
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "date", date)
-        Items::setAttribute(uuid, "payload-uuid-1141", UxPayloads::interactivelyIssueNewGetReferenceOrNull())
+        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
         Items::setAttribute(uuid, "mikuType", "NxOndate")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
@@ -51,7 +51,7 @@ class NxOndates
         performUpdate = lambda{|item|
             string = "#{PolyFunctions::toString(item).green}#{UxPayloads::suffixString(item)}"
             puts "ondate transform: #{string.green}"
-            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "to task", "to project"])
+            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "to task"])
             if choice == "access" then
                 PolyActions::access(item)
                 return false
@@ -75,17 +75,9 @@ class NxOndates
                 return true
             end
             if choice == "to task" then
-                focus = Focus23::interactivelyDecideFocus23OrNull()
-                Items::setAttribute(item["uuid"], "focus-23", focus)
-                Items::setAttribute(item["uuid"], "taskpos-49", rand)
+                focus = Focus24::interactivelyUpdateItemWithNewFocus()
+                Items::setAttribute(item["uuid"], "focus-24", focus)
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-                return true
-            end
-            if choice == "to project" then
-                focus = Focus23::interactivelyDecideFocus23OrNull()
-                Items::setAttribute(item["uuid"], "focus-23", focus)
-                Items::setAttribute(item["uuid"], "taskpos-49", rand)
-                Items::setAttribute(item["uuid"], "mikuType", "NxProject")
                 return true
             end
             Transmute::transmuteTo(item, choice)
