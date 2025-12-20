@@ -141,19 +141,17 @@ class UxPayloads
     def self.access(payload)
         return if payload.nil?
         if payload["mikuType"] == "Text" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file (also does edit)"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file"])
             return if option.nil?
             if option == "in terminal" then
                 puts payload["text"].strip
                 LucilleCore::pressEnterToContinue()
             end
-            if option == "in file (also does edit)" then
+            if option == "in file" then
                 filepath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{SecureRandom.hex(5)}.txt"
                 File.open(filepath, "w"){|f| f.puts(payload["text"]) }
                 system("open '#{filepath}'")
                 LucilleCore::pressEnterToContinue()
-                payload["text"] = IO.read(filepath)
-                Items::commitObject(payload)
             end
             return
         end
@@ -231,13 +229,12 @@ class UxPayloads
         raise "(error: e0040ec0-1c8f) type: #{payload["mikuType"]}"
     end
 
-    # UxPayloads::edit(payload)
+    # UxPayloads::edit(payload) # updated payload or nil if no modifications
     def self.edit(payload)
         return if payload.nil?
         if payload["type"] == "text" then
             payload["text"] = CommonUtils::editTextSynchronously(payload["text"])
-            Items::commitObject(payload)
-            return
+            return payload
         end
         if payload["type"] == "todo-text-file-by-name-fragment" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit the name fragment itself", "access the text file"])
@@ -246,12 +243,20 @@ class UxPayloads
                 name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
                 return nil if name1 == ""
                 payload["name"] = name1
-                Items::commitObject(payload)
-                return
+                return payload
             end
             if option == "access the text file" then
-                Items::commitObject(payload)
-                return
+                name1 = payload["name"]
+                location = CommonUtils::locateGalaxyFileByNameFragment(name1)
+                if location.nil? then
+                    puts "Could not resolve this todo text file: #{name1}"
+                    LucilleCore::pressEnterToContinue()
+                    return nil
+                end
+                puts "found: #{location}"
+                system("open '#{location}'")
+                LucilleCore::pressEnterToContinue()
+                return nil
             end
             raise "(error: f1ee6b3d)"
         end
@@ -260,8 +265,7 @@ class UxPayloads
             LucilleCore::pressEnterToContinue()
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            Items::commitObject(payload)
-            return
+            return UxPayloads::locationToPayload(location)
         end
         if payload["type"] == "Dx8Unit" then
             puts "You can't edit a Dx8Unit"
@@ -272,74 +276,73 @@ class UxPayloads
             url = LucilleCore::askQuestionAnswerAsString("url (empty to abort): ")
             return nil if url == ""
             payload["url"] = url
-            Items::commitObject(payload)
-            return
+            return payload
         end
         if payload["type"] == "unique-string" then
             uniquestring = LucilleCore::askQuestionAnswerAsString("unique-string (empty to abort): ")
             return nil if uniquestring == ""
             payload["uniquestring"] = uniquestring
-            Items::commitObject(payload)
-            return
+            return payload
         end
         if payload["type"] == "open cycle" then
             name1 = LucilleCore::askQuestionAnswerAsString("open cycle directory name (empty to abort): ")
             return nil if name1 == ""
             payload["name"] = name1
-            Items::commitObject(payload)
-            return
+            return payload
         end
         raise "(error: 9dc106ff-44c6)"
+    end
+
+    # UxPayloads::editItemPayload(item)
+    def self.editItemPayload(item)
+        return if item["payload-37"].nil?
+        payload = UxPayloads::edit(item["payload-37"])
+        return if payload.nil?
+        Items::setAttribute(item["uuid"], "payload-37", payload)
     end
 
     # UxPayloads::fsck(payload)
     def self.fsck(payload)
         return if payload.nil?
-        if payload["uuid"].nil? then
-            raise "could not find `uuid` attribute for payload #{payload}"
-        end
-        if payload["mikuType"].nil? then
-            raise "could not find `mikuType` attribute for payload #{payload}"
-        end
-        if payload["type"] == "text" then
-            if payload["text"].nil? then
-                raise "could not find `text` attribute for payload #{payload}"
-            end
+        if payload["mikuType"] == "NxTask" then
             return
         end
-        if payload["type"] == "todo-text-file-by-name-fragment" then
-            if payload["name"].nil? then
-                raise "could not find `name` attribute for payload #{payload}"
-            end
+
+        if payload["mikuType"] == "AionPoint" then
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), payload["nhash"])
             return
         end
-        if payload["type"] == "aion-point" then
-            nhash = payload["nhash"]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), nhash)
-            return
-        end
-        if payload["type"] == "Dx8Unit" then
+
+        if payload["mikuType"] == "Dx8Unit" then
             if payload["id"].nil? then
-                raise "could not find `id` attribute for payload #{payload}"
+                raise "could not find `id` attribute for item #{item}"
             end
             return
         end
-        if payload["type"] == "url" then
-            if payload["url"].nil? then
-                raise "could not find `url` attribute for payload #{payload}"
+
+        if payload["mikuType"] == "OpenCycle" then
+            return
+        end
+
+        if payload["mikuType"] == "Text" then
+            if payload["text"].nil? then
+                raise "could not find `text` attribute for item #{item}"
             end
             return
         end
-        if payload["type"] == "unique-string" then
-            if payload["uniquestring"].nil? then
-                raise "could not find `uniquestring` attribute for payload #{payload}"
-            end
+
+        if payload["mikuType"] == "TodoTextFileByNameFragment" then
             return
         end
-        if payload["type"] == "open cycle" then
+
+        if payload["mikuType"] == "UniqueString" then
             return
         end
-        raise "unkown payload type: #{payload["type"]} at #{payload}"
+
+        if payload["mikuType"] == "URL" then
+            return
+        end
+        raise "unkown payload mikuType: #{payload["mikuType"]} at #{payload}"
     end
 
     # UxPayloads::payloadProgram(item)
@@ -355,7 +358,7 @@ class UxPayloads
             UxPayloads::access(payload)
         end
         if option == "edit" then
-            UxPayloads::edit(payload)
+            UxPayloads::editItemPayload(item)
         end
         if option.nil? or option == "make new (default)" then
             Items::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull())

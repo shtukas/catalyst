@@ -9,13 +9,6 @@ class Operations
         }
     end
 
-    # Operations::editItemPayload(item)
-    def self.editItemPayload(item)
-        payload = item["payload-37"]
-        return payload.nil?
-        UxPayloads::edit(payload)
-    end
-
     # Operations::editItem(item)
     def self.editItem(item)
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit description", "edit payload", "edit json"])
@@ -24,7 +17,7 @@ class Operations
             PolyActions::editDescription(item)
         end
         if option == "edit payload" then
-            Operations::editItemPayload(item)
+            UxPayloads::editItemPayload(item)
         end
         if option == "edit json" then
             Operations::editItemJson(item)
@@ -115,7 +108,7 @@ class Operations
             DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
         end
         if option == "destroy" then
-            Items::deleteObject(item["uuid"])
+            Items::deleteItem(item["uuid"])
         end
     end
 end

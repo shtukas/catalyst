@@ -197,8 +197,8 @@ class Items
         filepath1
     end
 
-    # Items::entryOrNull(uuid)
-    def self.entryOrNull(uuid)
+    # Items::databaseEntryOrNull(uuid)
+    def self.databaseEntryOrNull(uuid)
         Items::filepaths().each{|filepath|
             entry = Items::extractEntryOrNullFromFilepath(filepath, uuid)
             return entry if entry
@@ -226,20 +226,20 @@ class Items
           "uuid" => uuid,
           "mikuType" => "NxDeleted",
         }
-        Items::commitObject(item)
+        Items::commitItem(item)
     end
 
     # Items::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        entry = Items::entryOrNull(uuid)
+        entry = Items::databaseEntryOrNull(uuid)
         if entry.nil? then
             return nil
         end
         entry["item"]
     end
 
-    # Items::commitObject(item)
-    def self.commitObject(item)
+    # Items::commitItem(item)
+    def self.commitItem(item)
         Fsck::fsckItemOrError(item, false)
         filepath = Items::getDatabaseFilepath()
         Items::insertUpdateItemAtFile(filepath, item)
@@ -252,7 +252,7 @@ class Items
             raise "(error: ce53d4c7) you are trying to set an attribute of an non existant item, uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
         end
         item[attrname] = attrvalue
-        Items::commitObject(item)
+        Items::commitItem(item)
         item
     end
 
@@ -298,8 +298,8 @@ class Items
         items
     end
 
-    # Items::deleteObject(uuid)
-    def self.deleteObject(uuid)
+    # Items::deleteItem(uuid)
+    def self.deleteItem(uuid)
         Items::setAttribute(uuid, "mikuType", 'NxDeleted')
     end
 

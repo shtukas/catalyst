@@ -41,13 +41,13 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteObject(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxDeleted" then
-            Items::deleteObject(item["uuid"])
+            Items::deleteItem(item["uuid"])
             return
         end
 
@@ -118,28 +118,28 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Items::deleteObject(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Anniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteObject(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteObject(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteObject(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
