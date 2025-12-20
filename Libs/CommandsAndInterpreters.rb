@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | maintenance | sort | morning | numbers",
+            "misc          : search | commands | fsck | maintenance | sort | numbers",
         ].join("\n")
     end
 
@@ -71,26 +71,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts "not implemented"
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("morning", input) then
-            puts "select tasks"
-            selected2, _ = LucilleCore::selectZeroOrMore("elements", [], Items::mikuType("NxTask"), lambda{|i| PolyFunctions::toString(i) })
-            selected2.each{|item|
-                Items::setAttribute(item["uuid"], "nx41", {
-                    "type"     => "override",
-                    "position" => rand,
-                })
-            }
-            items = selected2
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|item|
-                Items::setAttribute(item["uuid"], "nx41", {
-                    "type"     => "override",
-                    "position" => 1.147,
-                })
-            }
             return
         end
 
