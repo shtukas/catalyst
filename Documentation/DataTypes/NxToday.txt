@@ -1,9 +1,7 @@
 
-NxTask:
+NxOndate:
     - uuid         : String
-    - mikuType     : "NxTask"
+    - mikuType     : "NxOndate"
     - unixtime     :
     - datetime     :
     - description  : String
-    - tlname-11    : String
-    - tlpos-12     : Float

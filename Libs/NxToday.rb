@@ -1,7 +1,7 @@
 
-class NxTasks
+class NxTodays
 
-    # NxTasks::interactivelyIssueNewOrNull()
+    # NxTodays::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
@@ -11,27 +11,19 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
-        Items::setAttribute(uuid, "mikuType", "NxTask")
+        Items::setAttribute(uuid, "mikuType", "NxToday")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
         item
     end
 
-    # ----------------------
-    # Data
-
-    # NxTasks::icon()
+    # NxTodays::icon()
     def self.icon()
-        "🔹"
+        "☀️"
     end
 
-    # NxTasks::toString(item)
+    # NxTodays::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}#{TaskList::suffix(item)}"
-    end
-
-    # NxTasks::listingItems()
-    def self.listingItems()
-        Items::mikuType("NxTask")
+        "#{NxTodays::icon()} #{item["description"]}"
     end
 end

@@ -20,10 +20,17 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "NxTask" and item["tlname-11"].nil? then
             accounts << {
                 "description" => "task general",
-                "number"      => "task-general-5f03ccc7-2b00"
+                "number"      => "task-general-free-2b01"
+            }
+        end
+
+        if item["mikuType"] == "NxTask" and item["tlname-11"] then
+            accounts << {
+                "description" => "tlname-11:#{tasklisted}",
+                "number"      => "tlname-11:#{tasklisted}"
             }
         end
 
@@ -58,6 +65,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
+        end
+        if item["mikuType"] == "NxToday" then
+            return NxTodays::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

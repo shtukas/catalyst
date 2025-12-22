@@ -44,14 +44,14 @@ class NxOndates
         "#{NxOndates::icon()} [#{item["date"]}] #{item["description"]}"
     end
 
-    # NxOndates::transmutePastDaysAndToday()
-    def self.transmutePastDaysAndToday()
+    # NxOndates::prepareToday()
+    def self.prepareToday()
 
         # return true if there has been a successful transform
         performUpdate = lambda{|item|
             string = "#{PolyFunctions::toString(item).green}#{UxPayloads::suffixString(item)}"
             puts "ondate transform: #{string.green}"
-            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "to task"])
+            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "today", "tomorrow", "to task"])
             if choice == "access" then
                 PolyActions::access(item)
                 return false
@@ -74,8 +74,17 @@ class NxOndates
                 Items::setAttribute(item["uuid"], "date", date)
                 return true
             end
+            if choice == "today" then
+                Items::setAttribute(item["uuid"], "mikuType", "NxToday")
+                return true
+            end
+            if choice == "tomorrow" then
+                Items::setAttribute(item["uuid"], "mikuType", "NxToday")
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+                return true
+            end
             if choice == "to task" then
-                Focus24::interactivelyUpdateItemWithNewFocus(item)
+                TaskList::attach(item)
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")
                 return true
             end

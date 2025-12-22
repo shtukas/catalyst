@@ -34,26 +34,14 @@ class ListingPosition
             return item["nx41"]["position"]
         end
 
-        # (sorted)     : (negatives)
-        # priorities   : (negatives)
-
-        # Interruptions: 0.300
-
-        # NxTask, focus
-        #    priority                  : 0.400
-        #    happening                 : 0.450
-        #    today                     : 0.500
-        #    task:todo-within-days     : 0.550
-        #    task:todo-within-a-week   : 0.600
-        #    task:todo-within-weeks    : 0.650
-        #    task:todo-within-a-month  : 0.700
-        #    project:run-with-deadline : 0.750
-        #    project:short-run         : 0.800
-        #    project:long-run          : 0.900
-
-        # Wave        : 1.000 -> 2.500 over 2.5 hours
-        # BufferIn    : 2.000 -> 3.000 over 1.0 hours
-        # NxTask      : 2.000 -> 3.000 over 2.5 hours
+        # (sorted)            : (negatives)
+        # priorities          : (negatives)
+        # Interruptions       : 0.300
+        # Today               : 1.000
+        # Wave                : 1.000 -> 2.500 over 2.5 hours
+        # BufferIn            : 1.500 -> 3.000 over 1.0 hours
+        # NxTask (tasklisted) : 1.500 -> 3.000 over 2.5 hours
+        # NxTask (free)       : 2.000 -> 3.000 over 2.0 hours
 
         if item["mikuType"] == "Wave" and item["interruption"] then
             if item["random"].nil? then
@@ -63,56 +51,12 @@ class ListingPosition
             return 0.300 + item["random"].to_f/10000
         end
 
-        if item["mikuType"] == "NxOndate" then
+        if item["mikuType"] == "NxToday" then
             if item["random"].nil? then
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            return 1.151 + item["random"].to_f/10000
-        end
-
-        if item["mikuType"] == "NxTask" and item["focus-24"] then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
-            focus = item["focus-24"]
-            base = nil
-            if focus["type"] == "priority" then
-                base = 0.400
-            end
-            if focus["type"] == "priority" then
-                base = 0.450
-            end
-            if focus["type"] == "today" then
-                base = 0.500
-            end
-            if focus["type"] == "task:todo-within-days" then
-                base = 0.550
-            end
-            if focus["type"] == "task:todo-within-a-week" then
-                base = 0.600
-            end
-            if focus["type"] == "task:todo-within-weeks" then
-                base = 0.650
-            end
-            if focus["type"] == "task:todo-within-a-month" then
-                base = 0.700
-            end
-            if focus["type"] == "project:run-with-deadline" then
-                base = 0.750
-            end
-            if focus["type"] == "project:short-run" then
-                base = 0.800
-            end
-            if focus["type"] == "project:long-run" then
-                base = 0.900
-            end
-            if base.nil? then
-                raise "I do not know how to listing position NxTask with focus '#{focus}'"
-                exit
-            end
-            return base + item["random"].to_f/10000
+            return 1.000 + item["random"].to_f/10000
         end
 
         if item["mikuType"] == "Wave" then
@@ -120,12 +64,29 @@ class ListingPosition
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            shift = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300").to_f/2.500
-            return 1.000 + shift * 1.5 + item["random"].to_f/10000
+            increase = 1.5
+            hours    = 2.5
+            rt = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")
+            return 1.000 + increase * (rt.to_f/hours) + item["random"].to_f/10000
         end
 
         if item["mikuType"] == "BufferIn" then
-            return 2 + BankDerivedData::recoveredAverageHoursPerDayCached("0a8ca68f-d931-4110-825c-8fd290ad7853")
+            increase = 1.5
+            hours    = 1.0
+            rt = BankDerivedData::recoveredAverageHoursPerDayCached("0a8ca68f-d931-4110-825c-8fd290ad7853")
+            return 1.5 + increase * (rt.to_f/hours)
+        end
+
+        if item["mikuType"] == "NxTask" and item["tlname-11"] then
+            if item["tlpos-12"].nil? then
+                item["tlpos-12"] = TaskList::firstPosition() - 1
+                Items::setAttribute(uuid, "tlpos-12", item["tlpos-12"])
+            end
+            increase = 1.5
+            hours    = 1.0
+            tasklisted = item["tlname-11"]
+            rt = BankDerivedData::recoveredAverageHoursPerDayCached("tlname-11:#{tasklisted}")
+            return 1.500 + increase * (rt.to_f/hours) + ListingPosition::realLineTo01Increasing(item["tlpos-12"]).to_f/1000
         end
 
         if item["mikuType"] == "NxTask" then
@@ -133,8 +94,10 @@ class ListingPosition
                 item["random"] = rand
                 Items::setAttribute(item["uuid"], "random", item["random"])
             end
-            shift = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-5f03ccc7-2b00").to_f/2.500
-            return 2 + shift + item["random"].to_f/10000
+            increase = 1.5
+            hours    = 2.0
+            rt = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-free-2b01")
+            return 2 + increase * (rt.to_f/hours) + item["random"].to_f/10000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"

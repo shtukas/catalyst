@@ -52,7 +52,7 @@ class FrontPage
             },
             {
                 "label" => "task general     ",
-                "id"    => "task-general-5f03ccc7-2b00"
+                "id"    => "task-general-free-2b01"
             },
         ].map{|packet|
             rt = BankDerivedData::recoveredAverageHoursPerDayCached(packet["id"])
@@ -61,7 +61,7 @@ class FrontPage
         }
         .sort_by{|packet| packet["rt"] }
         .each{|packet|
-            puts "#{packet["label"]} : #{packet["rt"]}"
+            puts "#{packet["label"]} : #{packet["rt"].round(3)}"
         }
     end
 
@@ -75,7 +75,7 @@ class FrontPage
 
     # FrontPage::itemsForListing()
     def self.itemsForListing()
-        NxOndates::transmutePastDaysAndToday()
+        NxOndates::prepareToday()
         [
             Waves::listingItems(),
             BufferIn::listingItems(),
