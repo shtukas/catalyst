@@ -44,30 +44,18 @@ class ListingPosition
         # NxTask (free)       : 2.000 -> 3.000 over 2.0 hours
 
         if item["mikuType"] == "Wave" and item["interruption"] then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
-            return 0.300 + item["random"].to_f/10000
+            return 0.300 + ListingPosition::realLineTo01Increasing((item["lastDoneUnixtime"]-1766445888).to_f/86400).to_f/1000
         end
 
         if item["mikuType"] == "NxToday" then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
-            return 1.000 + item["random"].to_f/10000
+            return 1.000 + ListingPosition::realLineTo01Increasing((item["unixtime"]-1766445888).to_f/86400).to_f/1000
         end
 
         if item["mikuType"] == "Wave" then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
             increase = 1.5
             hours    = 2.5
             rt = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")
-            return 1.000 + increase * (rt.to_f/hours) + item["random"].to_f/10000
+            return 1.000 + increase * (rt.to_f/hours) + ListingPosition::realLineTo01Increasing((item["lastDoneUnixtime"]-1766445888).to_f/86400).to_f/1000
         end
 
         if item["mikuType"] == "BufferIn" then
@@ -90,14 +78,10 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["random"].nil? then
-                item["random"] = rand
-                Items::setAttribute(item["uuid"], "random", item["random"])
-            end
             increase = 1.5
             hours    = 2.0
             rt = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-free-2b01")
-            return 2 + increase * (rt.to_f/hours) + item["random"].to_f/10000
+            return 2 + increase * (rt.to_f/hours) + ListingPosition::realLineTo01Increasing((item["unixtime"]-1766445888).to_f/86400).to_f/1000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
