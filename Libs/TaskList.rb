@@ -30,14 +30,14 @@ class TaskList
         if tasklists.size > 0 then
             tasklist = LucilleCore::selectEntityFromListOfEntitiesOrNull("tasklist", tasklists)
             if tasklist then
-                Items::setAttribute(uuid, "tlname-11", tasklist)
+                Items::setAttribute(item["uuid"], "tlname-11", tasklist)
                 return
             end
         end
         if LucilleCore::askQuestionAnswerAsBoolean("You did not set a task list for '#{PolyFunctions::toString(item)}', create a new one ? : ", true) then
             tasklist = LucilleCore::askQuestionAnswerAsString("tasklist: ")
             if tasklist.size > 0 then
-                Items::setAttribute(uuid, "tlname-11", tasklist)
+                Items::setAttribute(item["uuid"], "tlname-11", tasklist)
                 return
             end
         end
