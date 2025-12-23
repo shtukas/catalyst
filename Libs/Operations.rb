@@ -49,6 +49,15 @@ class Operations
         Bank::maintenance()
         puts "Items::maintenance()"
         Items::maintenance()
+
+        if XCache::getOrNull("ab054e60-a15f-4aa8-8e3f-b02df7a6ae44") == "Lucille26" and !XCache::getFlag("f1a466ce-6717-46c0-b5e6-ca33e1142003:#{CommonUtils::today()}") then
+            puts "Moving some orphan NxTasks to NxToday"
+            items = Items::mikuType("NxTask").select{|item| item["tlname-11"].nil? }
+            puts items.size
+            puts "Please write the code"
+            exit
+            Items::setAttribute(item["uuid"], "mikuType", "NxToday")
+        end
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
