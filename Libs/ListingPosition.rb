@@ -66,15 +66,11 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxTask" and item["tlname-11"] then
-            if item["tlpos-12"].nil? then
-                item["tlpos-12"] = TaskLists::firstPosition() - 1
-                Items::setAttribute(item["uuid"], "tlpos-12", item["tlpos-12"])
-            end
             increase = 1.5
             hours    = 1.0
             listname = item["tlname-11"]
             rt = BankDerivedData::recoveredAverageHoursPerDayCached("tlname-11:#{listname}")
-            return 1.500 + increase * (rt.to_f/hours) + ListingPosition::realLineTo01Increasing(item["tlpos-12"]).to_f/1000
+            return 1.500 + increase * (rt.to_f/hours)
         end
 
         if item["mikuType"] == "NxTask" then

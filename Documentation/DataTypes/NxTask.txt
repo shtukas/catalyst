@@ -6,4 +6,3 @@ NxTask:
     - datetime     :
     - description  : String
     - tlname-11    : String
-    - tlpos-12     : Float

@@ -16,11 +16,6 @@ class TaskLists
         " (#{item["tlname-11"]})".yellow
     end
 
-    # TaskLists::firstPosition()
-    def self.firstPosition()
-        ([1] + Items::mikuType("NxTask").select{|item| item["tlpos-12"] }.map{|item| item["tlpos-12"] }).min
-    end
-
     # TaskLists::distinctNames()
     def self.distinctNames()
         Items::objects().map{|item| item["tlname-11"] }.compact.uniq
@@ -53,9 +48,6 @@ class TaskLists
         loop {
             elements = Items::mikuType("NxTask")
                         .select{|item| item["tlname-11"] == tasklist }
-            e1, e2 = elements.partition{|item| item["tlpos-12"] }
-            elements = e1.sort_by{|item| item["tlpos-12"] } + e2
-
             store = ItemStore.new()
             puts ""
             elements
@@ -63,17 +55,8 @@ class TaskLists
                     store.register(item, FrontPage::canBeDefault(item))
                     puts FrontPage::toString2(store, item)
                 }
-            puts "sort"
+            puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
-
-            if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|item|
-                    Items::setAttribute(uuid, "tlpos-12", TaskLists::firstPosition() - 1)
-                }
-                next
-            end
-
             return if input == "exit"
             return if input == ""
             CommandsAndInterpreters::interpreter(input, store)
