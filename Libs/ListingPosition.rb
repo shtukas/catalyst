@@ -42,7 +42,6 @@ class ListingPosition
         # NxInProgress        : 1.300
         # BufferIn            : 1.500 -> 3.000 over 1.0 hours
         # NxTask (cored)      : 1.500 -> 3.000 over 2.5 hours
-        # NxTask (free)       : 2.000 -> 3.000 over 2.0 hours
 
         if item["mikuType"] == "Wave" and item["interruption"] then
             return 0.300 + ListingPosition::realLineTo01Increasing((item["lastDoneUnixtime"]-1766445888).to_f/86400).to_f/1000
@@ -78,11 +77,8 @@ class ListingPosition
             return 1.500 + increase * (rt.to_f/hours)
         end
 
-        if item["mikuType"] == "NxTask" then
-            increase = 1.5
-            hours    = 2.0
-            rt = BankDerivedData::recoveredAverageHoursPerDayCached("task-general-free-2b01")
-            return 2 + increase * (rt.to_f/hours) + ListingPosition::realLineTo01Increasing((item["unixtime"]-1766445888).to_f/86400).to_f/1000
+        if item["mikuType"] == "NxTask" and item["tlname-11"].nil? then
+            puts "We are not supposed to be listing those, are we ? (they are automatically transmuted to NxToday)"
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"

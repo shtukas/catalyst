@@ -35,9 +35,13 @@ class NxTasks
 
     # NxTasks::listingItems()
     def self.listingItems()
-        if $memory1503 and (Time.new.to_i - $memory1503["unixtime"]) < 1200 then
-            $memory1503["items"] = $memory1503["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
-            return $memory1503["items"]
+        memory = JSON.parse(XCache::getOrDefaultValue("89d69959-2a82-411d-b980-98986113bb3d", "null"))
+        if memory and (Time.new.to_i - memory["unixtime"]) < 1200 then
+            memory["items"] = memory["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
+            if memory["items"].size > 0 then
+                XCache::set("89d69959-2a82-411d-b980-98986113bb3d", JSON.generate(memory))
+                return memory["items"]
+            end
         end
 
         names = Cores::distinctNames()
@@ -47,9 +51,11 @@ class NxTasks
             .select{|item| item["tlname-11"] == name1 }
             .first(20)
 
-        $memory1503 = {}
-        $memory1503["items"] = items
-        $memory1503["unixtime"] = Time.new.to_i
-        $memory1503["items"]
+        memory = {
+            "unixtime" => Time.new.to_i,
+            "items" => items
+        }
+        XCache::set("89d69959-2a82-411d-b980-98986113bb3d", JSON.generate(memory))
+        memory["items"]
     end
 end

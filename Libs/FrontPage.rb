@@ -164,6 +164,15 @@ class FrontPage
     # FrontPage::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
+
+        Thread.new {
+            sleep 12
+            loop {
+                NxTasks::listingItems()
+                sleep 15 * 60
+            }
+        }
+
         loop {
             FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)
