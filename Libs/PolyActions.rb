@@ -20,6 +20,9 @@ class PolyActions
     def self.stop(item)
         NxBalls::stop(item)
         ListingPosition::delist(item)
+        if item["mikuType"] == "NxTask" then
+            Items::setAttribute(uuid, "mikuType", "NxInProgress")
+        end
     end
 
     # PolyActions::dismiss(item)
@@ -30,7 +33,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if item["focus-24"].nil? then
                 puts "You are stopping a #{item["mikuType"]} with no focus, setting one..."
-                TaskLists::attach(item)
+                Cores::attach(item)
             end
             DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             return
@@ -53,6 +56,13 @@ class PolyActions
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 DropBox::done(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxInProgress" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                Items::deleteItem(item["uuid"])
             end
             return
         end
@@ -142,7 +152,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxToday" then
+        if item["mikuType"] == "NxInProgress" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteItem(item["uuid"])
             end

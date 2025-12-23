@@ -51,7 +51,7 @@ class FrontPage
                 "id"    => "0a8ca68f-d931-4110-825c-8fd290ad7853"
             }
         ]
-        x2 = TaskLists::distinctNames().map{|name1|
+        x2 = Cores::distinctNames().map{|name1|
             {
                 "label" => name1.ljust(20),
                 "id"    => "tlname-11:#{name1}"

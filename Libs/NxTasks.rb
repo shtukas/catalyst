@@ -30,7 +30,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}#{TaskLists::suffix(item)}"
+        "#{NxTasks::icon()} #{item["description"]}#{Cores::suffix(item)}"
     end
 
     # NxTasks::listingItems()
@@ -40,7 +40,7 @@ class NxTasks
             return $memory1503["items"]
         end
 
-        names = TaskLists::distinctNames()
+        names = Cores::distinctNames()
         names = names.sort_by{|listname| BankDerivedData::recoveredAverageHoursPerDayCached("tlname-11:#{listname}") }
         name1 = names.first
         items = Items::mikuType("NxTask")

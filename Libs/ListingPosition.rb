@@ -39,12 +39,17 @@ class ListingPosition
         # Interruptions       : 0.300
         # Today               : 1.000
         # Wave                : 1.000 -> 2.500 over 2.5 hours
+        # NxInProgress        : 1.300
         # BufferIn            : 1.500 -> 3.000 over 1.0 hours
-        # NxTask (tasklisted) : 1.500 -> 3.000 over 2.5 hours
+        # NxTask (cored)      : 1.500 -> 3.000 over 2.5 hours
         # NxTask (free)       : 2.000 -> 3.000 over 2.0 hours
 
         if item["mikuType"] == "Wave" and item["interruption"] then
             return 0.300 + ListingPosition::realLineTo01Increasing((item["lastDoneUnixtime"]-1766445888).to_f/86400).to_f/1000
+        end
+
+        if item["mikuType"] == "NxInProgress" then
+            return 1.300
         end
 
         if item["mikuType"] == "NxToday" then

@@ -1,22 +1,22 @@
 
-class TaskLists
+class Cores
 
     # -------------------------
     # Data
 
-    # TaskLists::interactivelySelectTaskListOrNull()
+    # Cores::interactivelySelectTaskListOrNull()
     def self.interactivelySelectTaskListOrNull()
-        tasklists = Items::objects().map{|item| item["tlname-11"] }.compact.uniq
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("tasklist", tasklists)
+        cores = Items::objects().map{|item| item["tlname-11"] }.compact.uniq
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores)
     end
 
-    # TaskLists::suffix(item)
+    # Cores::suffix(item)
     def self.suffix(item)
         return "" if item["tlname-11"].nil?
         " (#{item["tlname-11"]})".yellow
     end
 
-    # TaskLists::distinctNames()
+    # Cores::distinctNames()
     def self.distinctNames()
         Items::objects().map{|item| item["tlname-11"] }.compact.uniq
     end
@@ -24,30 +24,30 @@ class TaskLists
     # -------------------------
     # Ops
 
-    # TaskLists::attach(item)
+    # Cores::attach(item)
     def self.attach(item)
-        tasklists = TaskLists::distinctNames()
-        if tasklists.size > 0 then
-            tasklist = LucilleCore::selectEntityFromListOfEntitiesOrNull("tasklist", tasklists)
-            if tasklist then
-                Items::setAttribute(item["uuid"], "tlname-11", tasklist)
+        cores = Cores::distinctNames()
+        if cores.size > 0 then
+            core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores)
+            if core then
+                Items::setAttribute(item["uuid"], "tlname-11", core)
                 return
             end
         end
         if LucilleCore::askQuestionAnswerAsBoolean("You did not set a task list for '#{PolyFunctions::toString(item)}', create a new one ? : ", true) then
-            tasklist = LucilleCore::askQuestionAnswerAsString("tasklist: ")
-            if tasklist.size > 0 then
-                Items::setAttribute(item["uuid"], "tlname-11", tasklist)
+            core = LucilleCore::askQuestionAnswerAsString("core: ")
+            if core.size > 0 then
+                Items::setAttribute(item["uuid"], "tlname-11", core)
                 return
             end
         end
     end
 
-    # TaskLists::program(tasklist)
-    def self.program(tasklist)
+    # Cores::program(core)
+    def self.program(core)
         loop {
             elements = Items::mikuType("NxTask")
-                        .select{|item| item["tlname-11"] == tasklist }
+                        .select{|item| item["tlname-11"] == core }
             store = ItemStore.new()
             puts ""
             elements
@@ -63,12 +63,12 @@ class TaskLists
         }
     end
 
-    # TaskLists::dive()
+    # Cores::dive()
     def self.dive()
         loop {
-            tasklist = TaskLists::interactivelySelectTaskListOrNull()
-            return if tasklist.nil?
-            TaskLists::program(tasklist)
+            core = Cores::interactivelySelectTaskListOrNull()
+            return if core.nil?
+            Cores::program(core)
         }
     end
 end

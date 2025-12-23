@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | dismiss *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects | todays | tasklists | orphans",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects | todays | cores | orphans",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | numbers",
         ].join("\n")
@@ -200,8 +200,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("tasklists", input) then
-            TaskLists::dive()
+        if Interpreting::match("cores", input) then
+            Cores::dive()
             return
         end
 
@@ -298,7 +298,7 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            TaskLists::attach(item)
+            Cores::attach(item)
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
@@ -307,7 +307,7 @@ class CommandsAndInterpreters
         if Interpreting::match("project", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            TaskLists::attach(item)
+            Cores::attach(item)
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return

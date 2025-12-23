@@ -84,7 +84,7 @@ class NxOndates
                 return true
             end
             if choice == "to task" then
-                TaskLists::attach(item)
+                Cores::attach(item)
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")
                 return true
             end
