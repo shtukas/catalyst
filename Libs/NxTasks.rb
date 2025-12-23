@@ -1,4 +1,7 @@
 
+
+$memory1503 = nil
+
 class NxTasks
 
     # NxTasks::interactivelyIssueNewOrNull()
@@ -27,11 +30,26 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}#{TaskList::suffix(item)}"
+        "#{NxTasks::icon()} #{item["description"]}#{TaskLists::suffix(item)}"
     end
 
     # NxTasks::listingItems()
     def self.listingItems()
-        Items::mikuType("NxTask")
+        if $memory1503 and (Time.new.to_i - $memory1503["unixtime"]) < 1200 then
+            $memory1503["items"] = $memory1503["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
+            return $memory1503["items"]
+        end
+
+        names = TaskLists::distinctNames()
+        names = names.sort_by{|listname| BankDerivedData::recoveredAverageHoursPerDayCached("tlname-11:#{listname}") }
+        name1 = names.first
+        items = Items::mikuType("NxTask")
+            .select{|item| item["tlname-11"] == name1 }
+            .first(20)
+
+        $memory1503 = {}
+        $memory1503["items"] = items
+        $memory1503["unixtime"] = Time.new.to_i
+        $memory1503["items"]
     end
 end

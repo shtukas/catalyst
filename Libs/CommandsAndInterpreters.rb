@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | dismiss *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects | todays | tasklists",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects | todays | tasklists | orphans",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | numbers",
         ].join("\n")
@@ -201,12 +201,20 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("tasklists", input) then
-            TaskList::dive()
+            TaskLists::dive()
             return
         end
+
         if Interpreting::match("tasks", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxTask")
+            })
+            return
+        end
+
+        if Interpreting::match("orphans", input) then
+            Operations::program3(lambda { 
+                Items::mikuType("NxTask").select{|item| item["tlname-11"].nil? }
             })
             return
         end
@@ -290,7 +298,7 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            TaskList::attach(item)
+            TaskLists::attach(item)
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
@@ -299,7 +307,7 @@ class CommandsAndInterpreters
         if Interpreting::match("project", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            TaskList::attach(item)
+            TaskLists::attach(item)
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return

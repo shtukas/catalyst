@@ -30,7 +30,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if item["focus-24"].nil? then
                 puts "You are stopping a #{item["mikuType"]} with no focus, setting one..."
-                TaskList::attach(item)
+                TaskLists::attach(item)
             end
             DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             return

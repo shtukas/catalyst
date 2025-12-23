@@ -1,32 +1,37 @@
 
-class TaskList
+class TaskLists
 
     # -------------------------
     # Data
 
-    # TaskList::interactivelySelectTaskListOrNull()
+    # TaskLists::interactivelySelectTaskListOrNull()
     def self.interactivelySelectTaskListOrNull()
         tasklists = Items::objects().map{|item| item["tlname-11"] }.compact.uniq
         LucilleCore::selectEntityFromListOfEntitiesOrNull("tasklist", tasklists)
     end
 
-    # TaskList::suffix(item)
+    # TaskLists::suffix(item)
     def self.suffix(item)
         return "" if item["tlname-11"].nil?
         " (#{item["tlname-11"]})".yellow
     end
 
-    # TaskList::firstPosition()
+    # TaskLists::firstPosition()
     def self.firstPosition()
-        ([1] + Items::mikuType("NxTask").map{|item| item["tlpos-12"] }).min
+        ([1] + Items::mikuType("NxTask").select{|item| item["tlpos-12"] }.map{|item| item["tlpos-12"] }).min
+    end
+
+    # TaskLists::distinctNames()
+    def self.distinctNames()
+        Items::objects().map{|item| item["tlname-11"] }.compact.uniq
     end
 
     # -------------------------
     # Ops
 
-    # TaskList::attach(item)
+    # TaskLists::attach(item)
     def self.attach(item)
-        tasklists = Items::objects().map{|item| item["tlname-11"] }.compact.uniq
+        tasklists = TaskLists::distinctNames()
         if tasklists.size > 0 then
             tasklist = LucilleCore::selectEntityFromListOfEntitiesOrNull("tasklist", tasklists)
             if tasklist then
@@ -43,7 +48,7 @@ class TaskList
         end
     end
 
-    # TaskList::program(tasklist)
+    # TaskLists::program(tasklist)
     def self.program(tasklist)
         loop {
             elements = Items::mikuType("NxTask")
@@ -64,7 +69,7 @@ class TaskList
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
-                    Items::setAttribute(uuid, "tlpos-12", TaskList::firstPosition() - 1)
+                    Items::setAttribute(uuid, "tlpos-12", TaskLists::firstPosition() - 1)
                 }
                 next
             end
@@ -75,12 +80,12 @@ class TaskList
         }
     end
 
-    # TaskList::dive()
+    # TaskLists::dive()
     def self.dive()
         loop {
-            tasklist = TaskList::interactivelySelectTaskListOrNull()
+            tasklist = TaskLists::interactivelySelectTaskListOrNull()
             return if tasklist.nil?
-            TaskList::program(tasklist)
+            TaskLists::program(tasklist)
         }
     end
 end

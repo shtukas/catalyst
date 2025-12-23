@@ -41,28 +41,32 @@ class FrontPage
 
     # FrontPage::printNumbers()
     def self.printNumbers()
-        [
+        x1 = [
             {
-                "label" => "wave general     ",
+                "label" => "wave general        ",
                 "id"    => "wave-general-fd3c4ac4-1300"
             },
             {
-                "label" => "BufferIn         ",
+                "label" => "BufferIn            ",
                 "id"    => "0a8ca68f-d931-4110-825c-8fd290ad7853"
-            },
+            }
+        ]
+        x2 = TaskLists::distinctNames().map{|name1|
             {
-                "label" => "task general     ",
-                "id"    => "task-general-free-2b01"
-            },
-        ].map{|packet|
-            rt = BankDerivedData::recoveredAverageHoursPerDayCached(packet["id"])
-            packet["rt"] =  rt
-            packet
+                "label" => name1.ljust(20),
+                "id"    => "tlname-11:#{name1}"
+            }
         }
-        .sort_by{|packet| packet["rt"] }
-        .each{|packet|
-            puts "#{packet["label"]} : #{packet["rt"].round(3)}"
-        }
+        (x1 + x2)
+            .map{|packet|
+                rt = BankDerivedData::recoveredAverageHoursPerDayCached(packet["id"])
+                packet["rt"] =  rt
+                packet
+            }
+            .sort_by{|packet| packet["rt"] }
+            .each{|packet|
+                puts "#{packet["label"]} : #{packet["rt"].round(3)}"
+            }
     end
 
     # FrontPage::preliminaries(initialCodeTrace)
