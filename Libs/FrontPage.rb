@@ -81,21 +81,15 @@ class FrontPage
     def self.itemsForListing()
         NxOndates::prepareToday()
         [
+            Items::mikuType("NxToday"),
             Waves::listingItems(),
+            Items::mikuType("NxInProgress"),
             BufferIn::listingItems(),
             NxTasks::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
-            .map{|item|
-                {
-                    "item" => item,
-                    "position" => ListingPosition::decideItemListingPositionOrNull(item)
-                }
-            }
-            .select{|packet| packet["position"] }
-            .sort_by{|packet| packet["position"] }
-            .map{|packet| packet["item"] }
+            .sort_by{|item| ListingPosition::decideItemListingPosition(item) }
     end
 
     # FrontPage::displayListing(initialCodeTrace)

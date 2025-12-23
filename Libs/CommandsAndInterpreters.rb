@@ -84,10 +84,7 @@ class CommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                Items::setAttribute(item["uuid"], "nx41", {
-                    "type"     => "override",
-                    "position" => ListingPosition::firstNegativeListingPosition() - 1,
-                })
+                Items::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
             }
             return
         end
@@ -97,7 +94,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
-            Items::setAttribute(item["uuid"], "nx41", nil)
+            Items::setAttribute(item["uuid"], "nx42", nil)
             return
         end
 
@@ -131,10 +128,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            Items::setAttribute(item["uuid"], "nx41", {
-                "type"     => "override",
-                "position" => ListingPosition::firstNegativeListingPosition() - 1
-            })
+            Items::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return

@@ -21,6 +21,11 @@ class PolyActions
         NxBalls::stop(item)
         ListingPosition::delist(item)
         if item["mikuType"] == "NxTask" then
+            puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
+            Items::setAttribute(uuid, "mikuType", "NxInProgress")
+        end
+        if item["mikuType"] == "NxToday" then
+            puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
             Items::setAttribute(uuid, "mikuType", "NxInProgress")
         end
     end
