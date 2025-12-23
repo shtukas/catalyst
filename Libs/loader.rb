@@ -155,6 +155,7 @@ require_relative "Nx46.rb"
 require_relative "NxTasks.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
+require_relative "NxTodays.rb"
 
 require_relative "Operations.rb"
 

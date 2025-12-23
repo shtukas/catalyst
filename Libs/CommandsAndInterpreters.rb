@@ -186,7 +186,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            item = NxToday::interactivelyIssueNewOrNull()
+            item = NxTodays::interactivelyIssueNewOrNull()
             return if item.nil?
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
