@@ -82,6 +82,20 @@ class Parenting
         }
     end
 
+    # Parenting::determineChildrenSetSizeForce(item)
+    def self.determineChildrenSetSizeForce(item)
+        #{
+        #    "unixtime" Integer
+        #    "count"    Integer
+        #}
+        count = Parenting::childrenInOrder(item).size
+        Items::setAttribute(item["uuid"], "Sx09", {
+            "unixtime" => Time.new.to_i,
+            "count"    => count
+        })
+        count
+    end
+
     # Parenting::determineChildrenSetSizeOrNull(item)
     def self.determineChildrenSetSizeOrNull(item)
         #{
@@ -100,18 +114,9 @@ class Parenting
         # We perform a from zero determination but we limit those at 100 per hour
 
         hour_count = XCache::getOrDefaultValue("8da24e62-fe05-4a7c-84a9-106b86eec746:#{Time.new.to_s[0, 13]}", "0").to_i
-
         return nil if hour_count >= 100
-
-        count = Parenting::childrenInOrder(item).size
-        Items::setAttribute(item["uuid"], "Sx09", {
-            "unixtime" => Time.new.to_i,
-            "count"    => count
-        })
-
         XCache::set("8da24e62-fe05-4a7c-84a9-106b86eec746:#{Time.new.to_s[0, 13]}", hour_count + 1)
-
-        count
+        Parenting::determineChildrenSetSizeForce(item)
     end
 
     # Parenting::suffix(item)

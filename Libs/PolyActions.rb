@@ -13,7 +13,32 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        UxPayloads::access(item["payload-37"])
+        b1 = Parenting::determineChildrenSetSizeForce(item).size > 0
+        b2 = !item["payload-37"].nil?
+
+        if b1 and b2 then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dive", "access payload"])
+            return if option.nil?
+            if option == "dive" then
+                Parenting::dive(item)
+                return
+            end
+            if option == "access payload" then
+                UxPayloads::access(item["payload-37"])
+                return
+            end
+            raise "(ab59896d) how did this happen ?"
+        end
+
+        if b1 and b2.nil? then
+            Parenting::dive(item)
+            return
+        end
+
+        if b1.nil? and b2 then
+            UxPayloads::access(item["payload-37"])
+            return
+        end
     end
 
     # PolyActions::stop(item)
