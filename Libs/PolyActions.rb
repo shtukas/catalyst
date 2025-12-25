@@ -20,14 +20,6 @@ class PolyActions
     def self.stop(item)
         NxBalls::stop(item)
         ListingPosition::delist(item)
-        if item["mikuType"] == "NxTask" then
-            puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
-            Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
-        end
-        if item["mikuType"] == "NxToday" then
-            puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
-            Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
-        end
     end
 
     # PolyActions::done(item)
