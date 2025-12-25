@@ -86,4 +86,36 @@ class Parenting
     def self.suffix(item)
         " (12 children)".yellow
     end
+
+    # Parenting::selectParentForMove(reference = nil)
+    def self.selectParentForMove(reference = nil)
+        # return an reference (which can be made a parent) or null
+        if reference.nil? then
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", Orphans::orphansInOrder(), lambda{|item| PolyFunctions::toString(item) })
+            return nil if item.nil?
+            return Parenting::selectParentForMove(item)
+        end
+        puts "reference: #{PolyFunctions::toString(reference)}"
+        children = Parenting::childrenInOrder(reference)
+        if children.empty? then
+            return reference
+        end
+        item = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", children, lambda{|item| PolyFunctions::toString(item) })
+        return reference if item.nil?
+        return Parenting::selectParentForMove(item)
+    end
+
+    # Parenting::move(item)
+    def self.move(item)
+        # We select a parent or null
+        # We determine a position
+        # We mark
+        parent = Parenting::selectParentForMove(nil)
+        return if parent.nil?
+        position = Parenting::interactivelyDeterminePositionInParent(parent)
+        Items::setAttribute(item["uuid"], "parenting-13", {
+            "parentuuid" => parent["uuid"],
+            "position"   => position
+        })
+    end
 end

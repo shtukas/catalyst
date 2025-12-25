@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | maintenance | sort | numbers",
+            "misc          : search | commands | fsck | maintenance | sort",
         ].join("\n")
     end
 
@@ -65,26 +65,20 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">> *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            puts "not implemented"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("numbers", input) then
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if Interpreting::match("sort", input) then
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
             }
+            return
+        end
+
+        if Interpreting::match("move *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Parenting::move(item)
             return
         end
 
