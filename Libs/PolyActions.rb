@@ -39,35 +39,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxInProgress" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
-            if option == "dismiss" then
-                NxBalls::stop(item)
-                puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
-                Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                NxBalls::stop(item)
-                PolyActions::destroy(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxToday" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxDeleted" then
             Items::deleteItem(item["uuid"])
             return
@@ -85,12 +56,55 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxToday" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
+            if option == "dismiss" then
+                NxBalls::stop(item)
+                puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
+                Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                NxBalls::stop(item)
+                PolyActions::destroy(item)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
+            if option == "dismiss" then
+                NxBalls::stop(item)
+                puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
+                Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                NxBalls::stop(item)
+                PolyActions::destroy(item)
+            end
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
                 puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
                 Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                NxBalls::stop(item)
+                PolyActions::destroy(item)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxInProgress" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
+            if option == "dismiss" then
+                NxBalls::stop(item)
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
