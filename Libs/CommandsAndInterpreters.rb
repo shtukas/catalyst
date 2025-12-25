@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | >> * (update behaviour) | delist * | dismiss *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | tasks | projects | todays | orphans",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | maintenance | sort | numbers",
         ].join("\n")
@@ -208,14 +208,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("tasks", input) then
-            Operations::program3(lambda { 
-                Items::mikuType("NxTask")
-            })
-            return
-        end
-
-        if Interpreting::match("orphans", input) then
+        if Interpreting::match("todos", input) then
             Operations::program3(lambda {
                 Orphan::orphansInOrder()
             })
