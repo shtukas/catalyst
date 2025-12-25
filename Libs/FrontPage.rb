@@ -55,7 +55,7 @@ class FrontPage
             Waves::listingItems(),
             Items::mikuType("NxInProgress"),
             BufferIn::listingItems(),
-            Orphan::orphansInOrder(),
+            Orphans::orphansInOrder(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

@@ -209,9 +209,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todos", input) then
-            Operations::program3(lambda {
-                Orphan::orphansInOrder()
-            })
+            Orphans::dive()
             return
         end
 

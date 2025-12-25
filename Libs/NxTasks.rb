@@ -16,7 +16,7 @@ class NxTasks
         Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
         Items::setAttribute(item["uuid"], "parenting-13", {
             "parentuuid" => nil,
-            "position"   => Orphan::lastPositionAmongOrphans() + 1
+            "position"   => Orphans::lastPositionAmongOrphans() + 1
         })
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
