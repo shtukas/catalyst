@@ -57,6 +57,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxToday" then
+            puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
@@ -72,6 +73,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
+            puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
@@ -87,6 +89,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
+            puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
@@ -102,6 +105,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxInProgress" then
+            puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
