@@ -82,9 +82,47 @@ class Parenting
         }
     end
 
+    # Parenting::determineChildrenSetSizeOrNull(item)
+    def self.determineChildrenSetSizeOrNull(item)
+        #{
+        #    "unixtime" Integer
+        #    "count"    Integer
+        #}
+
+        # We use the information we have if it's less than a day old
+
+        if item["Sx09"] then
+            if Time.new.to_i - item["Sx09"]["unixtime"] < 86400 then
+                return item["Sx09"]["count"]
+            end
+        end
+
+        # We perform a from zero determination but we limit those at 100 per hour
+
+        hour_count = XCache::getOrDefaultValue("8da24e62-fe05-4a7c-84a9-106b86eec746:#{Time.new.to_s[0, 13]}", "0").to_i
+
+        return nil if hour_count >= 100
+
+        count = Parenting::childrenInOrder(item).size
+        Items::setAttribute(item["uuid"], "Sx09", {
+            "unixtime" => Time.new.to_i,
+            "count"    => count
+        })
+
+        XCache::set("8da24e62-fe05-4a7c-84a9-106b86eec746:#{Time.new.to_s[0, 13]}", hour_count + 1)
+
+        count
+    end
+
     # Parenting::suffix(item)
     def self.suffix(item)
-        " (12 children)".yellow
+        count = Parenting::determineChildrenSetSizeOrNull(item)
+        if count then
+            return "" if count == 0
+            " (#{count} children)".yellow
+        else
+            " (unkown children count)".yellow
+        end
     end
 
     # Parenting::selectParentForMove(reference = nil)
