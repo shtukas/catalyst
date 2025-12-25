@@ -44,61 +44,11 @@ class NxOndates
         "#{NxOndates::icon()} [#{item["date"]}] #{item["description"]}"
     end
 
-    # NxOndates::prepareToday()
-    def self.prepareToday()
+    # NxOndates::listingItems()
+    def self.listingItems()
+        Items::mikuType("NxOndate")
+                .select{|item| item["date"] <= CommonUtils::today() }
+                .sort_by{|item| item["unixtime"] }
 
-        # return true if there has been a successful transform
-        performUpdate = lambda{|item|
-            string = "#{PolyFunctions::toString(item).green}#{UxPayloads::suffixString(item)}"
-            puts "ondate transform: #{string.green}"
-            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "today", "tomorrow"])
-            if choice == "access" then
-                PolyActions::access(item)
-                return false
-            end
-            if choice == "done" then
-                PolyActions::done(item)
-                return true
-            end
-            if choice == "description" then
-                description = LucilleCore::askQuestionAnswerAsString("description: ")
-                Items::setAttribute(item["uuid"], "description", description)
-                return false
-            end
-            if choice == "payload" then
-                UxPayloads::payloadProgram(item)
-                return false
-            end
-            if choice == "redate" then
-                date = CommonUtils::interactivelyMakeADate()
-                Items::setAttribute(item["uuid"], "date", date)
-                return true
-            end
-            if choice == "today" then
-                Items::setAttribute(item["uuid"], "mikuType", "NxToday")
-                return true
-            end
-            if choice == "tomorrow" then
-                Items::setAttribute(item["uuid"], "mikuType", "NxToday")
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-                return true
-            end
-            Transmute::transmuteTo(item, choice)
-            true
-        }
-
-        past_days = Items::mikuType("NxOndate")
-                        .select{|item| item["date"] <= CommonUtils::today() }
-                        .sort_by{|item| item["unixtime"] }
-
-        return if past_days.empty?
-
-        past_days.each{|item|
-            loop {
-                item = Items::itemOrNull(item["uuid"])
-                status = performUpdate.call(item)
-                break if status
-            }
-        }
     end
 end

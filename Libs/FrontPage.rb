@@ -49,8 +49,8 @@ class FrontPage
 
     # FrontPage::itemsForListing()
     def self.itemsForListing()
-        NxOndates::prepareToday()
         [
+            NxOndates::listingItems(),
             Items::mikuType("NxToday"),
             Waves::listingItems(),
             Items::mikuType("NxInProgress"),

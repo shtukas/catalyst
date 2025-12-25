@@ -213,19 +213,19 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("tomorrows", input) then
-            Operations::program3(lambda { 
-                Items::mikuType("NxOndate")
-                    .select{|item| item["date"] == CommonUtils::tomorrow() }
-            })
-            return
-        end
-
         if Interpreting::match("tomorrow", input) then
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             item = NxOndates::interactivelyIssueNewWithDetails(description, CommonUtils::tomorrow())
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("tomorrows", input) then
+            Operations::program3(lambda { 
+                Items::mikuType("NxOndate")
+                    .select{|item| item["date"] == CommonUtils::tomorrow() }
+            })
             return
         end
 

@@ -34,6 +34,7 @@ class ListingPosition
         # (sorted)      : (negatives)
         # priorities    : (negatives)
         # Interruptions : 0.300
+        # NxOndate      : 0.500
         # Today         : 0.800
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
         # NxInProgress  : 1.300
@@ -42,6 +43,10 @@ class ListingPosition
 
         if item["mikuType"] == "Wave" and item["interruption"] then
             return 0.300
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            return 0.500
         end
 
         if item["mikuType"] == "NxToday" then
