@@ -41,16 +41,21 @@ class ListingPosition
         # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
         # NxTask        : 2.000
 
+        if item["random"].nil? then
+            item["random"] = rand
+            Items::setAttribute(item["uuid"], "random", item["random"])
+        end
+
         if item["mikuType"] == "Wave" and item["interruption"] then
-            return 0.300
+            return 0.300 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxOndate" then
-            return 0.500
+            return 0.500 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxToday" then
-            return 0.800
+            return 0.800 + item["random"]/1000
         end
 
         if item["mikuType"] == "Wave" then
@@ -58,19 +63,19 @@ class ListingPosition
             hours    = 2.5
             rt = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")
             return 3.500 if rt > 2.0
-            return 1.000 + increase * (rt.to_f/hours)
+            return 1.000 + increase * (rt.to_f/hours) + item["random"]/1000
         end
 
         if item["mikuType"] == "NxInProgress" then
-            return 1.300
+            return 1.300 + item["random"]/1000
         end
 
         if item["mikuType"] == "BufferIn" then
             increase = 1.5
             hours    = 1.0
             rt = BankDerivedData::recoveredAverageHoursPerDayCached("0a8ca68f-d931-4110-825c-8fd290ad7853")
-            return 4 if rt > 1.0
-            return 1.5
+            return 4  + item["random"]/1000 if rt > 1.0
+            return 1.5 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxTask" then
