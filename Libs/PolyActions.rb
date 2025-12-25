@@ -32,19 +32,15 @@ class PolyActions
 
     # PolyActions::dismiss(item)
     def self.dismiss(item)
-
         PolyActions::stop(item)
-
         if item["mikuType"] == "NxTask" then
             if item["focus-24"].nil? then
                 puts "You are stopping a #{item["mikuType"]} with no focus, setting one..."
-                Cores::attach(item)
             end
             DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             return
         end
-
-        puts "I do not know how to PolyActions::dismiss(#{JSON.pretty_generate(item)})"
+        puts "You can only dismiss NxTasks"
         LucilleCore::pressEnterToContinue()
     end
 

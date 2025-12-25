@@ -20,20 +20,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTask" and item["tlname-11"].nil? then
-            accounts << {
-                "description" => "task general",
-                "number"      => "task-general-free-2b01"
-            }
-        end
-
-        if item["mikuType"] == "NxTask" and item["tlname-11"] then
-            accounts << {
-                "description" => "tlname-11:#{coreed}",
-                "number"      => "tlname-11:#{coreed}"
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

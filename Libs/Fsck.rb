@@ -37,6 +37,9 @@ class Fsck
         end
 
         if item["mikuType"] == "NxTask" then
+            if item["parenting-13"].nil? then
+                raise "NxTask #{item["uuid"]} doesn't have a parenting-13"
+            end
             return
         end
 
@@ -65,7 +68,7 @@ class Fsck
             }
             XCache::set("82e98b31-2d0a-4a9d-9030-28fd195a97c0", JSON.generate(config))
         end
-        Items::objects()
+        Items::items()
             .each{|item|
                 key = "#{config["mark"]}:#{item["uuid"]}"
                 next if XCache::getOrNull(key) == "done"

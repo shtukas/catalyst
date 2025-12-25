@@ -39,36 +39,6 @@ class FrontPage
     # -----------------------------------------
     # Ops
 
-    # FrontPage::printNumbers()
-    def self.printNumbers()
-        x1 = [
-            {
-                "label" => "wave general        ",
-                "id"    => "wave-general-fd3c4ac4-1300"
-            },
-            {
-                "label" => "BufferIn            ",
-                "id"    => "0a8ca68f-d931-4110-825c-8fd290ad7853"
-            }
-        ]
-        x2 = Cores::distinctNames().map{|name1|
-            {
-                "label" => name1.ljust(20),
-                "id"    => "tlname-11:#{name1}"
-            }
-        }
-        (x1 + x2)
-            .map{|packet|
-                rt = BankDerivedData::recoveredAverageHoursPerDayCached(packet["id"])
-                packet["rt"] =  rt
-                packet
-            }
-            .sort_by{|packet| packet["rt"] }
-            .each{|packet|
-                puts "#{packet["label"]} : #{packet["rt"].round(3)}"
-            }
-    end
-
     # FrontPage::preliminaries(initialCodeTrace)
     def self.preliminaries(initialCodeTrace)
         if CommonUtils::catalystTraceCode() != initialCodeTrace then
@@ -85,7 +55,7 @@ class FrontPage
             Waves::listingItems(),
             Items::mikuType("NxInProgress"),
             BufferIn::listingItems(),
-            NxTasks::listingItems(),
+            Orphan::orphansInOrder(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -139,8 +109,6 @@ class FrontPage
                 sheight = sheight - (line.size/swidth + 1)
             }
 
-        # FrontPage::printNumbers()
-
         t2 = Time.new.to_f
         renderingTime = t2-t1
         if renderingTime > 0.5 then
@@ -158,15 +126,6 @@ class FrontPage
     # FrontPage::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
-
-        Thread.new {
-            sleep 12
-            loop {
-                NxTasks::listingItems()
-                sleep 15 * 60
-            }
-        }
-
         loop {
             FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)

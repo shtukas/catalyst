@@ -51,7 +51,7 @@ class NxOndates
         performUpdate = lambda{|item|
             string = "#{PolyFunctions::toString(item).green}#{UxPayloads::suffixString(item)}"
             puts "ondate transform: #{string.green}"
-            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "today", "tomorrow", "to task"])
+            choice = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("choice", ["access", "done", "description", "payload", "redate", "today", "tomorrow"])
             if choice == "access" then
                 PolyActions::access(item)
                 return false
@@ -81,11 +81,6 @@ class NxOndates
             if choice == "tomorrow" then
                 Items::setAttribute(item["uuid"], "mikuType", "NxToday")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-                return true
-            end
-            if choice == "to task" then
-                Cores::attach(item)
-                Items::setAttribute(item["uuid"], "mikuType", "NxTask")
                 return true
             end
             Transmute::transmuteTo(item, choice)

@@ -14,6 +14,10 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
+        Items::setAttribute(item["uuid"], "parenting-13", {
+            "parentuuid" => nil,
+            "position"   => Orphan::lastPositionAmongOrphans() + 1
+        })
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
         Fsck::fsckItemOrError(item, false)
@@ -30,32 +34,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}#{Cores::suffix(item)}"
-    end
-
-    # NxTasks::listingItems()
-    def self.listingItems()
-        memory = JSON.parse(XCache::getOrDefaultValue("89d69959-2a82-411d-b980-98986113bb3d", "null"))
-        if memory and (Time.new.to_i - memory["unixtime"]) < 1200 then
-            memory["items"] = memory["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
-            if memory["items"].size > 0 then
-                XCache::set("89d69959-2a82-411d-b980-98986113bb3d", JSON.generate(memory))
-                return memory["items"]
-            end
-        end
-
-        names = Cores::distinctNames()
-        names = names.sort_by{|listname| BankDerivedData::recoveredAverageHoursPerDayCached("tlname-11:#{listname}") }
-        name1 = names.first
-        items = Items::mikuType("NxTask")
-            .select{|item| item["tlname-11"] == name1 }
-            .first(20)
-
-        memory = {
-            "unixtime" => Time.new.to_i,
-            "items" => items
-        }
-        XCache::set("89d69959-2a82-411d-b980-98986113bb3d", JSON.generate(memory))
-        memory["items"]
+        ps = item["parenting-13"] ? "(#{"%7.3f" % item["parenting-13"]["position"]}) ".yellow : ""
+        "#{NxTasks::icon()} #{ps}#{item["description"]}#{Parenting::suffix(item)}"
     end
 end

@@ -256,8 +256,8 @@ class Items
         item
     end
 
-    # Items::objects()
-    def self.objects()
+    # Items::items()
+    def self.items()
         items = []
         db = SQLite3::Database.new(Items::getDatabaseFilepath())
         db.busy_timeout = 117
