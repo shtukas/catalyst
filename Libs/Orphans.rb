@@ -55,9 +55,8 @@ class Orphans
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
-                    position = Parenting::firstPositionInParent(parent) - 1
                     Items::setAttribute(item["uuid"], "parenting-13", {
-                        "parentuuid" => parent["uuid"],
+                        "parentuuid" => nil,
                         "position"   => Orphans::firstPositionAmongOrphans() - 1
                     })
                 }
