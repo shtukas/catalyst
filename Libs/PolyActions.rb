@@ -30,20 +30,6 @@ class PolyActions
         end
     end
 
-    # PolyActions::dismiss(item)
-    def self.dismiss(item)
-        PolyActions::stop(item)
-        if item["mikuType"] == "NxTask" then
-            if item["focus-24"].nil? then
-                puts "You are stopping a #{item["mikuType"]} with no focus, setting one..."
-            end
-            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            return
-        end
-        puts "You can only dismiss NxTasks"
-        LucilleCore::pressEnterToContinue()
-    end
-
     # PolyActions::done(item)
     def self.done(item)
 
@@ -62,8 +48,16 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxInProgress" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteItem(item["uuid"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
+            if option == "dismiss" then
+                NxBalls::stop(item)
+                puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
+                Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                NxBalls::stop(item)
+                PolyActions::destroy(item)
             end
             return
         end
@@ -100,12 +94,15 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            puts "You cannot `done` a NxTask, you can either `dismiss` or `destroy` them"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
-                PolyActions::dismiss(item)
+                NxBalls::stop(item)
+                puts "Transmuting #{PolyFunctions::toString(item).green} to NxInProgress"
+                Items::setAttribute(item["uuid"], "mikuType", "NxInProgress")
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
+                NxBalls::stop(item)
                 PolyActions::destroy(item)
             end
             return
