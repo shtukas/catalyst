@@ -126,6 +126,7 @@ require_relative "Anniversaries.rb"
 
 require_relative "Bank.rb"
 require_relative "BufferIn.rb"
+require_relative "Blades.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
