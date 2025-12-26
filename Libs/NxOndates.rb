@@ -7,30 +7,28 @@ class NxOndates
         return nil if description == ""
         date = CommonUtils::interactivelyMakeADate()
         uuid = SecureRandom.uuid
-        Items::init(uuid)
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "date", date)
-        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
-        Items::setAttribute(uuid, "mikuType", "NxOndate")
-        item = Items::itemOrNull(uuid)
-        Fsck::fsckItemOrError(item, false)
+        Blades::init(uuid)
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "date", date)
+        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        Blades::setAttribute(uuid, "mikuType", "NxOndate")
+        item = Blades::itemOrNull(uuid)
         item
     end
 
     # NxOndates::interactivelyIssueNewWithDetails(description, date)
     def self.interactivelyIssueNewWithDetails(description, date)
         uuid = SecureRandom.uuid
-        Items::init(uuid)
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "date", date)
-        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
-        Items::setAttribute(uuid, "mikuType", "NxOndate")
-        item = Items::itemOrNull(uuid)
-        Fsck::fsckItemOrError(item, false)
+        Blades::init(uuid)
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "date", date)
+        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        Blades::setAttribute(uuid, "mikuType", "NxOndate")
+        item = Blades::itemOrNull(uuid)
         item
     end
 
@@ -46,7 +44,7 @@ class NxOndates
 
     # NxOndates::listingItems()
     def self.listingItems()
-        Items::mikuType("NxOndate")
+        Blades::mikuType("NxOndate")
                 .select{|item| item["date"] <= CommonUtils::today() }
                 .sort_by{|item| item["unixtime"] }
 

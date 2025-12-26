@@ -114,7 +114,7 @@ class BankDataRTCache
         # This case should not really happen (anymore), so if the condition 
         # is true, let's error noisily.
         if filepaths.size == 0 then
-            # return Items::initiateDatabaseFile()
+            # return Blades::initiateDatabaseFile()
             raise "(error: 73dd7dae)"
         end
 

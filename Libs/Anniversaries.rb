@@ -134,16 +134,15 @@ class Anniversary
         return nil if description == ""
         details = Anniversary::makeDetails()
         uuid = SecureRandom.uuid
-        Items::init(uuid)
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "startdate", details["startdate"])
-        Items::setAttribute(uuid, "repeatType", details["repeatType"])
-        Items::setAttribute(uuid, "next_celebration", details["next_celebration"])
-        Items::setAttribute(uuid, "mikuType", "Anniversary")
-        item = Items::itemOrNull(uuid)
-        Fsck::fsckItemOrError(item, false)
+        Blades::init(uuid)
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "startdate", details["startdate"])
+        Blades::setAttribute(uuid, "repeatType", details["repeatType"])
+        Blades::setAttribute(uuid, "next_celebration", details["next_celebration"])
+        Blades::setAttribute(uuid, "mikuType", "Anniversary")
+        item = Blades::itemOrNull(uuid)
         item
     end
 

@@ -3,7 +3,7 @@ class Orphans
 
     # Orphans::orphansInOrder()
     def self.orphansInOrder()
-        Items::mikuType("NxTask")
+        Blades::mikuType("NxTask")
             .select{|item|
                 item["parenting-13"]["parentuuid"].nil? }
             .sort_by{|item| item["parenting-13"]["position"] }
@@ -45,7 +45,7 @@ class Orphans
 
             if input == "new" then
                 item = NxTasks::interactivelyIssueNewOrNull()
-                Items::setAttribute(item["uuid"], "parenting-13", {
+                Blades::setAttribute(item["uuid"], "parenting-13", {
                     "parentuuid" => nil,
                     "position"   => Orphans::lastPositionAmongOrphans() + 1
                 })
@@ -55,7 +55,7 @@ class Orphans
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
-                    Items::setAttribute(item["uuid"], "parenting-13", {
+                    Blades::setAttribute(item["uuid"], "parenting-13", {
                         "parentuuid" => nil,
                         "position"   => Orphans::firstPositionAmongOrphans() - 1
                     })

@@ -66,7 +66,7 @@ class PolyFunctions
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
     def self.get_name_of_donation_target_or_identity(donation_target_id)
-        target = Items::itemOrNull(donation_target_id)
+        target = Blades::itemOrNull(donation_target_id)
         if target then
             return target["description"]
         end

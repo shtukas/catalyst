@@ -11,7 +11,7 @@ class ListingPosition
 
     # ListingPosition::firstNegativeListingPosition()
     def self.firstNegativeListingPosition()
-        positions = Items::items()
+        positions = Blades::items_enumerator()
             .select{|item| item["nx42"] }
             .map{|item| item["nx42"] }
         ([-1] + positions).min
@@ -19,7 +19,7 @@ class ListingPosition
 
     # ListingPosition::firstPositiveListingPosition()
     def self.firstPositiveListingPosition()
-        positions = Items::items()
+        positions = Blades::items_enumerator()
             .select{|item| item["nx42"] }
             .map{|item| item["nx42"] }
         ([0.500] + positions).min
@@ -43,7 +43,7 @@ class ListingPosition
 
         if item["random"].nil? then
             item["random"] = rand
-            Items::setAttribute(item["uuid"], "random", item["random"])
+            Blades::setAttribute(item["uuid"], "random", item["random"])
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then
@@ -87,6 +87,6 @@ class ListingPosition
 
     # ListingPosition::delist(item)
     def self.delist(item)
-        Items::setAttribute(item["uuid"], "nx42", nil)
+        Blades::setAttribute(item["uuid"], "nx42", nil)
     end
 end

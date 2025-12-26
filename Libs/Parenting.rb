@@ -9,7 +9,7 @@ class Parenting
 
     # Parenting::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        Items::items()
+        Blades::items_enumerator()
             .select{|item|
                 item["parenting-13"] and item["parenting-13"]["parentuuid"] == parent["uuid"]
             }
@@ -59,7 +59,7 @@ class Parenting
             if input == "new" then
                 item = NxTasks::interactivelyIssueNewOrNull()
                 position = Parenting::interactivelyDeterminePositionInParent(parent)
-                Items::setAttribute(item["uuid"], "parenting-13", {
+                Blades::setAttribute(item["uuid"], "parenting-13", {
                     "parentuuid" => parent["uuid"],
                     "position"   => position
                 })
@@ -70,7 +70,7 @@ class Parenting
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
                     position = Parenting::firstPositionInParent(parent) - 1
-                    Items::setAttribute(item["uuid"], "parenting-13", {
+                    Blades::setAttribute(item["uuid"], "parenting-13", {
                         "parentuuid" => parent["uuid"],
                         "position"   => position
                     })
@@ -89,7 +89,7 @@ class Parenting
         #    "count"    Integer
         #}
         count = Parenting::childrenInOrder(item).size
-        Items::setAttribute(item["uuid"], "Sx09", {
+        Blades::setAttribute(item["uuid"], "Sx09", {
             "unixtime" => Time.new.to_i,
             "count"    => count
         })
@@ -156,7 +156,7 @@ class Parenting
         parent = Parenting::selectParentForMove(nil)
         return if parent.nil?
         position = Parenting::interactivelyDeterminePositionInParent(parent)
-        Items::setAttribute(item["uuid"], "parenting-13", {
+        Blades::setAttribute(item["uuid"], "parenting-13", {
             "parentuuid" => parent["uuid"],
             "position"   => position
         })

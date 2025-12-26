@@ -9,18 +9,17 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Items::init(uuid)
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
-        Items::setAttribute(item["uuid"], "parenting-13", {
+        Blades::init(uuid)
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        Blades::setAttribute(item["uuid"], "parenting-13", {
             "parentuuid" => nil,
             "position"   => Orphans::lastPositionAmongOrphans() + 1
         })
-        Items::setAttribute(uuid, "mikuType", "NxTask")
-        item = Items::itemOrNull(uuid)
-        Fsck::fsckItemOrError(item, false)
+        Blades::setAttribute(uuid, "mikuType", "NxTask")
+        item = Blades::itemOrNull(uuid)
         item
     end
 

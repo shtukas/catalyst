@@ -5,7 +5,7 @@ class Operations
         # This function edit the payload, if there is now
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.each{|k, v|
-            Items::setAttribute(item["uuid"], k, v)
+            Blades::setAttribute(item["uuid"], k, v)
         }
     end
 
@@ -47,8 +47,6 @@ class Operations
     def self.globalMaintenance()
         puts "Bank::maintenance()"
         Bank::maintenance()
-        puts "Items::maintenance()"
-        Items::maintenance()
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
@@ -108,7 +106,7 @@ class Operations
             DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
         end
         if option == "destroy" then
-            Items::deleteItem(item["uuid"])
+            Blades::deleteItem(item["uuid"])
         end
     end
 end

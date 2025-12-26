@@ -51,9 +51,9 @@ class FrontPage
     def self.itemsForListing()
         [
             NxOndates::listingItems(),
-            Items::mikuType("NxToday"),
+            Blades::mikuType("NxToday"),
             Waves::listingItems(),
-            Items::mikuType("NxInProgress"),
+            Blades::mikuType("NxInProgress"),
             BufferIn::listingItems(),
             Orphans::orphansInOrder(),
         ]
