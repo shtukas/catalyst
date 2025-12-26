@@ -23,6 +23,11 @@ class BladesConfig
     def self.repository_path()
         "#{Config::pathToCatalystDataRepository()}/blades"
     end
+
+    # BladesConfig::cache_prefix()
+    def self.cache_prefix()
+        "f495112a-719d-4cd7-9dcb-6d6f9dab2973"
+    end
 end
 
 class Blades
@@ -186,14 +191,14 @@ class Blades
         # updating the cache for reading later
         XCache::set("4e4d5752-a99a-4ed1-87b0-eb3fccb2b881:#{uuid}", filepath)
 
-        # Maintaining: 44a38835-4c00-4af9-a3c6-d5340b202831
-        items = XCache::getOrNull("44a38835-4c00-4af9-a3c6-d5340b202831")
+        # Maintaining: #{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831
+        items = XCache::getOrNull("#{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831")
         if items then
             items = JSON.parse(items)
             item = Blades::itemOrNull(uuid)
             if item then
                 items[uuid] = item
-                XCache::set("44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(items))
+                XCache::set("#{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(items))
             end
         end
 
@@ -231,7 +236,7 @@ class Blades
         end
 
         # We try XCache
-        data = XCache::getOrNull("44a38835-4c00-4af9-a3c6-d5340b202831")
+        data = XCache::getOrNull("#{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831")
         if data then
             data = JSON.parse(data)
             @memory1 = data
@@ -244,7 +249,7 @@ class Blades
         }
 
         @memory1 = data
-        XCache::set("44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(data))
+        XCache::set("#{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(data))
 
         @memory1.values
     end
@@ -269,11 +274,11 @@ class Blades
         Blades::setAttribute(uuid, "mikuType", 'NxDeleted')
 
         # Delete from XCache
-        items = XCache::getOrNull("44a38835-4c00-4af9-a3c6-d5340b202831")
+        items = XCache::getOrNull("#{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831")
         if items then
             items = JSON.parse(items)
             items.delete(uuid)
-            XCache::set("44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(items))
+            XCache::set("#{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(items))
         end
 
         # Delete from @memory1
