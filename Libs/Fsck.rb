@@ -72,7 +72,7 @@ class Fsck
             }
             XCache::set("82e98b31-2d0a-4a9d-9030-28fd195a97c0", JSON.generate(config))
         end
-        Blades::items_enumerator()
+        Blades::items()
             .each{|item|
                 key = "#{config["mark"]}:#{item["uuid"]}"
                 next if XCache::getOrNull(key) == "done"
@@ -83,7 +83,7 @@ class Fsck
 
     # Fsck::fsckAllForce()
     def self.fsckAllForce()
-        Blades::items_enumerator()
+        Blades::items()
             .each{|item|
                 Fsck::fsckItemOrError(item, true)
             }

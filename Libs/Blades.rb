@@ -126,7 +126,9 @@ class Blades
     # --------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------
-    # Items
+    # Public interface
+
+    @memory1 = {}
 
     # Blades::init(uuid, mikuType)
     def self.init(uuid, mikuType)
@@ -183,6 +185,21 @@ class Blades
 
         # updating the cache for reading later
         XCache::set("4e4d5752-a99a-4ed1-87b0-eb3fccb2b881:#{uuid}", filepath)
+
+        # Maintaining: 44a38835-4c00-4af9-a3c6-d5340b202831
+        items = XCache::getOrNull("44a38835-4c00-4af9-a3c6-d5340b202831")
+        if items then
+            items = JSON.parse(items)
+            item = Blades::itemOrNull(uuid)
+            if item then
+                items[uuid] = item
+                XCache::set("44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(items))
+            end
+        end
+
+        # Maintaining: @memory1
+        @memory1[uuid] = Blades::itemOrNull(uuid)
+
         nil
     end
 
@@ -195,8 +212,8 @@ class Blades
         }
     end
 
-    # Blades::items_enumerator()
-    def self.items_enumerator()
+    # Blades::itemsEnumeratorUseTheForce()
+    def self.itemsEnumeratorUseTheForce()
         Enumerator.new do |items|
             Blades::filepaths_enumerator().each{|filepath|
                 item = Blades::filepathToItem(filepath)
@@ -205,10 +222,37 @@ class Blades
         end
     end
 
+    # Blades::items()
+    def self.items()
+
+        # We try @memory1
+        if @memory1.values.size > 0 then
+            return @memory1.values
+        end
+
+        # We try XCache
+        data = XCache::getOrNull("44a38835-4c00-4af9-a3c6-d5340b202831")
+        if data then
+            data = JSON.parse(data)
+            @memory1 = data
+            return @memory1.values
+        end
+
+        data = {}
+        Blades::itemsEnumeratorUseTheForce().each{|item|
+            data[item["uuid"]] = item
+        }
+
+        @memory1 = data
+        XCache::set("44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(data))
+
+        @memory1.values
+    end
+
     # Blades::mikuTypes()
     def self.mikuTypes()
         mikuTypes = []
-        Blades::items_enumerator().each{|item|
+        Blades::items().each{|item|
             mikuTypes << item["mikuType"]
         }
         mikuTypes.uniq
@@ -216,13 +260,25 @@ class Blades
 
     # Blades::mikuType(mikuType) -> Array[Item]
     def self.mikuType(mikuType)
-        Blades::items_enumerator().select{|item| item["mikuType"] == mikuType }
+        Blades::items().select{|item| item["mikuType"] == mikuType }
     end
 
     # Blades::deleteItem(uuid)
     def self.deleteItem(uuid)
         Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute(uuid, "mikuType", 'NxDeleted')
+
+        # Delete from XCache
+        items = XCache::getOrNull("44a38835-4c00-4af9-a3c6-d5340b202831")
+        if items then
+            items = JSON.parse(items)
+            items.delete(uuid)
+            XCache::set("44a38835-4c00-4af9-a3c6-d5340b202831", JSON.generate(items))
+        end
+
+        # Delete from @memory1
+        @memory1.delete(uuid)
+        nil
     end
 
     # --------------------------------------------------------------------------

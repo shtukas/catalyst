@@ -11,7 +11,7 @@ class ListingPosition
 
     # ListingPosition::firstNegativeListingPosition()
     def self.firstNegativeListingPosition()
-        positions = Blades::items_enumerator()
+        positions = Blades::items()
             .select{|item| item["nx42"] }
             .map{|item| item["nx42"] }
         ([-1] + positions).min
@@ -19,7 +19,7 @@ class ListingPosition
 
     # ListingPosition::firstPositiveListingPosition()
     def self.firstPositiveListingPosition()
-        positions = Blades::items_enumerator()
+        positions = Blades::items()
             .select{|item| item["nx42"] }
             .map{|item| item["nx42"] }
         ([0.500] + positions).min
