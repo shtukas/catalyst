@@ -16,7 +16,7 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxInProgress" then
+        if item["mikuType"] == "NxProject" then
             return
         end
 

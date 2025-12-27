@@ -8,12 +8,12 @@ class NxOndates
         date = CommonUtils::interactivelyMakeADate()
         uuid = SecureRandom.uuid
         Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "date", date)
-        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        Blades::setAttribute(uuid, "mikuType", "NxOndate")
+        BladesFront::setAttribute(uuid, "unixtime", Time.new.to_i)
+        BladesFront::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        BladesFront::setAttribute(uuid, "description", description)
+        BladesFront::setAttribute(uuid, "date", date)
+        BladesFront::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        BladesFront::setAttribute(uuid, "mikuType", "NxOndate")
         item = Blades::itemOrNull(uuid)
         item
     end
@@ -22,12 +22,12 @@ class NxOndates
     def self.interactivelyIssueNewWithDetails(description, date)
         uuid = SecureRandom.uuid
         Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "date", date)
-        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        Blades::setAttribute(uuid, "mikuType", "NxOndate")
+        BladesFront::setAttribute(uuid, "unixtime", Time.new.to_i)
+        BladesFront::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        BladesFront::setAttribute(uuid, "description", description)
+        BladesFront::setAttribute(uuid, "date", date)
+        BladesFront::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        BladesFront::setAttribute(uuid, "mikuType", "NxOndate")
         item = Blades::itemOrNull(uuid)
         item
     end
@@ -39,7 +39,7 @@ class NxOndates
 
     # NxOndates::toString(item)
     def self.toString(item)
-        "#{NxOndates::icon()} [#{item["date"]}] #{item["description"]}"
+        "#{NxOndates::icon()} [#{item["date"]}] #{item["description"]}#{Parenting::suffix(item)}"
     end
 
     # NxOndates::listingItems()

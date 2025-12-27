@@ -4,7 +4,7 @@ class DoNotShowUntil
     def self.doNotShowUntil(item, unixtime)
         datetime = Time.at(unixtime).utc.iso8601
         puts "do not show #{PolyFunctions::toString(item).green} until #{datetime.green}"
-        Blades::setAttribute(item["uuid"], "do-not-show-until-51", datetime)
+        BladesFront::setAttribute(item["uuid"], "do-not-show-until-51", datetime)
     end
 
     # DoNotShowUntil::isVisible(item)

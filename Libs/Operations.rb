@@ -5,7 +5,7 @@ class Operations
         # This function edit the payload, if there is now
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.each{|k, v|
-            Blades::setAttribute(item["uuid"], k, v)
+            BladesFront::setAttribute(item["uuid"], k, v)
         }
     end
 

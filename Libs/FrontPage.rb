@@ -53,7 +53,7 @@ class FrontPage
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
             Waves::listingItems(),
-            Blades::mikuType("NxInProgress"),
+            Blades::mikuType("NxProject"),
             BufferIn::listingItems(),
             Orphans::orphansInOrder(),
         ]

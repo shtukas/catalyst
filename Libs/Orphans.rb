@@ -44,7 +44,7 @@ class Orphans
 
             if input == "new" then
                 item = NxTasks::interactivelyIssueNewOrNull()
-                Blades::setAttribute(item["uuid"], "parenting-13", {
+                BladesFront::setAttribute(item["uuid"], "parenting-13", {
                     "parentuuid" => nil,
                     "position"   => Orphans::lastPositionAmongOrphans() + 1
                 })
@@ -54,7 +54,7 @@ class Orphans
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
-                    Blades::setAttribute(item["uuid"], "parenting-13", {
+                    BladesFront::setAttribute(item["uuid"], "parenting-13", {
                         "parentuuid" => nil,
                         "position"   => Orphans::firstPositionAmongOrphans() - 1
                     })

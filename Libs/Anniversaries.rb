@@ -135,13 +135,13 @@ class Anniversary
         details = Anniversary::makeDetails()
         uuid = SecureRandom.uuid
         Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "startdate", details["startdate"])
-        Blades::setAttribute(uuid, "repeatType", details["repeatType"])
-        Blades::setAttribute(uuid, "next_celebration", details["next_celebration"])
-        Blades::setAttribute(uuid, "mikuType", "Anniversary")
+        BladesFront::setAttribute(uuid, "unixtime", Time.new.to_i)
+        BladesFront::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        BladesFront::setAttribute(uuid, "description", description)
+        BladesFront::setAttribute(uuid, "startdate", details["startdate"])
+        BladesFront::setAttribute(uuid, "repeatType", details["repeatType"])
+        BladesFront::setAttribute(uuid, "next_celebration", details["next_celebration"])
+        BladesFront::setAttribute(uuid, "mikuType", "Anniversary")
         item = Blades::itemOrNull(uuid)
         item
     end

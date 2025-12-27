@@ -10,15 +10,15 @@ class NxTasks
         return nil if description == ""
         uuid = SecureRandom.uuid
         Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        Blades::setAttribute(uuid, "parenting-13", {
+        BladesFront::setAttribute(uuid, "unixtime", Time.new.to_i)
+        BladesFront::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        BladesFront::setAttribute(uuid, "description", description)
+        BladesFront::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        BladesFront::setAttribute(uuid, "parenting-13", {
             "parentuuid" => nil,
             "position"   => Orphans::lastPositionAmongOrphans() + 1
         })
-        Blades::setAttribute(uuid, "mikuType", "NxTask")
+        BladesFront::setAttribute(uuid, "mikuType", "NxTask")
         item = Blades::itemOrNull(uuid)
         item
     end

@@ -44,13 +44,13 @@ class ListingPosition
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
         # NxOndate      : 1.100
         # Today         : 1.200
-        # NxInProgress  : 1.300
+        # NxProject  : 1.300
         # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
         # NxTask        : 2.000
 
         if item["random"].nil? then
             item["random"] = rand
-            Blades::setAttribute(item["uuid"], "random", item["random"])
+            BladesFront::setAttribute(item["uuid"], "random", item["random"])
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then
@@ -73,7 +73,7 @@ class ListingPosition
             return 1.000 + increase * (rt.to_f/hours) + item["random"]/1000
         end
 
-        if item["mikuType"] == "NxInProgress" then
+        if item["mikuType"] == "NxProject" then
             return 1.300 + item["random"]/1000
         end
 
@@ -94,6 +94,6 @@ class ListingPosition
 
     # ListingPosition::delist(item)
     def self.delist(item)
-        Blades::setAttribute(item["uuid"], "nx42", nil)
+        BladesFront::setAttribute(item["uuid"], "nx42", nil)
     end
 end

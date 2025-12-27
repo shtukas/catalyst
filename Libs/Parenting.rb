@@ -60,7 +60,7 @@ class Parenting
             if input == "new" then
                 item = NxTasks::interactivelyIssueNewOrNull()
                 position = Parenting::interactivelyDeterminePositionInParent(parent)
-                Blades::setAttribute(item["uuid"], "parenting-13", {
+                BladesFront::setAttribute(item["uuid"], "parenting-13", {
                     "parentuuid" => parent["uuid"],
                     "position"   => position
                 })
@@ -71,7 +71,7 @@ class Parenting
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
                     position = Parenting::firstPositionInParent(parent) - 1
-                    Blades::setAttribute(item["uuid"], "parenting-13", {
+                    BladesFront::setAttribute(item["uuid"], "parenting-13", {
                         "parentuuid" => parent["uuid"],
                         "position"   => position
                     })
@@ -83,52 +83,19 @@ class Parenting
         }
     end
 
-    # Parenting::determineChildrenSetSizeForce(item)
-    def self.determineChildrenSetSizeForce(item)
-        #{
-        #    "unixtime" Integer
-        #    "count"    Integer
-        #}
+    # Parenting::determineAndUpdateChildrenSetSize(item)
+    def self.determineAndUpdateChildrenSetSize(item)
         count = Parenting::childrenInOrder(item).size
-        Blades::setAttribute(item["uuid"], "Sx09", {
-            "unixtime" => Time.new.to_i,
-            "count"    => count
-        })
+        BladesFront::setAttribute(item["uuid"], "sx10", count)
         count
-    end
-
-    # Parenting::determineChildrenSetSizeOrNull(item)
-    def self.determineChildrenSetSizeOrNull(item)
-        #{
-        #    "unixtime" Integer
-        #    "count"    Integer
-        #}
-
-        # We use the information we have if it's less than a day old
-
-        if item["Sx09"] then
-            if Time.new.to_i - item["Sx09"]["unixtime"] < 86400 then
-                return item["Sx09"]["count"]
-            end
-        end
-
-        # We perform a from zero determination but we limit those at 100 per hour
-
-        hour_count = XCache::getOrDefaultValue("8da24e62-fe05-4a7c-84a9-106b86eec746:#{Time.new.to_s[0, 13]}", "0").to_i
-        return nil if hour_count >= 100
-        XCache::set("8da24e62-fe05-4a7c-84a9-106b86eec746:#{Time.new.to_s[0, 13]}", hour_count + 1)
-        Parenting::determineChildrenSetSizeForce(item)
     end
 
     # Parenting::suffix(item)
     def self.suffix(item)
-        count = Parenting::determineChildrenSetSizeOrNull(item)
-        if count then
-            return "" if count == 0
-            " (#{count} children)".yellow
-        else
-            " (unkown children count)".yellow
+        if item["sx10"] and item["sx10"] > 10 then
+            return " (#{item["sx10"]} children)".yellow
         end
+        " (unkown children count)".yellow
     end
 
     # Parenting::selectParentForMove(reference = nil)
@@ -157,7 +124,7 @@ class Parenting
         parent = Parenting::selectParentForMove(nil)
         return if parent.nil?
         position = Parenting::interactivelyDeterminePositionInParent(parent)
-        Blades::setAttribute(item["uuid"], "parenting-13", {
+        BladesFront::setAttribute(item["uuid"], "parenting-13", {
             "parentuuid" => parent["uuid"],
             "position"   => position
         })
