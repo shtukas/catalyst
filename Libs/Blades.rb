@@ -26,7 +26,7 @@ class BladesConfig
 
     # BladesConfig::cache_prefix()
     def self.cache_prefix()
-        "f495112a-719d-4cd7-9dcb-6d6f9dab2973"
+        "f495112a-719d-4cd7-9dcb-6d6f9dab2975"
     end
 end
 
@@ -56,7 +56,7 @@ class Blades
     # Blades::filepaths_enumerator()
     def self.filepaths_enumerator()
         Enumerator.new do |filepaths|
-            Find.find(Config::pathToGalaxy()) do |path|
+            Find.find(BladesConfig::repository_path()) do |path|
                 if File.file?(path) and path[-14, 14] == ".blade.sqlite3" then
                     filepaths << path
                 end
