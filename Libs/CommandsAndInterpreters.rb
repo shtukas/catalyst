@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning",
         ].join("\n")
     end
 
@@ -19,6 +19,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 PolyActions::stop(item)
+                ListingPosition::delist(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::doNotShowUntil(item, unixtime)
                 return
@@ -88,6 +89,20 @@ class CommandsAndInterpreters
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
             Blades::setAttribute(item["uuid"], "nx42", nil)
+            return
+        end
+
+        if Interpreting::match("morning", input) then
+            puts "Decide the NxToday and NxOndates to do before the Waves"
+            items = Blades::mikuType("NxToday") + NxOndates::listingItems()
+            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
+            selected.each{|item|
+                Blades::setAttribute(item["uuid"], "nx42", 0.8)
+            }
+            item = Blades::itemOrNull("6d4e97fa-d1ed-4db8-aa68-be403c659f9e")
+            if item then
+                Waves::performDone(item)
+            end
             return
         end
 

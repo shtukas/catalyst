@@ -18,7 +18,7 @@ class NxTodays
 
     # NxTodays::icon()
     def self.icon()
-        "☀️ "
+        "☀️"
     end
 
     # NxTodays::toString(item)

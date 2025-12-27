@@ -31,12 +31,19 @@ class ListingPosition
             return item["nx42"]
         end
 
+        if item["uuid"] == "6d4e97fa-d1ed-4db8-aa68-be403c659f9e" then
+            return 0.200
+        end
+
         # (sorted)      : (negatives)
         # priorities    : (negatives)
+        # morning       : 0.200
         # Interruptions : 0.300
-        # NxOndate      : 0.500
-        # Today         : 0.800
+        # NxOndate & Today selected for before Waves
+        #               : 0.800
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
+        # NxOndate      : 1.100
+        # Today         : 1.200
         # NxInProgress  : 1.300
         # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
         # NxTask        : 2.000
@@ -51,11 +58,11 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxOndate" then
-            return 0.500 + item["random"]/1000
+            return 1.100 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxToday" then
-            return 0.800 + item["random"]/1000
+            return 1.200 + item["random"]/1000
         end
 
         if item["mikuType"] == "Wave" then

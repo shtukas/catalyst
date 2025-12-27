@@ -6,6 +6,7 @@ class Search
             fragment = LucilleCore::askQuestionAnswerAsString("search fragment (empty to abort) : ")
             break if fragment == ""
             selected = Blades::items()
+                            .select{|item| item["mikuType"] != "NxDeleted" }
                             .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
             if selected.empty? then
                 puts "Could not find a matching element for '#{fragment}'"
