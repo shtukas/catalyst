@@ -93,16 +93,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("morning", input) then
-            puts "Decide the NxToday and NxOndates to do before the Waves"
-            items = Blades::mikuType("NxToday") + NxOndates::listingItems()
-            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
-            selected.each{|item|
-                BladesFront::setAttribute(item["uuid"], "nx42", 0.8)
-            }
-            item = Blades::itemOrNull("6d4e97fa-d1ed-4db8-aa68-be403c659f9e")
-            if item then
-                Waves::performDone(item)
-            end
+            Operations::morning()
             return
         end
 
