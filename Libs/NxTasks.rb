@@ -14,7 +14,7 @@ class NxTasks
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
         Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        Blades::setAttribute(item["uuid"], "parenting-13", {
+        Blades::setAttribute(uuid, "parenting-13", {
             "parentuuid" => nil,
             "position"   => Orphans::lastPositionAmongOrphans() + 1
         })
