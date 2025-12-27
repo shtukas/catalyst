@@ -44,7 +44,7 @@ class ListingPosition
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
         # NxOndate      : 1.100
         # Today         : 1.200
-        # NxProject  : 1.300
+        # NxProject     : 1.300
         # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
         # NxTask        : 2.000
 
