@@ -4,8 +4,7 @@ class Orphans
     # Orphans::orphansInOrder()
     def self.orphansInOrder()
         Blades::mikuType("NxTask")
-            .select{|item|
-                item["parenting-13"]["parentuuid"].nil? }
+            .select{|item| item["parenting-13"]["parentuuid"].nil? }
             .sort_by{|item| item["parenting-13"]["position"] }
     end
 

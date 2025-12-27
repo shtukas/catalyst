@@ -26,7 +26,7 @@ class BladesConfig
 
     # BladesConfig::cache_prefix()
     def self.cache_prefix()
-        "f495112a-719d-4cd7-9dcb-6d6f9dab2976"
+        "f495112a-719d-4cd7-9dcb-6d6f9dab2977"
     end
 end
 

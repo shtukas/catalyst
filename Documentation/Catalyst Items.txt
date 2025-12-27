@@ -9,10 +9,4 @@ Cross types conventions (all optional):
     - skip-0843             : unixtime (skipped until this time)
     - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
     - nx42                  : null or Float # Positioning
-    - payload-37            : UxPayload
-    - parenting-13          : Px13
-
-Px13 {
-    "parentuuid" : String
-    "position"   : Float
-}
+    - payload-37            : null or UxPayload
