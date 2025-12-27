@@ -13,7 +13,7 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        b1 = Parenting::determineChildrenSetSizeForce(item).size > 0
+        b1 = Parenting::determineChildrenSetSizeForce(item) > 0
         b2 = !item["payload-37"].nil?
 
         if b1 and b2 then

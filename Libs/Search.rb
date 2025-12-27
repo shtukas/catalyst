@@ -14,6 +14,7 @@ class Search
                 next
             end
             lx = lambda { Blades::items()
+                        .select{|item| item["mikuType"] != "NxDeleted" }
                         .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
                         .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] } }
             Operations::program3(lx)

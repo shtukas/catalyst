@@ -10,6 +10,7 @@ class Parenting
     # Parenting::childrenInOrder(parent)
     def self.childrenInOrder(parent)
         Blades::items()
+            .select{|item| item["mikuType"] != "NxDeleted" }
             .select{|item|
                 item["parenting-13"] and item["parenting-13"]["parentuuid"] == parent["uuid"]
             }
