@@ -30,12 +30,12 @@ class PolyActions
             raise "(ab59896d) how did this happen ?"
         end
 
-        if b1 and b2.nil? then
+        if b1 and !b2 then
             Parenting::dive(item)
             return
         end
 
-        if b1.nil? and b2 then
+        if !b1 and b2 then
             UxPayloads::access(item["uuid"], item["payload-37"])
             return
         end
