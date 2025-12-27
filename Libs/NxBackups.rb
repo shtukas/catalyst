@@ -8,12 +8,12 @@ class NxBackups
         period = LucilleCore::askQuestionAnswerAsString("period in days: ").to_f
         uuid = SecureRandom.uuid
         Blades::init(uuid)
-        BladesFront::setAttribute(uuid, "unixtime", Time.new.to_i)
-        BladesFront::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        BladesFront::setAttribute(uuid, "description", description)
-        BladesFront::setAttribute(uuid, "period", period)
-        BladesFront::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        BladesFront::setAttribute(uuid, "mikuType", "NxBackup")
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "period", period)
+        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        Blades::setAttribute(uuid, "mikuType", "NxBackup")
         item = Blades::itemOrNull(uuid)
         item
     end

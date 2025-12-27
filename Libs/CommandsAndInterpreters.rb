@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning",
@@ -70,7 +70,7 @@ class CommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                BladesFront::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
+                Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
             }
             return
         end
@@ -88,7 +88,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
-            BladesFront::setAttribute(item["uuid"], "nx42", nil)
+            Blades::setAttribute(item["uuid"], "nx42", nil)
             return
         end
 
@@ -127,7 +127,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            BladesFront::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
+            Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
             item = Blades::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
@@ -142,6 +142,22 @@ class CommandsAndInterpreters
         if Interpreting::match("backups", input) then
             Operations::program3(lambda { 
                 Blades::mikuType("NxBackup")
+            })
+            return
+        end
+
+        if Interpreting::match("project", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxTasks::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("projects", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Operations::program3(lambda { 
+                Blades::mikuType("NxProject")
             })
             return
         end
@@ -253,7 +269,7 @@ class CommandsAndInterpreters
             _, d, _ = Interpreting::tokenizer(input)
             item = store.getDefault()
             return if item.nil?
-            BladesFront::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
+            Blades::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
             return
         end
 
@@ -426,7 +442,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            BladesFront::setAttribute(item["uuid"], "date", datetime)
+            Blades::setAttribute(item["uuid"], "date", datetime)
             return
         end
 

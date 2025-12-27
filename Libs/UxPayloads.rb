@@ -298,7 +298,7 @@ class UxPayloads
         return if item["payload-37"].nil?
         payload = UxPayloads::edit(item["uuid"], item["payload-37"])
         return if payload.nil?
-        BladesFront::setAttribute(item["uuid"], "payload-37", payload)
+        Blades::setAttribute(item["uuid"], "payload-37", payload)
     end
 
     # UxPayloads::fsck(uuid, payload)
@@ -349,7 +349,7 @@ class UxPayloads
     def self.payloadProgram(item)
         payload = UxPayloads::makeNewPayloadOrNull(item["uuid"])
         if payload.nil? then
-            BladesFront::setAttribute(item["uuid"], "payload-37", payload)
+            Blades::setAttribute(item["uuid"], "payload-37", payload)
             return
         end
         options = ["access", "edit", "make new (default)", "delete existing payload"]
@@ -361,10 +361,10 @@ class UxPayloads
             UxPayloads::editItemPayload(item)
         end
         if option.nil? or option == "make new (default)" then
-            BladesFront::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull(item["uuid"]))
+            Blades::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull(item["uuid"]))
         end
         if option == "delete existing payload" then
-            BladesFront::setAttribute(item["uuid"], "payload-37", nil)
+            Blades::setAttribute(item["uuid"], "payload-37", nil)
         end
     end
 end

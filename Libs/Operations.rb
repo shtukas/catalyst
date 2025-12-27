@@ -5,7 +5,7 @@ class Operations
         # This function edit the payload, if there is now
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.each{|k, v|
-            BladesFront::setAttribute(item["uuid"], k, v)
+            Blades::setAttribute(item["uuid"], k, v)
         }
     end
 
@@ -113,8 +113,8 @@ class Operations
     # Operations::morning()
     def self.morning()
         if Blades::mikuType("NxToday").empty? and Blades::mikuType("NxProject").size < 5 then
-            Blades::mikuType("NxTask").take(5).each{|item|
-                BladesFront::setAttribute(item["uuid"], "mikuType", "NxToday")
+            Orphans::orphans().take(10).each{|item|
+                Blades::setAttribute(item["uuid"], "mikuType", "NxToday")
             }
         end
 
@@ -122,7 +122,7 @@ class Operations
         items = Blades::mikuType("NxToday") + NxOndates::listingItems()
         selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
         selected.each{|item|
-            BladesFront::setAttribute(item["uuid"], "nx42", 0.8)
+            Blades::setAttribute(item["uuid"], "nx42", 0.8)
         }
         item = Blades::itemOrNull("6d4e97fa-d1ed-4db8-aa68-be403c659f9e")
         if item then

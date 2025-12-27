@@ -11,14 +11,14 @@ class Waves
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
         Blades::init(uuid)
-        BladesFront::setAttribute(uuid, "unixtime", Time.new.to_i)
-        BladesFront::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        BladesFront::setAttribute(uuid, "description", description)
-        BladesFront::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        BladesFront::setAttribute(uuid, "nx46", nx46)
-        BladesFront::setAttribute(uuid, "lastDoneUnixtime", 0)
-        BladesFront::setAttribute(uuid, "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))
-        BladesFront::setAttribute(uuid, "mikuType", "Wave")
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
+        Blades::setAttribute(uuid, "nx46", nx46)
+        Blades::setAttribute(uuid, "lastDoneUnixtime", 0)
+        Blades::setAttribute(uuid, "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))
+        Blades::setAttribute(uuid, "mikuType", "Wave")
         item = Blades::itemOrNull(uuid)
         item
     end
@@ -81,7 +81,7 @@ class Waves
 
     # Waves::performDone(wave)
     def self.performDone(wave)
-        BladesFront::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Blades::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)
         unixtime = Waves::nx46ToNextDisplayUnixtime(wave["nx46"], Time.new.to_i)
         puts "do not show until #{Time.at(unixtime)}".yellow
         DoNotShowUntil::doNotShowUntil(wave, unixtime)

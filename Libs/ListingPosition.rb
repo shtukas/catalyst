@@ -50,7 +50,7 @@ class ListingPosition
 
         if item["random"].nil? then
             item["random"] = rand
-            BladesFront::setAttribute(item["uuid"], "random", item["random"])
+            Blades::setAttribute(item["uuid"], "random", item["random"])
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then
@@ -86,7 +86,7 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxTask" then
-            return 2.000 + ListingPosition::realLineTo01Increasing(item["parenting-13"]["position"]).to_f/1000
+            return 2.000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
@@ -94,6 +94,6 @@ class ListingPosition
 
     # ListingPosition::delist(item)
     def self.delist(item)
-        BladesFront::setAttribute(item["uuid"], "nx42", nil)
+        Blades::setAttribute(item["uuid"], "nx42", nil)
     end
 end

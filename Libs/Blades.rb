@@ -30,43 +30,6 @@ class BladesConfig
     end
 end
 
-class BladesFront
-    # BladesFront::setAttribute(uuid, attrname, attrvalue)
-    def self.setAttribute(uuid, attrname, attrvalue)
-
-        existing_parent_opt = nil
-
-        if attrname == "parenting-13" then
-            # We are about to set the parenting of an item
-            # It could be the child of an existing one
-            # The existing one needs to be identified and remembered 
-            # so that we can update its number of children later
-            item = Blades::itemOrNull(uuid)
-            if item and item["parenting-13"] then
-                existing_parent_opt = Blades::itemOrNull(item["parenting-13"]["parentuuid"])
-            end
-        end
-
-        Blades::setAttribute(uuid, attrname, attrvalue)
-
-        if attrname == "parenting-13" then
-            # We have updated an item's parenting information
-            # now is the time to update the parent's count
-            parentuuid = attrvalue["parentuuid"]
-            parent = Blades::itemOrNull(parentuuid)
-            if parent then
-                Parenting::determineAndUpdateChildrenSetSize(parent)
-            end
-            if existing_parent_opt then
-                Parenting::determineAndUpdateChildrenSetSize(existing_parent_opt)
-            end
-            # Note that it could be that parent and existing_parent_opt
-            # are both defined and te same, that would happen if, for instance,
-            # we update the position of the item inside the same parent
-        end
-    end
-end
-
 class Blades
 
     # --------------------------------------------------------------------------
@@ -257,7 +220,7 @@ class Blades
         uuid = item["uuid"]
         item.to_h.each{|attrname, attrvalue|
             next if attrname == "uuid"
-            BladesFront::setAttribute(uuid, attrname, attrvalue)
+            Blades::setAttribute(uuid, attrname, attrvalue)
         }
     end
 
@@ -314,8 +277,8 @@ class Blades
 
     # Blades::deleteItem(uuid)
     def self.deleteItem(uuid)
-        BladesFront::setAttribute(uuid, "unixtime", Time.new.to_i)
-        BladesFront::setAttribute(uuid, "mikuType", 'NxDeleted')
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "mikuType", 'NxDeleted')
 
         # Delete from XCache
         items = XCache::getOrNull("#{BladesConfig::cache_prefix()}:44a38835-4c00-4af9-a3c6-d5340b202831")

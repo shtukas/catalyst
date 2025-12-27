@@ -49,7 +49,7 @@ class PolyActions
         if item["mikuType"] == "NxToday" then
             if LucilleCore::askQuestionAnswerAsBoolean("transmute to NxProject ? ", true) then
                 puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                BladesFront::setAttribute(item["uuid"], "mikuType", "NxProject")
+                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             return
@@ -58,7 +58,7 @@ class PolyActions
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("transmute to NxProject ? ", true) then
                 puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                BladesFront::setAttribute(item["uuid"], "mikuType", "NxProject")
+                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             return
@@ -67,7 +67,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("transmute to NxProject ? ", true) then
                 puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                BladesFront::setAttribute(item["uuid"], "mikuType", "NxProject")
+                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             return
@@ -103,7 +103,7 @@ class PolyActions
 
         if item["mikuType"] == "Anniversary" then
             next_celebration = Anniversary::computeNextCelebrationDate(item["startdate"], item["repeatType"])
-            BladesFront::setAttribute(item["uuid"], "next_celebration", next_celebration)
+            Blades::setAttribute(item["uuid"], "next_celebration", next_celebration)
             DoNotShowUntil::doNotShowUntil(item, Date.parse(next_celebration).to_time.to_i)
             return
         end
@@ -114,7 +114,7 @@ class PolyActions
             if option == "dismiss" then
                 NxBalls::stop(item)
                 puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                BladesFront::setAttribute(item["uuid"], "mikuType", "NxProject")
+                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -130,7 +130,7 @@ class PolyActions
             if option == "dismiss" then
                 NxBalls::stop(item)
                 puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                BladesFront::setAttribute(item["uuid"], "mikuType", "NxProject")
+                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -146,7 +146,7 @@ class PolyActions
             if option == "dismiss" then
                 NxBalls::stop(item)
                 puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                BladesFront::setAttribute(item["uuid"], "mikuType", "NxProject")
+                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -269,6 +269,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        BladesFront::setAttribute(item["uuid"], "description", description)
+        Blades::setAttribute(item["uuid"], "description", description)
     end
 end

@@ -11,25 +11,13 @@ class Parenting
     def self.childrenInOrder(parent)
         Blades::items()
             .select{|item| item["mikuType"] != "NxDeleted" }
-            .select{|item|
-                item["parenting-13"] and item["parenting-13"]["parentuuid"] == parent["uuid"]
-            }
+            .select{|item| item["parenting-13"] and item["parenting-13"]["parentuuid"] == parent["uuid"] }
             .sort_by{|item| item["parenting-13"]["position"] }
     end
 
     # Parenting::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
         ([0] + Parenting::childrenInOrder(parent).map{|item| item["parenting-13"]["position"] }).min
-    end
-
-    # Parenting::firstPositionAmongOrphans()
-    def self.firstPositionAmongOrphans()
-        (
-            [0] + 
-            Parenting::childrenInOrder(parent)
-                .select{|item| item["parenting-13"]["parentuuid"].nil? }
-                .map{|item| item["parenting-13"]["position"] }
-        ).min
     end
 
     # Parenting::interactivelyDeterminePositionInParent(parent)
@@ -60,7 +48,7 @@ class Parenting
             if input == "new" then
                 item = NxTasks::interactivelyIssueNewOrNull()
                 position = Parenting::interactivelyDeterminePositionInParent(parent)
-                BladesFront::setAttribute(item["uuid"], "parenting-13", {
+                Blades::setAttribute(item["uuid"], "parenting-13", {
                     "parentuuid" => parent["uuid"],
                     "position"   => position
                 })
@@ -71,7 +59,7 @@ class Parenting
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
                     position = Parenting::firstPositionInParent(parent) - 1
-                    BladesFront::setAttribute(item["uuid"], "parenting-13", {
+                    Blades::setAttribute(item["uuid"], "parenting-13", {
                         "parentuuid" => parent["uuid"],
                         "position"   => position
                     })
@@ -86,23 +74,23 @@ class Parenting
     # Parenting::determineAndUpdateChildrenSetSize(item)
     def self.determineAndUpdateChildrenSetSize(item)
         count = Parenting::childrenInOrder(item).size
-        BladesFront::setAttribute(item["uuid"], "sx10", count)
+        Blades::setAttribute(item["uuid"], "sx10", count)
         count
     end
 
     # Parenting::suffix(item)
     def self.suffix(item)
-        if item["sx10"] and item["sx10"] > 10 then
+        if item["sx10"] then
             return " (#{item["sx10"]} children)".yellow
         end
-        " (unkown children count)".yellow
+        ""
     end
 
     # Parenting::selectParentForMove(reference = nil)
     def self.selectParentForMove(reference = nil)
         # return an reference (which can be made a parent) or null
         if reference.nil? then
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", Orphans::orphansInOrder(), lambda{|item| PolyFunctions::toString(item) })
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", Orphans::orphans(), lambda{|item| PolyFunctions::toString(item) })
             return nil if item.nil?
             return Parenting::selectParentForMove(item)
         end
@@ -124,7 +112,7 @@ class Parenting
         parent = Parenting::selectParentForMove(nil)
         return if parent.nil?
         position = Parenting::interactivelyDeterminePositionInParent(parent)
-        BladesFront::setAttribute(item["uuid"], "parenting-13", {
+        Blades::setAttribute(item["uuid"], "parenting-13", {
             "parentuuid" => parent["uuid"],
             "position"   => position
         })

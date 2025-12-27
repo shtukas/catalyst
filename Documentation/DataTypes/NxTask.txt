@@ -5,9 +5,3 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
-    - parenting-13 : Px13
-
-Px13 {
-    "parentuuid" : nil or String
-    "position"   : Float
-}

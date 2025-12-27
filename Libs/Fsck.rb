@@ -41,8 +41,8 @@ class Fsck
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["parenting-13"].nil? then
-                raise "We do not have a parenting-13 on item #{item}"
+            if item["parenting-13"] and item["parenting-13"]["parentuuid"].nil? then
+                raise "We have a malformed parenting-13 on #{item}"
             end
             return
         end
