@@ -80,7 +80,7 @@ class Parenting
 
     # Parenting::suffix(item)
     def self.suffix(item)
-        if item["sx10"] then
+        if item["sx10"] and item["sx10"] > 0 then
             return " (#{item["sx10"]} children)".yellow
         end
         ""

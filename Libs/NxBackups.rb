@@ -32,9 +32,4 @@ class NxBackups
     def self.listingItems()
         Blades::mikuType("NxBackup")
     end
-
-    # NxBackups::listingPosition(item)
-    def self.listingPosition(item)
-        0.400
-    end
 end

@@ -41,6 +41,7 @@ class ListingPosition
         # Interruptions : 0.300
         # NxOndate & Today selected for before Waves
         #               : 0.800
+        # NxBackups     : 0.900
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
         # NxOndate      : 1.100
         # Today         : 1.200
@@ -55,6 +56,10 @@ class ListingPosition
 
         if item["mikuType"] == "Wave" and item["interruption"] then
             return 0.300 + item["random"]/1000
+        end
+
+        if item["mikuType"] == "NxBackup" then
+            return 0.900
         end
 
         if item["mikuType"] == "NxOndate" then

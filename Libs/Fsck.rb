@@ -47,6 +47,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxBackup" then
+            return
+        end
+
         if item["mikuType"] == "NxToday" then
             return
         end

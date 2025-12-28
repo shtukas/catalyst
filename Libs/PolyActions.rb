@@ -170,6 +170,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBackup" then
+            puts "#{PolyFunctions::toString(item).green}"
+            DoNotShowUntil::doNotShowUntil(item, Time.new.to_i + 86400 * item["period"])
+            return
+        end
+
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -234,6 +240,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Blades::deleteItem(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::deleteItem(item["uuid"])
             end
