@@ -130,6 +130,10 @@ class CommandsAndInterpreters
             Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
             item = Blades::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
+            NxBalls::runningItems().each{|i|
+                NxBalls::pause(i)
+            }
+            NxBalls::start(item)
             return
         end
 
