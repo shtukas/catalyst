@@ -1,3 +1,4 @@
+
 class Operations
 
     # Operations::editItemJson(item)
@@ -45,8 +46,17 @@ class Operations
 
     # Operations::globalMaintenance()
     def self.globalMaintenance()
-        puts "Bank::maintenance()"
         Bank::maintenance()
+
+        Blades::mikuType("NxTask").each{|item|
+            if item["parenting-13"] then
+                if (item = Blades::itemOrNull(item["parenting-13"]["parentuuid"])).nil? or (item["mikuType"] == "NxDeleted") then
+                    puts "releasing practical orphan item: #{item["description"]}".yellow
+                    Blades::setAttribute(uuid, "parenting-13", nil)
+                end
+            end
+        }
+
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()

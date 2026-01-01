@@ -184,6 +184,13 @@ class PolyActions
 
         NxBalls::stop(item)
 
+        children_size = Parenting::determineAndUpdateChildrenSetSize(item)
+        if children_size > 0 then
+            puts "Cannot destroy an item with children"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Blades::deleteItem(item["uuid"])

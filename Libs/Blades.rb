@@ -34,7 +34,9 @@ class Blades
 
     # --------------------------------------------------------------------------
     # The original version of this file is Catalyst's Blades.rb
-    # Nyx has a copy of it
+    # Nyx has a copy of it.
+    # Do not get rid of the cache prefix, that's how we maintain dataset difference
+    # between Catalyst and Nyx.
     # --------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------
