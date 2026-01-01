@@ -133,7 +133,9 @@ class CommandsAndInterpreters
             NxBalls::runningItems().each{|i|
                 NxBalls::pause(i)
             }
-            NxBalls::start(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("start `#{item["description"]}` ? ", true) then
+                NxBalls::start(item)
+            end
             return
         end
 
