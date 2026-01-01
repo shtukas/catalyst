@@ -45,33 +45,6 @@ class PolyActions
     def self.stop(item)
         NxBalls::stop(item)
         ListingPosition::delist(item)
-
-        if item["mikuType"] == "NxToday" then
-            if LucilleCore::askQuestionAnswerAsBoolean("transmute to NxProject ? ", true) then
-                puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("transmute to NxProject ? ", true) then
-                puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("transmute to NxProject ? ", true) then
-                puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            return
-        end
     end
 
     # PolyActions::done(item)
