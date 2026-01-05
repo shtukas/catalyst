@@ -300,6 +300,28 @@ class Blades
         nil
     end
 
+    # Blades::destroyBlade(uuid)
+    def self.destroyBlade(uuid)
+
+        # Delete blade from disk
+        filepath = Blades::uuidToFilepathOrNull(uuid)
+        if filepath then
+            FileUtils.rm(filepath)
+        end
+
+        # Delete from XCache
+        items = XCache::getOrNull("#{BladesConfig::cache_prefix()}:items-4af9-a3c6-d5340b202831:#{Blades::today()}")
+        if items then
+            items = JSON.parse(items)
+            items.delete(uuid)
+            XCache::set("#{BladesConfig::cache_prefix()}:items-4af9-a3c6-d5340b202831:#{Blades::today()}", JSON.generate(items))
+        end
+
+        # Delete from @memory1
+        @memory1.delete(uuid)
+        nil
+    end
+
     # --------------------------------------------------------------------------
     # Datablobs
     # create table datablobs (nhash TEXT primary key, data BLOB);

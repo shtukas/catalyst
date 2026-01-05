@@ -71,18 +71,6 @@ class FrontPage
         sheight = CommonUtils::screenHeight()
         swidth = CommonUtils::screenWidth()
 
-        # ------------------------------------------------
-        # Palmer
-        sheight = sheight - 3
-        palmer_file_path = "#{Config::pathToGalaxy()}/DataHub/Palmer/reports/report-l24-leaderboard-paper.txt"
-        lines = IO.read(palmer_file_path).lines
-        lines.each{|line|
-            if line.start_with?("strat1") or line.start_with?("strat2") or line.start_with?("strat3eur") then
-                puts line
-            end
-        }
-        # ------------------------------------------------
-
         if XCacheExensions::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 40000) then
             puts "Running global maintenance (every half a day)"
             Operations::globalMaintenance()

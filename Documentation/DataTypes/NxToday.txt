@@ -1,7 +1,7 @@
 
-NxOndate:
+NxToday:
     - uuid         : String
-    - mikuType     : "NxOndate"
+    - mikuType     : "NxToday"
     - unixtime     :
     - datetime     :
     - description  : String

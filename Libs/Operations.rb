@@ -57,6 +57,13 @@ class Operations
             end
         }
 
+        Blades::mikuType("NxDeleted").each{|item|
+            if (Time.new.to_i - item["unixtime"]) > 30*86400 then
+                # been logically deleted for more than 30 days
+                puts "destroying blade: #{item["description"]} 🗡️"
+                Blades::destroyBlade(item["uuid"])
+            end
+        }
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
