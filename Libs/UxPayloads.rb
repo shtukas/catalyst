@@ -347,11 +347,6 @@ class UxPayloads
 
     # UxPayloads::payloadProgram(item)
     def self.payloadProgram(item)
-        payload = UxPayloads::makeNewPayloadOrNull(item["uuid"])
-        if payload.nil? then
-            Blades::setAttribute(item["uuid"], "payload-37", payload)
-            return
-        end
         options = ["access", "edit", "make new (default)", "delete existing payload"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option == "access" then
