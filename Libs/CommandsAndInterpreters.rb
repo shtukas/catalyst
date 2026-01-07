@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move * | time commitment *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -17,6 +17,13 @@ class CommandsAndInterpreters
     def self.interpreter(input, store)
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
+            
+            if item["mikuType"] == "NxTimeCommitment" then
+                puts "Nope! It's a NxTimeCommitment"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+
             if (item = store.getDefault()) then
                 PolyActions::stop(item)
                 ListingPosition::delist(item)
@@ -99,6 +106,19 @@ class CommandsAndInterpreters
 
         if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
+            return
+        end
+
+        if Interpreting::match("time commitment *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if ["NxToday"].include?(item["mikuType"]) then
+                puts "transmuting '#{PolyFunctions::toString(item).green}' to NxTimeCommitment"
+                Transmute::transmuteTo(item, "NxTimeCommitment")
+                return
+            end
+            puts "I do not know how to transmute a #{item["mikuType"]} to NxTimeCommitment"
             return
         end
 
@@ -392,6 +412,13 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+
+            if item["mikuType"] == "NxTimeCommitment" then
+                puts "Nope! It's a NxTimeCommitment"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
             return

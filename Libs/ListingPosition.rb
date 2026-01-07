@@ -39,11 +39,12 @@ class ListingPosition
         # priorities    : (negatives)
         # morning       : 0.200
         # Interruptions : 0.300
-        # NxOndate & Today selected for before Waves
+        # NxOndate & Today (monday selection)
         #               : 0.800
         # NxBackups     : 0.900
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
         # NxOndate      : 1.100
+        # NxTimeCommitment : 1.150
         # Today         : 1.200
         # NxProject     : 1.300
         # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
@@ -64,6 +65,10 @@ class ListingPosition
 
         if item["mikuType"] == "NxOndate" then
             return 1.100 + item["random"]/1000
+        end
+
+        if item["mikuType"] == "NxTimeCommitment" then
+            return 1.150 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxToday" then

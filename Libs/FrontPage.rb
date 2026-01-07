@@ -50,6 +50,7 @@ class FrontPage
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         [
+            NxTimeCommitments::listingItems(),
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
