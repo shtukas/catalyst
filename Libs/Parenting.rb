@@ -22,8 +22,10 @@ class Parenting
 
     # Parenting::interactivelyDeterminePositionInParent(parent)
     def self.interactivelyDeterminePositionInParent(parent)
+        children = Parenting::childrenInOrder(parent)
+        return 0 if children.empty?
         puts "children:"
-        Parenting::childrenInOrder(parent).each{|item|
+        children.each{|item|
             puts PolyFunctions::toString(item)
         }
         LucilleCore::askQuestionAnswerAsString("position (empty for next): ").to_f
@@ -90,7 +92,7 @@ class Parenting
     def self.selectParentForMove(reference = nil)
         # return an reference (which can be made a parent) or null
         if reference.nil? then
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", Orphans::orphans(), lambda{|item| PolyFunctions::toString(item) })
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", Blades::mikuType("Environment"), lambda{|item| PolyFunctions::toString(item) })
             return nil if item.nil?
             return Parenting::selectParentForMove(item)
         end

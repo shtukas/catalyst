@@ -1,0 +1,9 @@
+
+Environment:
+    - uuid         : String
+    - mikuType     : "Environment"
+    - unixtime     :
+    - datetime     :
+    - description  : String
+
+    - tc-16        : hours per week # time commitment

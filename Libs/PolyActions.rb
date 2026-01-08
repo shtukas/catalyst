@@ -86,8 +86,6 @@ class PolyActions
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
-                puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -102,8 +100,6 @@ class PolyActions
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
-                puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -118,8 +114,6 @@ class PolyActions
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
-                puts "Transmuting #{PolyFunctions::toString(item).green} to NxProject"
-                Blades::setAttribute(item["uuid"], "mikuType", "NxProject")
                 DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             end
             if option == "destroy" then
@@ -129,17 +123,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            puts "#{PolyFunctions::toString(item).green}"
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
-            if option == "dismiss" then
-                NxBalls::stop(item)
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                NxBalls::stop(item)
-                PolyActions::destroy(item)
-            end
+        if item["mikuType"] == "Environment" then
+            NxBalls::stop(item)
+            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             return
         end
 
@@ -198,7 +184,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
+        if item["mikuType"] == "Environment" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Blades::deleteItem(item["uuid"])
             end

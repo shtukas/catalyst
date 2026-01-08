@@ -54,7 +54,7 @@ class FrontPage
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
             Waves::listingItems(),
-            Blades::mikuType("NxProject"),
+            Blades::mikuType("Environment"),
             BufferIn::listingItems(),
             Orphans::orphans(),
         ]

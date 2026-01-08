@@ -44,10 +44,11 @@ class ListingPosition
         # NxBackups     : 0.900
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
         # NxOndate      : 1.100
-        # NxTasks with tc-15
-        #               : 1.300
         # Today         : 1.200
+        # NxTask with tc-15
+        #               : 1.300
         # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
+        # Environment   : 1.600
         # NxTask        : 2.000
 
         if item["random"].nil? then
@@ -79,10 +80,6 @@ class ListingPosition
             return 1.000 + increase * (rt.to_f/hours) + item["random"]/1000
         end
 
-        if item["mikuType"] == "NxProject" then
-            return 1.300 + item["random"]/1000
-        end
-
         if item["mikuType"] == "BufferIn" then
             increase = 1.5
             hours    = 1.0
@@ -91,13 +88,15 @@ class ListingPosition
             return 1.5 + item["random"]/1000
         end
 
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "Environment" then
+            return 1.600 + item["random"]/1000
+        end
 
+        if item["mikuType"] == "NxTask" then
             if item["tc-15"] then
                 return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < item["tc-15"]*3600)
                 return 1.300 + item["random"]/1000
             end
-
             return 2.000
         end
 

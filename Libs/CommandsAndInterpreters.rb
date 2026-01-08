@@ -6,8 +6,8 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move * | time commitment *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project | environment",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos | cores",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning",
         ].join("\n")
@@ -171,18 +171,18 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("project", input) then
+        if Interpreting::match("environment", input) then
             item = store.getDefault()
             return if item.nil?
-            NxTasks::interactivelyIssueNewOrNull()
+            Environments::interactivelyIssueNewOrNull()
             return
         end
 
-        if Interpreting::match("projects", input) then
+        if Interpreting::match("cores", input) then
             item = store.getDefault()
             return if item.nil?
             Operations::program3(lambda { 
-                Blades::mikuType("NxProject")
+                Blades::mikuType("Environment")
             })
             return
         end

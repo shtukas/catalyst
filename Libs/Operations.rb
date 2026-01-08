@@ -129,7 +129,7 @@ class Operations
 
     # Operations::morning()
     def self.morning()
-        if Blades::mikuType("NxToday").empty? and Blades::mikuType("NxProject").size < 5 then
+        if Blades::mikuType("NxToday").empty? and Blades::mikuType("Environment").size < 5 then
             Orphans::orphans().take(10).each{|item|
                 Blades::setAttribute(item["uuid"], "mikuType", "NxToday")
             }

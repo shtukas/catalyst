@@ -1,7 +1,0 @@
-
-NxProject:
-    - uuid         : String
-    - mikuType     : "NxProject"
-    - unixtime     :
-    - datetime     :
-    - description  : String
