@@ -17,14 +17,12 @@ class CommandsAndInterpreters
     def self.interpreter(input, store)
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
-            
-            if item["mikuType"] == "NxTimeCommitment" then
-                puts "Nope! It's a NxTimeCommitment"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-
             if (item = store.getDefault()) then
+                if item["mikuType"] == "NxTimeCommitment" then
+                    puts "Nope! We don't push NxTimeCommitments"
+                    LucilleCore::pressEnterToContinue()
+                    return
+                end
                 PolyActions::stop(item)
                 ListingPosition::delist(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
