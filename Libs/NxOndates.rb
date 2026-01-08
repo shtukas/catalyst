@@ -32,14 +32,15 @@ class NxOndates
         item
     end
 
-    # NxOndates::icon()
-    def self.icon()
+    # NxOndates::icon(item)
+    def self.icon(item)
+        return NxTodays::icon() if item["date"] <= CommonUtils::today() 
         "🗓️ "
     end
 
     # NxOndates::toString(item)
     def self.toString(item)
-        "#{NxOndates::icon()} [#{item["date"]}] #{item["description"]}"
+        "#{NxOndates::icon(item)} [#{item["date"]}] #{item["description"]}"
     end
 
     # NxOndates::listingItems()
