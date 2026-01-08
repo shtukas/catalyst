@@ -19,7 +19,12 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 if item["tc-15"] then
-                    puts "Nope! We don't push tasks with time commitments"
+                    puts "Nope! We do not push tasks with time commitments"
+                    LucilleCore::pressEnterToContinue()
+                    return
+                end
+                if item["tc-16"] then
+                    puts "Nope! We do not push Environments"
                     LucilleCore::pressEnterToContinue()
                     return
                 end
@@ -107,16 +112,21 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("time commitment *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("hours *", input) then
+            _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if ["NxToday"].include?(item["mikuType"]) then
+            if item["mikuType"] == "NxToday" then
                 hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
                 Blades::setAttribute(item["uuid"], "tc-15", hours)
                 return
             end
-            puts "We do not add tc-15 a #{item["mikuType"]}"
+            if item["mikuType"] == "Environment" then
+                hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
+                Blades::setAttribute(item["uuid"], "tc-16", hours)
+                return
+            end
+            puts "I do not know how to add a time commitment to a #{item["mikuType"]}"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -414,6 +424,12 @@ class CommandsAndInterpreters
 
             if item["tc-15"] then
                 puts "Nope! We don't push tasks with time commitments"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+
+            if item["tc-16"] then
+                puts "Nope! We do not push Environments"
                 LucilleCore::pressEnterToContinue()
                 return
             end

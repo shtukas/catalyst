@@ -42,13 +42,13 @@ class ListingPosition
         # NxOndate & Today (monday selection)
         #               : 0.800
         # NxBackups     : 0.900
-        # Wave          : 1.000 (parked at 3.500 after 2 hours)
+        # Wave          : 1.000 (disappearing after 2 hours)
         # NxOndate      : 1.100
         # Today         : 1.200
         # NxTask with tc-15
-        #               : 1.300
-        # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
-        # Environment   : 1.600
+        #               : 1.300 disappearing after daily requirement)
+        # BufferIn      : 1.500 (disappearing after 1 hour)
+        # Environment   : 1.600 (disappearing after daily requirement)
         # NxTask        : 2.000
 
         if item["random"].nil? then
@@ -75,26 +75,27 @@ class ListingPosition
         if item["mikuType"] == "Wave" then
             increase = 1.5
             hours    = 2.5
-            rt = BankDerivedData::recoveredAverageHoursPerDayCached("wave-general-fd3c4ac4-1300")
-            return 3.500 if rt > 2.0
+            rt = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache("wave-general-fd3c4ac4-1300")
+            return nil if rt > 2.0
             return 1.000 + increase * (rt.to_f/hours) + item["random"]/1000
         end
 
         if item["mikuType"] == "BufferIn" then
             increase = 1.5
             hours    = 1.0
-            rt = BankDerivedData::recoveredAverageHoursPerDayCached("0a8ca68f-d931-4110-825c-8fd290ad7853")
-            return 4  + item["random"]/1000 if rt > 1.0
+            rt = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache("0a8ca68f-d931-4110-825c-8fd290ad7853")
+            return nil if rt > 1.0
             return 1.5 + item["random"]/1000
         end
 
         if item["mikuType"] == "Environment" then
+            return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) > (item["tc-16"].to_f/7)*3600)
             return 1.600 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxTask" then
             if item["tc-15"] then
-                return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < item["tc-15"]*3600)
+                return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) > item["tc-15"]*3600)
                 return 1.300 + item["random"]/1000
             end
             return 2.000

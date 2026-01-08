@@ -417,8 +417,8 @@ class BankDerivedData
         (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n) }.max
     end
 
-    # BankDerivedData::recoveredAverageHoursPerDayCached(uuid)
-    def self.recoveredAverageHoursPerDayCached(uuid)
+    # BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(uuid)
+    def self.recoveredAverageHoursPerDayShortLivedCache(uuid)
         data = $BankDerivedDataMemory[uuid]
         if data then
             if (Time.new.to_f - data["unixtime"]) < 2 then
