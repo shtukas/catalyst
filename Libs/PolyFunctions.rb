@@ -55,9 +55,6 @@ class PolyFunctions
         if item["mikuType"] == "NxToday" then
             return NxTodays::toString(item)
         end
-        if item["mikuType"] == "NxTimeCommitment" then
-            return NxTimeCommitments::toString(item)
-        end
         if item["mikuType"] == "NxProject" then
             return NxProjects::toString(item)
         end

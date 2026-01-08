@@ -5,3 +5,5 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
+
+    - tc-15        : hours per day # time commitment

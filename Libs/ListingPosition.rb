@@ -25,8 +25,8 @@ class ListingPosition
         ([0.500] + positions).min
     end
 
-    # ListingPosition::decideItemListingPosition(item)
-    def self.decideItemListingPosition(item)
+    # ListingPosition::decideItemListingPositionOrNull(item)
+    def self.decideItemListingPositionOrNull(item)
         if item["nx42"] then
             return item["nx42"]
         end
@@ -44,9 +44,9 @@ class ListingPosition
         # NxBackups     : 0.900
         # Wave          : 1.000 (parked at 3.500 after 2 hours)
         # NxOndate      : 1.100
-        # NxTimeCommitment : 1.150
+        # NxTasks with tc-15
+        #               : 1.300
         # Today         : 1.200
-        # NxProject     : 1.300
         # BufferIn      : 1.500 (parked at 4.000 after 1 hour)
         # NxTask        : 2.000
 
@@ -65,10 +65,6 @@ class ListingPosition
 
         if item["mikuType"] == "NxOndate" then
             return 1.100 + item["random"]/1000
-        end
-
-        if item["mikuType"] == "NxTimeCommitment" then
-            return 1.150 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxToday" then
@@ -96,6 +92,12 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxTask" then
+
+            if item["tc-15"] then
+                return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < item["tc-15"]*3600)
+                return 1.300 + item["random"]/1000
+            end
+
             return 2.000
         end
 

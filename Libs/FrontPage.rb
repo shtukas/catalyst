@@ -50,7 +50,6 @@ class FrontPage
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         [
-            NxTimeCommitments::listingItems(),
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
@@ -61,7 +60,13 @@ class FrontPage
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
-            .sort_by{|item| ListingPosition::decideItemListingPosition(item) }
+            .map{|item| {
+                "item" => item,
+                "position" => ListingPosition::decideItemListingPositionOrNull(item)
+            }}
+            .select{|packet| packet["position"] }
+            .sort_by{|packet| packet["position"] }
+            .map{|packet| packet["item"] }
     end
 
     # FrontPage::displayListing(initialCodeTrace)

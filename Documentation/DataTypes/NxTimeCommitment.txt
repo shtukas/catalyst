@@ -1,8 +1,0 @@
-
-NxTimeCommitment:
-    - uuid         : String
-    - mikuType     : "NxTimeCommitment"
-    - unixtime     :
-    - datetime     :
-    - description  : String
-    - tx31         : Float # in hours

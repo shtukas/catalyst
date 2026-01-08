@@ -18,8 +18,8 @@ class CommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                if item["mikuType"] == "NxTimeCommitment" then
-                    puts "Nope! We don't push NxTimeCommitments"
+                if item["tc-15"] then
+                    puts "Nope! We don't push tasks with time commitments"
                     LucilleCore::pressEnterToContinue()
                     return
                 end
@@ -112,11 +112,12 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             if ["NxToday"].include?(item["mikuType"]) then
-                puts "transmuting '#{PolyFunctions::toString(item).green}' to NxTimeCommitment"
-                Transmute::transmuteTo(item, "NxTimeCommitment")
+                hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
+                Blades::setAttribute(item["uuid"], "tc-15", hours)
                 return
             end
-            puts "I do not know how to transmute a #{item["mikuType"]} to NxTimeCommitment"
+            puts "We do not add tc-15 a #{item["mikuType"]}"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -411,8 +412,8 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
 
-            if item["mikuType"] == "NxTimeCommitment" then
-                puts "Nope! It's a NxTimeCommitment"
+            if item["tc-15"] then
+                puts "Nope! We don't push tasks with time commitments"
                 LucilleCore::pressEnterToContinue()
                 return
             end
