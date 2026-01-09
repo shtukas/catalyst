@@ -122,7 +122,7 @@ class CommandsAndInterpreters
                 return
             end
             if item["mikuType"] == "Environment" then
-                hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
+                hours = LucilleCore::askQuestionAnswerAsString("commitment per week in hours: ").to_f
                 Blades::setAttribute(item["uuid"], "tc-16", hours)
                 return
             end

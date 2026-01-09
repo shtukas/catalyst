@@ -1,4 +1,0 @@
-NxDeleted:
-    - uuid     : String
-    - mikyType : "NxDeleted"
-    - unixtime : unixtime of deletion (for if we want to garbage collect later)

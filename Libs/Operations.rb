@@ -47,21 +47,12 @@ class Operations
     # Operations::globalMaintenance()
     def self.globalMaintenance()
         Bank::maintenance()
-
         Blades::mikuType("NxTask").each{|item|
             if item["parenting-13"] then
                 if (item = Blades::itemOrNull(item["parenting-13"]["parentuuid"])).nil? or (item["mikuType"] == "NxDeleted") then
                     puts "releasing practical orphan item: #{item["description"]}".yellow
                     Blades::setAttribute(uuid, "parenting-13", nil)
                 end
-            end
-        }
-
-        Blades::mikuType("NxDeleted").each{|item|
-            if (Time.new.to_i - item["unixtime"]) > 30*86400 then
-                # been logically deleted for more than 30 days
-                puts "destroying blade: #{item["description"]} 🗡️"
-                Blades::destroyBlade(item["uuid"])
             end
         }
     end
@@ -129,7 +120,7 @@ class Operations
 
     # Operations::morning()
     def self.morning()
-        if Blades::mikuType("NxToday").empty? and Blades::mikuType("Environment").size < 5 then
+        if Blades::mikuType("NxToday").empty? then
             Orphans::orphans().take(10).each{|item|
                 Blades::setAttribute(item["uuid"], "mikuType", "NxToday")
             }

@@ -284,8 +284,10 @@ class Blades
 
     # Blades::deleteItem(uuid)
     def self.deleteItem(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "mikuType", 'NxDeleted')
+        #Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        #Blades::setAttribute(uuid, "mikuType", 'NxDeleted')
+
+        Blades::destroyBlade(uuid)
 
         # Delete from XCache
         items = XCache::getOrNull("#{BladesConfig::cache_prefix()}:items-4af9-a3c6-d5340b202831:#{Blades::today()}")
