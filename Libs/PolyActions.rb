@@ -13,6 +13,11 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
+        if item["uuid"] == "6d4e97fa-d1ed-4db8-aa68-be403c659f9e" then
+            Operations::morning()
+            return
+        end
+
         b1 = Parenting::determineAndUpdateChildrenSetSize(item) > 0
         b2 = !item["payload-37"].nil?
 

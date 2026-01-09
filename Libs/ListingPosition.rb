@@ -39,7 +39,7 @@ class ListingPosition
         # priorities    : (negatives)
         # morning       : 0.200
         # Interruptions : 0.300
-        # NxOndate & Today (monday selection)
+        # NxOndate & Today (morning selection)
         #               : 0.800
         # NxBackups     : 0.900
         # Wave          : 1.000 (disappearing after 2 hours)

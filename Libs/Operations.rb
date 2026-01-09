@@ -125,12 +125,11 @@ class Operations
                 Blades::setAttribute(item["uuid"], "mikuType", "NxToday")
             }
         end
-
-        puts "Decide the NxToday and NxOndates to do before the Waves"
+        puts "Decide the NxToday to do before anything else"
         items = Blades::mikuType("NxToday") + NxOndates::listingItems()
         selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
         selected.each{|item|
-            Blades::setAttribute(item["uuid"], "nx42", 0.8)
+            Blades::setAttribute(item["uuid"], "nx42", 0.8 + rand.to_f/1000)
         }
         item = Blades::itemOrNull("6d4e97fa-d1ed-4db8-aa68-be403c659f9e")
         if item then

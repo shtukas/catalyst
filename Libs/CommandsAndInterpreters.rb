@@ -258,6 +258,28 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("today *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] == "Wave" then
+                uuid = SecureRandom.uuid
+                Blades::init(uuid)
+                Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+                Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+                Blades::setAttribute(uuid, "description", "wavelet: #{item["description"]}")
+                Blades::setAttribute(uuid, "payload-37", item["payload-37"])
+                Blades::setAttribute(uuid, "mikuType", "NxToday")
+                wavelet = Blades::itemOrNull(uuid)
+                puts JSON.pretty_generate(wavelet)
+                Waves::performDone(item)
+                return
+            end
+            puts "I do not know how to today * a #{item["mikuType"]}"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
                 Blades::mikuType("NxToday")
