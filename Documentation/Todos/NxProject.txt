@@ -1,9 +1,8 @@
 
-NxTask:
+NxProject:
     - uuid         : String
-    - mikuType     : "NxTask"
+    - mikuType     : "NxProject"
     - unixtime     :
     - datetime     :
     - description  : String
-
     - tc-15        : hours per day # time commitment

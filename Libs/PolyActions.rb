@@ -86,6 +86,20 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxProject" then
+            puts "#{PolyFunctions::toString(item).green}"
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
+            if option == "dismiss" then
+                NxBalls::stop(item)
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+            if option == "destroy" then
+                NxBalls::stop(item)
+                PolyActions::destroy(item)
+            end
+            return
+        end
+
         if item["mikuType"] == "NxToday" then
             puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
@@ -197,6 +211,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxToday" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Blades::deleteItem(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::deleteItem(item["uuid"])
             end

@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move * | time commitment *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move * | time commitment * | transmute *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project | environment",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos | cores",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -18,12 +18,12 @@ class CommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                if item["tc-15"] then
-                    puts "Nope! We do not push tasks with time commitments"
+                if item["mikuType"] == "NxProject" then
+                    puts "Nope! We do not push NxProjects"
                     LucilleCore::pressEnterToContinue()
                     return
                 end
-                if item["tc-16"] then
+                if item["mikuType"] == "Environment" then
                     puts "Nope! We do not push Environments"
                     LucilleCore::pressEnterToContinue()
                     return
@@ -85,6 +85,14 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("transmute *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmute::transmute(item)
+            return
+        end
+
         if Interpreting::match("move *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -112,13 +120,19 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("hours *", input) then
+        if Interpreting::match("time commitment *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if item["mikuType"] == "NxTask" then
+                hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
+                Blades::setAttribute(item["uuid"], "tc-15", hours)
+                return
+            end
             if item["mikuType"] == "NxToday" then
                 hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
                 Blades::setAttribute(item["uuid"], "tc-15", hours)
+                Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
                 return
             end
             if item["mikuType"] == "Environment" then

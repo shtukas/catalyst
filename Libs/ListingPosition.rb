@@ -45,8 +45,7 @@ class ListingPosition
         # Wave          : 1.000 (disappearing after 2 hours)
         # NxOndate      : 1.100
         # Today         : 1.200
-        # NxTask with tc-15
-        #               : 1.300 disappearing after daily requirement)
+        # NxProject     : 1.300 (disappearing after daily requirement)
         # BufferIn      : 1.500 (disappearing after 1 hour)
         # Environment   : 1.600 (disappearing after daily requirement)
         # NxTask        : 2.000
@@ -88,8 +87,13 @@ class ListingPosition
             return 1.5 + item["random"]/1000
         end
 
+        if item["mikuType"] == "NxProject" then
+            return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) > 3600*item["tc-15"].to_f)
+            return 1.300 + item["random"]/1000
+        end
+
         if item["mikuType"] == "Environment" then
-            return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) > (item["tc-16"].to_f/7)*3600)
+            return nil if (Bank::getValueAtDate(item["uuid"], CommonUtils::today()) > 3600 * (item["tc-16"].to_f/7))
             return 1.600 + item["random"]/1000
         end
 

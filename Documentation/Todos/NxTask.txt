@@ -1,0 +1,7 @@
+
+NxTask:
+    - uuid         : String
+    - mikuType     : "NxTask"
+    - unixtime     :
+    - datetime     :
+    - description  : String
