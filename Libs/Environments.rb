@@ -24,7 +24,7 @@ class Environments
 
     # Environments::toString(item)
     def self.toString(item)
-        suffix = " (#{item["tc-15"]} hours week)".yellow
+        suffix = " (#{item["tc-16"]} hours week)".yellow
         "#{Environments::icon()} #{item["description"]}#{suffix}"
     end
 end
