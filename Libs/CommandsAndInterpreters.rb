@@ -116,7 +116,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("maintenance", input) then
-            Operations::globalMaintenance()
+            Operations::globalMaintenanceSync()
             return
         end
 

@@ -44,13 +44,18 @@ class Operations
         }
     end
 
-    # Operations::globalMaintenance()
-    def self.globalMaintenance()
+    # Operations::globalMaintenanceSync()
+    def self.globalMaintenanceSync()
+        puts "Running global maintenance sync, every half a day, on primary instance".yellow
+    end
+
+    # Operations::globalMaintenanceASync()
+    def self.globalMaintenanceASync()
         Bank::maintenance()
         Blades::mikuType("NxTask").each{|item|
             if item["parenting-13"] then
                 if (item = Blades::itemOrNull(item["parenting-13"]["parentuuid"])).nil? or (item["mikuType"] == "NxDeleted") then
-                    puts "releasing practical orphan item: #{item["description"]}".yellow
+                    puts "releasing orphan item: #{item["description"]}".yellow
                     Blades::setAttribute(uuid, "parenting-13", nil)
                 end
             end

@@ -26,4 +26,13 @@ class Config
         end
         JSON.parse(IO.read(filepath))["instanceId"]
     end
+
+    # Config::isPrimaryInstance()
+    def self.isPrimaryInstance()
+        filepath = "#{Config::pathToGalaxy()}/DataBank/Stargate-Config.json"
+        if !File.exist?(filepath) then
+            raise "I can't find the config file: #{filepath}"
+        end
+        JSON.parse(IO.read(filepath))["primaryInstance"]
+    end
 end

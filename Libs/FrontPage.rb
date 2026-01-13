@@ -77,10 +77,11 @@ class FrontPage
         sheight = CommonUtils::screenHeight()
         swidth = CommonUtils::screenWidth()
 
-        if XCacheExensions::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 40000) then
-            puts "Running global maintenance (every half a day)"
-            Operations::globalMaintenance()
-            XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
+        if Config::isPrimaryInstance() then
+            if XCacheExensions::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 3600*12) then
+                Operations::globalMaintenanceSync()
+                XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
+            end
         end
 
         t1 = Time.new.to_f
@@ -131,6 +132,15 @@ class FrontPage
     # FrontPage::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
+
+        Thread.new {
+            loop {
+                sleep 3600
+                Operations::globalMaintenanceASync()
+            }
+        }
+
+
         loop {
             FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)
