@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move * | time commitment * | transmute *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute *",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project | environment",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos | cores",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -90,6 +90,13 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmute::transmute(item)
+            return
+        end
+
+        if Interpreting::match("move", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Parenting::move(item)
             return
         end
 

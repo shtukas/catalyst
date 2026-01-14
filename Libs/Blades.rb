@@ -113,6 +113,7 @@ class Blades
 
     # Blades::uuidToFilepathOrNullUseTheForce(uuid)
     def self.uuidToFilepathOrNullUseTheForce(uuid)
+        puts "uuidToFilepathOrNullUseTheForce: #{uuid}".yellow
         Blades::filepaths_enumerator().each{|filepath|
             # To speed up further searches, we pick locations mapping as we go,
             # but only once per location
