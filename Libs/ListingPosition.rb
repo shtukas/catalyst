@@ -36,11 +36,12 @@ class ListingPosition
         # Interruptions : 0.300
         # Today         : 0.800
         # NxBackups     : 0.900
-        # Wave          : 1.000 (disappearing after 2 hours)
         # NxOndate      : 1.100
         # Today         : 1.200
-        # BufferIn      : 1.500 (disappearing after 1 hour)
-        # Cliques       : 1.600
+
+        # Wave          : 2.000 + time shifted base
+        # BufferIn      : 2.000 + time shifted base
+        # Cliques       : 2.000 + time shifted base
 
         bases = {
             "buffer-in" => {
@@ -80,18 +81,18 @@ class ListingPosition
 
         if item["mikuType"] == "Wave" then
             base = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["waves"]["account"]).to_f/bases["waves"]["rt-target"]
-            return base + item["random"]/1000
+            return 2 + base + item["random"]/1000
         end
 
         if item["mikuType"] == "BufferIn" then
             base = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["buffer-in"]["account"]).to_f/bases["buffer-in"]["rt-target"]
-            return base + item["random"]/1000
+            return 2 + base + item["random"]/1000
         end
 
         if item["mikuType"] == "NxClique" then
             base = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["waves"]["account"]).to_f/bases["waves"]["rt-target"]
             epsilon = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(item["uuid"])
-            return base + epsilon
+            return 2 + base + epsilon
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
