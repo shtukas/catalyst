@@ -13,41 +13,19 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        if item["uuid"] == "6d4e97fa-d1ed-4db8-aa68-be403c659f9e" then
-            Operations::morning()
+        if item["mikuType"] == "NxClique" then
+            Cliques::diveClique(item["uuid"])
             return
         end
-
-        b1 = Parenting::determineAndUpdateChildrenSetSize(item) > 0
-        b2 = !item["payload-37"].nil?
-
-        if b1 and b2 then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dive", "access payload"])
-            return if option.nil?
-            if option == "dive" then
-                Parenting::dive(item)
-                return
-            end
-            if option == "access payload" then
-                UxPayloads::access(item["uuid"], item["payload-37"])
-                return
-            end
-            raise "(ab59896d) how did this happen ?"
-        end
-
-        if b1 and !b2 then
-            Parenting::dive(item)
-            return
-        end
-
-        if !b1 and b2 then
-            UxPayloads::access(item["uuid"], item["payload-37"])
-            return
-        end
+        UxPayloads::access(item["uuid"], item["payload-37"])
     end
 
     # PolyActions::stop(item)
     def self.stop(item)
+        if item["mikuType"] == "NxClique" then
+            return
+        end
+
         NxBalls::stop(item)
         ListingPosition::delist(item)
     end
@@ -56,6 +34,11 @@ class PolyActions
     def self.done(item)
 
         PolyActions::stop(item)
+
+        if item["mikuType"] == "NxClique" then
+            Cliques::diveClique(item["uuid"])
+            return
+        end
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
@@ -83,20 +66,6 @@ class PolyActions
             next_celebration = Anniversary::computeNextCelebrationDate(item["startdate"], item["repeatType"])
             Blades::setAttribute(item["uuid"], "next_celebration", next_celebration)
             DoNotShowUntil::doNotShowUntil(item, Date.parse(next_celebration).to_time.to_i)
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            puts "#{PolyFunctions::toString(item).green}"
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
-            if option == "dismiss" then
-                NxBalls::stop(item)
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                NxBalls::stop(item)
-                PolyActions::destroy(item)
-            end
             return
         end
 
@@ -142,12 +111,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Environment" then
-            NxBalls::stop(item)
-            DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            return
-        end
-
         if item["mikuType"] == "NxBackup" then
             puts "#{PolyFunctions::toString(item).green}"
             DoNotShowUntil::doNotShowUntil(item, Time.new.to_i + 86400 * item["period"])
@@ -187,14 +150,12 @@ class PolyActions
     # PolyActions::destroy(item)
     def self.destroy(item)
 
-        NxBalls::stop(item)
-
-        children_size = Parenting::determineAndUpdateChildrenSetSize(item)
-        if children_size > 0 then
-            puts "Cannot destroy an item with children"
-            LucilleCore::pressEnterToContinue()
+        if item["mikuType"] == "NxClique" then
+            Cliques::diveClique(item["uuid"])
             return
         end
+
+        NxBalls::stop(item)
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
@@ -203,21 +164,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Environment" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Blades::deleteItem(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxToday" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::deleteItem(item["uuid"])
             end
@@ -271,6 +218,11 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
+        if item["mikuType"] == "NxClique" then
+            puts "I do not know how to update the description of a clique"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""

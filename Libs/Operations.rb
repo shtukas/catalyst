@@ -52,14 +52,6 @@ class Operations
     # Operations::globalMaintenanceASync()
     def self.globalMaintenanceASync()
         Bank::maintenance()
-        Blades::mikuType("NxTask").each{|item|
-            if item["parenting-13"] then
-                if (item = Blades::itemOrNull(item["parenting-13"]["parentuuid"])).nil? or (item["mikuType"] == "NxDeleted") then
-                    puts "releasing orphan item: #{item["description"]}".yellow
-                    Blades::setAttribute(uuid, "parenting-13", nil)
-                end
-            end
-        }
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
@@ -120,25 +112,6 @@ class Operations
         end
         if option == "destroy" then
             Blades::deleteItem(item["uuid"])
-        end
-    end
-
-    # Operations::morning()
-    def self.morning()
-        if Blades::mikuType("NxToday").empty? then
-            Orphans::orphans().take(10).each{|item|
-                Blades::setAttribute(item["uuid"], "mikuType", "NxToday")
-            }
-        end
-        puts "Decide the NxToday to do before anything else"
-        items = Blades::mikuType("NxToday") + NxOndates::listingItems()
-        selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
-        selected.each{|item|
-            Blades::setAttribute(item["uuid"], "nx42", 0.8 + rand.to_f/1000)
-        }
-        item = Blades::itemOrNull("6d4e97fa-d1ed-4db8-aa68-be403c659f9e")
-        if item then
-            Waves::performDone(item)
         end
     end
 end

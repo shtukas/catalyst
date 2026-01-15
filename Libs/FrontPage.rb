@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{Parenting::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -54,9 +54,8 @@ class FrontPage
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
             Waves::listingItems(),
-            Blades::mikuType("Environment"),
             BufferIn::listingItems(),
-            Orphans::orphans(),
+            Cliques::itemsForListing(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -131,6 +130,7 @@ class FrontPage
 
     # FrontPage::main()
     def self.main()
+
         initialCodeTrace = CommonUtils::catalystTraceCode()
 
         Thread.new {
@@ -139,7 +139,6 @@ class FrontPage
                 Operations::globalMaintenanceASync()
             }
         }
-
 
         loop {
             FrontPage::preliminaries(initialCodeTrace)

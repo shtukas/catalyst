@@ -1,6 +1,12 @@
 
 class Fsck
 
+    # Fsck::fsckNx38OrError(nx38)
+    def self.fsckNx38OrError(nx38)
+        return if nx38["position"]
+        raise "error with Nx38: #{nx38}"
+    end
+
     # Fsck::fsckItemOrError(item, verbose)
     def self.fsckItemOrError(item, verbose)
         if verbose then
@@ -13,10 +19,6 @@ class Fsck
 
         if item["payload-37"] then
             UxPayloads::fsck(item["uuid"], item["payload-37"])
-            return
-        end
-
-        if item["mikuType"] == "Environment" then
             return
         end
 
@@ -41,13 +43,10 @@ class Fsck
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["parenting-13"] and item["parenting-13"]["parentuuid"].nil? then
-                raise "We have a malformed parenting-13 on #{item}"
+            if item["clique8"].nil? then
+                raise "We have a missing clique8 on #{item}"
             end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
+            item["clique8"].each{|nx38| Fsck::fsckNx38OrError(nx38) }
             return
         end
 

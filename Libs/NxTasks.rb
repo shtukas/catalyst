@@ -29,7 +29,6 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        ps = item["parenting-13"] ? "(#{"%7.3f" % item["parenting-13"]["position"]}) ".yellow : ""
-        "#{NxTasks::icon()} #{ps}#{item["description"]}"
+        "#{NxTasks::icon()} #{item["description"]}"
     end
 end

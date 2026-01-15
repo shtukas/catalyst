@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project | environment",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays | todos | cores",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | dive (*) | time commitment * | transmute *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort",
         ].join("\n")
     end
 
@@ -18,16 +18,6 @@ class CommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                if item["mikuType"] == "NxProject" then
-                    puts "Nope! We do not push NxProjects"
-                    LucilleCore::pressEnterToContinue()
-                    return
-                end
-                if item["mikuType"] == "Environment" then
-                    puts "Nope! We do not push Environments"
-                    LucilleCore::pressEnterToContinue()
-                    return
-                end
                 PolyActions::stop(item)
                 ListingPosition::delist(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
@@ -96,7 +86,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            Parenting::move(item)
+
             return
         end
 
@@ -104,7 +94,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Parenting::move(item)
+
             return
         end
 
@@ -114,11 +104,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
             Blades::setAttribute(item["uuid"], "nx42", nil)
-            return
-        end
-
-        if Interpreting::match("morning", input) then
-            Operations::morning()
             return
         end
 
@@ -140,11 +125,6 @@ class CommandsAndInterpreters
                 hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
                 Blades::setAttribute(item["uuid"], "tc-15", hours)
                 Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
-                return
-            end
-            if item["mikuType"] == "Environment" then
-                hours = LucilleCore::askQuestionAnswerAsString("commitment per week in hours: ").to_f
-                Blades::setAttribute(item["uuid"], "tc-16", hours)
                 return
             end
             puts "I do not know how to add a time commitment to a #{item["mikuType"]}"
@@ -195,25 +175,16 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("backups", input) then
+        if Interpreting::match("cliques", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxBackup")
+                Cliques::nxCliques()
             })
             return
         end
 
-        if Interpreting::match("environment", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Environments::interactivelyIssueNewOrNull()
-            return
-        end
-
-        if Interpreting::match("cores", input) then
-            item = store.getDefault()
-            return if item.nil?
+        if Interpreting::match("backups", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("Environment")
+                Blades::mikuType("NxBackup")
             })
             return
         end
@@ -236,7 +207,7 @@ class CommandsAndInterpreters
         if Interpreting::match("dive", input) then
             item = store.getDefault()
             return if item.nil?
-            Parenting::dive(item)
+
             return
         end
 
@@ -244,7 +215,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Parenting::dive(item)
+
             return
         end
 
@@ -305,11 +276,6 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Blades::mikuType("NxToday")
             })
-            return
-        end
-
-        if Interpreting::match("todos", input) then
-            Orphans::dive()
             return
         end
 
@@ -465,14 +431,8 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
 
-            if item["tc-15"] then
-                puts "Nope! We don't push tasks with time commitments"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-
-            if item["tc-16"] then
-                puts "Nope! We do not push Environments"
+            if item["mikuType"] == "NxClique" then
+                puts "Nope! We don't push NxCliques"
                 LucilleCore::pressEnterToContinue()
                 return
             end

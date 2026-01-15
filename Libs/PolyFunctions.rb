@@ -13,15 +13,23 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["parenting-13"] then
-            parent = Blades::itemOrNull(item["parenting-13"]["parentuuid"])
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent, depth - 1)
+        if item["mikuType"] == "NxTask" then
+            item["clique8"].each{|nx38|
+                accounts << {
+                    "description" => nx38["uuid"],
+                    "number"      => nx38["name"]
+                }
+            }
+            accounts << {
+                "description" => "cliques-general-abe8-29c00fe4f10c",
+                "number"      => "cliques-general-abe8-29c00fe4f10c"
+            }
         end
 
         if item["mikuType"] == "Wave" then
             accounts << {
-                "description" => "wave general",
-                "number"      => "wave-general-fd3c4ac4-1300"
+                "description" => "waves general",
+                "number"      => "waves-general-fd3c4ac4-1300"
             }
         end
 
@@ -60,14 +68,11 @@ class PolyFunctions
         if item["mikuType"] == "NxToday" then
             return NxTodays::toString(item)
         end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
-        end
-        if item["mikuType"] == "Environment" then
-            return Environments::toString(item)
-        end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
+        end
+        if item["mikuType"] == "NxClique" then
+            return Cliques::toString(item["uuid"])
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

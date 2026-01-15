@@ -1,0 +1,6 @@
+
+NxClique:
+    - uuid         : String
+    - mikuType     : "NxClique"
+    - description  : String
+    - cliqueuuid   : String
