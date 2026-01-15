@@ -108,12 +108,24 @@ class Parenting
 
     # Parenting::move(item)
     def self.move(item)
+
+        allowedMikuTypes = ["NxOndate"]
+
+        if !allowedMikuTypes.include?(item["mikuType"]) then
+            puts "I do not know how to move a #{item["mikuType"]}"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         # We select a parent or null
         # We determine a position
         # We mark
         parent = Parenting::selectParentForMove(nil)
         return if parent.nil?
         position = Parenting::interactivelyDeterminePositionInParent(parent)
+
+        item = Transmute::transmuteTo(item, "NxTask")
+
         Blades::setAttribute(item["uuid"], "parenting-13", {
             "parentuuid" => parent["uuid"],
             "position"   => position
