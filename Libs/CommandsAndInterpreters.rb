@@ -5,7 +5,8 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | dive (*) | time commitment * | transmute *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute *",
+            "NxClique      : dive (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -86,7 +87,8 @@ class CommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-
+            puts "We do not have this implemented, but it could be that you want to move a task from a clique to another"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -94,7 +96,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-
+            puts "We do not have this implemented, but it could be that you want to move a task from a clique to another"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -207,7 +210,8 @@ class CommandsAndInterpreters
         if Interpreting::match("dive", input) then
             item = store.getDefault()
             return if item.nil?
-
+            return if item["mikuType"] != "NxClique"
+            Cliques::diveClique(item["uuid"])
             return
         end
 
@@ -215,7 +219,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-
+            return if item["mikuType"] != "NxClique"
+            Cliques::diveClique(item["uuid"])
             return
         end
 
