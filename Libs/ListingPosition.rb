@@ -46,15 +46,15 @@ class ListingPosition
         bases = {
             "buffer-in" => {
                 "account" => BufferIn::uuid(),
-                "rt-target" => 1
+                "rtTarget" => 1
             },
             "cliques" => {
                 "account" => "cliques-general-abe8-29c00fe4f10c",
-                "rt-target" => 4
+                "rtTarget" => 5 # we select 3 each morning that are expected to do 1.5 + 1 + 1
             },
             "waves" => {
                 "account" => "waves-general-fd3c4ac4-1300",
-                "rt-target" => 2
+                "rtTarget" => 2
             }
         }
 
@@ -80,19 +80,26 @@ class ListingPosition
         end
 
         if item["mikuType"] == "Wave" then
-            base = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["waves"]["account"]).to_f/bases["waves"]["rt-target"]
-            return 2 + base + item["random"]/1000
+            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["waves"]["account"]).to_f/bases["waves"]["rtTarget"]
+            return nil if ratio >= 1
+            return 2 + ratio + item["random"]/1000
         end
 
         if item["mikuType"] == "BufferIn" then
-            base = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["buffer-in"]["account"]).to_f/bases["buffer-in"]["rt-target"]
-            return 2 + base + item["random"]/1000
+            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["buffer-in"]["account"]).to_f/bases["buffer-in"]["rtTarget"]
+            return nil if ratio >= 1
+            return 2 + ratio + item["random"]/1000
         end
 
         if item["mikuType"] == "NxClique" then
-            base = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["waves"]["account"]).to_f/bases["waves"]["rt-target"]
-            epsilon = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(item["uuid"])
-            return 2 + base + epsilon
+            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["cliques"]["account"]).to_f/bases["cliques"]["rtTarget"]
+            return nil if ratio >= 1
+
+            cliqueRTTarget = Cliques::rtTargetForCliqueTodayOrNull(item["uuid"])
+            return nil if cliqueRTTarget.nil?
+            epsilon = (BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(item["uuid"]).to_f/1000)/cliqueRTTarget
+
+            return 2 + ratio + epsilon
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"

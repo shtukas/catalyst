@@ -114,4 +114,29 @@ class Operations
             Blades::deleteItem(item["uuid"])
         end
     end
+
+    # Operations::morning()
+    def self.morning()
+        c1, c2, c3 = Cliques::select3Cliques()
+        
+        filepath1 = "#{Config::pathToCatalystDataRepository()}/priority-cliques/#{c1["uuid"]}.json"
+        File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(
+            {
+                "date" => CommonUtils::today(),
+                "rt" => 1.5
+            }
+        ))}
+
+        [c2, c3].each{|c|
+            filepath1 = "#{Config::pathToCatalystDataRepository()}/priority-cliques/#{c["uuid"]}.json"
+            File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(
+                {
+                    "date" => CommonUtils::today(),
+                    "rt" => 1
+                }
+            ))}
+        }
+
+    end
 end
+

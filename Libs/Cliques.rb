@@ -82,7 +82,7 @@ class Cliques
     # Cliques::toString(cliqueuuid)
     def self.toString(cliqueuuid)
         name1 = Cliques::cliqueuuidToName(cliqueuuid)
-        "⛵️ #{name1}"
+        "⛵️ #{name1} (#{Cliques::cliqueSizeCached(cliqueuuid)} items)"
     end
 
     # Cliques::nxCliques()
@@ -110,9 +110,14 @@ class Cliques
         }
     end
 
+    # Cliques::selectNx37OrNull()
+    def self.selectNx37OrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", Cliques::nx37s(), lambda {|nx37| nx37["name"] })
+    end
+
     # Cliques::architectNx38()
     def self.architectNx38()
-        nx37 = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", Cliques::nx37s(), lambda {|nx37| nx37["name"] })
+        nx37 = Cliques::selectNx37OrNull()
         if nx37 then
             position = Cliques::interactivelyDeterminePositionInClique(nx37["uuid"])
             nx38 = nx37.clone()
@@ -123,6 +128,30 @@ class Cliques
         nx38 = nx37.clone()
         nx38["position"] = 0
         nx38
+    end
+
+    # Cliques::cliqueSizeCached(cliqueuuid)
+    def self.cliqueSizeCached(cliqueuuid)
+        Cliques::cliqueToItemsInOrder(cliqueuuid).size
+    end
+
+    # Cliques::rtTargetForCliqueTodayOrNull(cliqueuuid)
+    def self.rtTargetForCliqueTodayOrNull(cliqueuuid)
+        filepath = "#{Config::pathToCatalystDataRepository()}/priority-cliques/#{cliqueuuid}.json"
+        return nil if !File.exist?(filepath)
+        data = JSON.parse(IO.read(filepath))
+        return nil if data["date"] != CommonUtils::today()
+        data["rt"]
+    end
+
+    # Cliques::select3Cliques()
+    def self.select3Cliques()
+        puts "select 3 cliques"
+        selected, _ = LucilleCore::selectZeroOrMore("clique", [], Cliques::nx37s(), lambda {|nx37| nx37["name"] })
+        if selected.size == 3 then
+            return selected
+        end
+        Cliques::select3Cliques()
     end
 
     # ---------------------------------------

@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning",
         ].join("\n")
     end
 
@@ -107,6 +107,11 @@ class CommandsAndInterpreters
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
             Blades::setAttribute(item["uuid"], "nx42", nil)
+            return
+        end
+
+        if Interpreting::match("morning", input) then
+            Operations::morning()
             return
         end
 
