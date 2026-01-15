@@ -7,6 +7,9 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
+        if item["mikuType"] == "NxClique" then
+            return
+        end
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
@@ -123,6 +126,11 @@ class PolyActions
 
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
+        if item["mikuType"] == "NxClique" then
+            PolyActions::access(item)
+            return
+        end
+
         if NxBalls::itemIsPaused(item) then
             NxBalls::pursue(item)
             return
@@ -138,6 +146,11 @@ class PolyActions
 
     # PolyActions::tripleDots(item)
     def self.tripleDots(item)
+
+        if item["mikuType"] == "NxClique" then
+            PolyActions::access(item)
+            return
+        end
 
         return if NxBalls::itemIsActive(item)
 

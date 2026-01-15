@@ -3,6 +3,9 @@
 
 class Cliques
 
+    # ---------------------------------------
+    # Data
+
     # Cliques::itemToNx38s(item)
     def self.itemToNx38s(item)
         return [] if item["clique8"].nil?
@@ -29,7 +32,12 @@ class Cliques
 
     # Cliques::firstPositionInClique(cliqueuuid)
     def self.firstPositionInClique(cliqueuuid)
-        ([1] + Cliques::cliqueToItemsInOrder(cliqueuuid).map{|item| Cliques::itemToNx38OrNull(cliqueuuid)["position"] }).min
+        ([1] + Cliques::cliqueToItemsInOrder(cliqueuuid).map{|item| Cliques::itemToNx38OrNull(item, cliqueuuid)["position"] }).min
+    end
+
+    # Cliques::lastPositionInClique(cliqueuuid)
+    def self.lastPositionInClique(cliqueuuid)
+        ([1] + Cliques::cliqueToItemsInOrder(cliqueuuid).map{|item| Cliques::itemToNx38OrNull(item, cliqueuuid)["position"] }).max
     end
 
     # Cliques::nx37s()
@@ -56,14 +64,6 @@ class Cliques
         raise "(error: 49f22a07) could not determine name for clique: #{cliqueuuid}"
     end
 
-    # Cliques::setMembership(item, nx38)
-    def self.setMembership(item, nx38)
-        nx38s = Cliques::itemToNx38s(item)
-        nx38s = nx38s.select{|x| x["uuid"] != nx38["uuid"] }
-        nx38s = nx38s + [nx38]
-        Blades::setAttribute(item["uuid"], "clique8", nx38s)
-    end
-
     # Cliques::interactivelyDeterminePositionInClique(cliqueuuid)
     def self.interactivelyDeterminePositionInClique(cliqueuuid)
         elements = Cliques::cliqueToItemsInOrder(cliqueuuid)
@@ -72,13 +72,68 @@ class Cliques
         elements.each{|item|
             puts PolyFunctions::toString(item)
         }
-        LucilleCore::askQuestionAnswerAsString("position (empty for next): ").to_f
+        answer = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        if answer == "" then
+            return Cliques::lastPositionInClique(cliqueuuid) + 1
+        end
+        answer.to_f
     end
 
     # Cliques::toString(cliqueuuid)
     def self.toString(cliqueuuid)
         name1 = Cliques::cliqueuuidToName(cliqueuuid)
         "⛵️ #{name1}"
+    end
+
+    # Cliques::nxCliques()
+    def self.nxCliques()
+        Cliques::nx37s().map{|nx37|
+            {
+                "uuid"        => nx37["uuid"],
+                "mikuType"    => "NxClique",
+                "description" => nx37["name"]
+            }
+        }
+    end
+
+    # Cliques::itemsForListing()
+    def self.itemsForListing()
+        Cliques::nxCliques()
+    end
+
+    # Cliques::interactivelyMakeNewNx37()
+    def self.interactivelyMakeNewNx37()
+        name1 = LucilleCore::askQuestionAnswerAsString("name: ")
+        {
+            "uuid" => SecureRandom.hex,
+            "name" => name1
+        }
+    end
+
+    # Cliques::architectNx38()
+    def self.architectNx38()
+        nx37 = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", Cliques::nx37s(), lambda {|nx37| nx37["name"] })
+        if nx37 then
+            position = Cliques::interactivelyDeterminePositionInClique(nx37["uuid"])
+            nx38 = nx37.clone()
+            nx38["position"] = position
+            return nx38
+        end
+        nx37 = Cliques::interactivelyMakeNewNx37()
+        nx38 = nx37.clone()
+        nx38["position"] = 0
+        nx38
+    end
+
+    # ---------------------------------------
+    # Ops
+
+    # Cliques::setMembership(item, nx38)
+    def self.setMembership(item, nx38)
+        nx38s = Cliques::itemToNx38s(item)
+        nx38s = nx38s.select{|x| x["uuid"] != nx38["uuid"] }
+        nx38s = nx38s + [nx38]
+        Blades::setAttribute(item["uuid"], "clique8", nx38s)
     end
 
     # Cliques::diveClique(cliqueuuid)
@@ -98,13 +153,13 @@ class Cliques
             return if input == ""
 
             if input == "new" then
-                item = NxTasks::interactivelyIssueNewOrNull()
                 position = Cliques::interactivelyDeterminePositionInClique(cliqueuuid)
-                Cliques::setMembership(item, {
+                nx38 = {
                     "uuid"     => cliqueuuid,
                     "name"     => Cliques::cliqueuuidToName(cliqueuuid),
                     "position" => position
-                })
+                }
+                NxTasks::interactivelyIssueNewOrNull(nx38)
                 next
             end
 
@@ -126,19 +181,4 @@ class Cliques
         }
     end
 
-    # Cliques::nxCliques()
-    def self.nxCliques()
-        Cliques::nx37s().map{|nx37|
-            {
-                "uuid"        => nx37["uuid"],
-                "mikuType"    => "NxClique",
-                "description" => nx37["name"]
-            }
-        }
-    end
-
-    # Cliques::itemsForListing()
-    def self.itemsForListing()
-        Cliques::nxCliques()
-    end
 end
