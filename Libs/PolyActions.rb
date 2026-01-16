@@ -114,6 +114,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "BufferIn" then
+            return
+        end
+
         if item["mikuType"] == "NxBackup" then
             puts "#{PolyFunctions::toString(item).green}"
             DoNotShowUntil::doNotShowUntil(item, Time.new.to_i + 86400 * item["period"])

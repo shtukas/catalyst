@@ -90,13 +90,16 @@ class FrontPage
         displayeduuids = []
 
         FrontPage::itemsForListing()
-            .each{|item|
-                next if displayeduuids.include?(item["uuid"])
-                displayeduuids << item["uuid"]
-                store.register(item, FrontPage::canBeDefault(item))
-                line = FrontPage::toString2(store, item)
-                puts line
-                sheight = sheight - (line.size/swidth + 1)
+            .each{|item_|
+                Prefix::prefix(item_).each{|item|
+                    next if displayeduuids.include?(item["uuid"])
+                    displayeduuids << item["uuid"]
+                    store.register(item, FrontPage::canBeDefault(item))
+                    line = FrontPage::toString2(store, item)
+                    puts line
+                    sheight = sheight - (line.size/swidth + 1)
+                    break if sheight <= 3
+                }
                 break if sheight <= 3
             }
 
