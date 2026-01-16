@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | projects | todays",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning | numbers",
         ].join("\n")
     end
 
@@ -112,6 +112,39 @@ class CommandsAndInterpreters
 
         if Interpreting::match("morning", input) then
             Operations::morning()
+            return
+        end
+
+        if Interpreting::match("numbers", input) then
+            puts "domains:"
+            bases = ListingPosition::bases()
+            bases
+                .values
+                .map{|base|
+                    ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(base["account"]).to_f/base["rtTarget"]
+                    {
+                        "base" => base,
+                        "ratio" => ratio
+                    }
+                }
+                .sort_by{|packet| packet["ratio"] }
+                .each{|packet|
+                    puts "#{packet["base"]["name"]}: #{packet["ratio"]}"
+                }
+            puts ""
+            cliques = Cliques::nxCliques()
+            c1, c2 = cliques.partition{|clique| Cliques::clique_epsilon(clique["uuid"]) }
+            
+            c1.sort_by{|clique| Cliques::clique_epsilon(clique["uuid"]) }
+                .each{|clique|
+                    ratio = Cliques::clique_epsilon(clique["uuid"])
+                    puts "#{clique["description"]}: #{ratio}"
+                }
+            
+            c2.each{|clique|
+                puts "#{clique["description"]}"
+            }
+            LucilleCore::pressEnterToContinue()
             return
         end
 

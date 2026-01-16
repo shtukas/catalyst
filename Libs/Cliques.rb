@@ -154,6 +154,13 @@ class Cliques
         Cliques::select3Cliques()
     end
 
+    # Cliques::clique_epsilon(cliqueuuid)
+    def self.clique_epsilon(cliqueuuid)
+        cliqueRTTarget = Cliques::rtTargetForCliqueTodayOrNull(cliqueuuid)
+        return nil if cliqueRTTarget.nil?
+        BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(cliqueuuid).to_f/cliqueRTTarget
+    end
+
     # ---------------------------------------
     # Ops
 

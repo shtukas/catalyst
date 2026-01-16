@@ -25,6 +25,27 @@ class ListingPosition
         ([0.500] + positions).min
     end
 
+    # ListingPosition::bases()
+    def self.bases()
+        {
+            "buffer-in" => {
+                "name"     => "Buffer In",
+                "account"  => BufferIn::uuid(),
+                "rtTarget" => 1
+            },
+            "cliques" => {
+                "name"     => "Cliques",
+                "account"  => "cliques-general-abe8-29c00fe4f10c",
+                "rtTarget" => 5 # we select 3 each morning that are expected to do 1.5 + 1 + 1
+            },
+            "waves" => {
+                "name"     => "Waves",
+                "account"  => "waves-general-fd3c4ac4-1300",
+                "rtTarget" => 2
+            }
+        }
+    end
+
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
         if item["nx42"] then
@@ -43,20 +64,7 @@ class ListingPosition
         # BufferIn      : 2.000 + time shifted base
         # Cliques       : 2.000 + time shifted base
 
-        bases = {
-            "buffer-in" => {
-                "account" => BufferIn::uuid(),
-                "rtTarget" => 1
-            },
-            "cliques" => {
-                "account" => "cliques-general-abe8-29c00fe4f10c",
-                "rtTarget" => 5 # we select 3 each morning that are expected to do 1.5 + 1 + 1
-            },
-            "waves" => {
-                "account" => "waves-general-fd3c4ac4-1300",
-                "rtTarget" => 2
-            }
-        }
+        bases = ListingPosition::bases()
 
         if item["random"].nil? and (item["mikuType"] != "NxClique") then
             item["random"] = rand
@@ -94,12 +102,9 @@ class ListingPosition
         if item["mikuType"] == "NxClique" then
             ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["cliques"]["account"]).to_f/bases["cliques"]["rtTarget"]
             return nil if ratio >= 1
-
-            cliqueRTTarget = Cliques::rtTargetForCliqueTodayOrNull(item["uuid"])
-            return nil if cliqueRTTarget.nil?
-            epsilon = (BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(item["uuid"]).to_f/1000)/cliqueRTTarget
-
-            return 2 + ratio + epsilon
+            epsilon = Cliques::clique_epsilon(item["uuid"])
+            return nil if epsilon.nil?
+            return 2 + ratio + epsilon.to_f/1000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
