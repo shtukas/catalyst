@@ -115,28 +115,62 @@ class Operations
         end
     end
 
-    # Operations::morning()
-    def self.morning()
-        c1, c2, c3 = Cliques::select3Cliques()
-        
-        filepath1 = "#{Config::pathToCatalystDataRepository()}/priority-cliques/#{c1["uuid"]}.json"
-        File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(
-            {
-                "date" => CommonUtils::today(),
-                "rt" => 1.5
+    # Operations::xstream()
+    def self.xstream()
+        processItem = lambda {|item|
+            loop {
+                input = LucilleCore::askQuestionAnswerAsString("#{FrontPage::toString2(nil, item)}: start | access | run (start+access) | ... | stop | done | push : ")
+                if input == "start" then
+                    PolyActions::start(item)
+                    next
+                end
+                if input == "stop" then
+                    PolyActions::stop(item)
+                    break
+                end
+                if input == "done" then
+                    PolyActions::done(item)
+                    break
+                end
+                if input == "push" then
+                    Operations::interactivelyPush(item)
+                    break
+                end
+                if input == "access" then
+                    PolyActions::access(item)
+                    next
+                end
+                if input == "..." then
+                    puts "starting"
+                    PolyActions::start(item)
+                    puts "accessing"
+                    PolyActions::access(item)
+                    PolyActions::done(item)
+                    break
+                end
+                if input == "run" then
+                    puts "starting"
+                    PolyActions::start(item)
+                    puts "accessing"
+                    PolyActions::access(item)
+                    next
+                end
+                if input == "exit" then
+                    break
+                end
             }
-        ))}
-
-        [c2, c3].each{|c|
-            filepath1 = "#{Config::pathToCatalystDataRepository()}/priority-cliques/#{c["uuid"]}.json"
-            File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(
-                {
-                    "date" => CommonUtils::today(),
-                    "rt" => 1
-                }
-            ))}
         }
-
+        getNextItem = lambda {
+            FrontPage::itemsForListing().each{|i1|
+                Prefix::prefix(i1).each{|i2|
+                    next if BankDerivedData::recoveredAverageHoursPerDay(i2["uuid"]) > 1
+                    return i2
+                }
+            }
+        }
+        loop {
+            processItem.call(getNextItem.call())
+        }
     end
 end
 

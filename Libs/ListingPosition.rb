@@ -89,7 +89,6 @@ class ListingPosition
 
         if item["mikuType"] == "Wave" then
             ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["waves"]["account"]).to_f/bases["waves"]["rtTarget"]
-            return nil if ratio >= 1
             return 2 + ratio + item["random"]/1000
         end
 

@@ -82,7 +82,13 @@ class Cliques
     # Cliques::toString(cliqueuuid)
     def self.toString(cliqueuuid)
         name1 = Cliques::cliqueuuidToName(cliqueuuid)
-        "⛵️ #{name1} (#{Cliques::cliqueSizeCached(cliqueuuid)} items)"
+        "⛵️ #{name1} (#{Cliques::rtTargetForClique(cliqueuuid)} hours) (#{Cliques::cliqueSizeCached(cliqueuuid)} items)"
+    end
+
+    # Cliques::toStringWithDimension(cliqueuuid)
+    def self.toStringWithDimension(cliqueuuid)
+        name1 = Cliques::cliqueuuidToName(cliqueuuid)
+        "⛵️ #{name1.ljust(Cliques::dimension())} #{"%4.2f" % Cliques::rtTargetForClique(cliqueuuid)} hours #{Cliques::cliqueSizeCached(cliqueuuid).to_s.rjust(6)} items"
     end
 
     # Cliques::nxCliques()
@@ -135,30 +141,24 @@ class Cliques
         Cliques::cliqueToItemsInOrder(cliqueuuid).size
     end
 
-    # Cliques::rtTargetForCliqueTodayOrNull(cliqueuuid)
-    def self.rtTargetForCliqueTodayOrNull(cliqueuuid)
-        filepath = "#{Config::pathToCatalystDataRepository()}/priority-cliques/#{cliqueuuid}.json"
-        return nil if !File.exist?(filepath)
-        data = JSON.parse(IO.read(filepath))
-        return nil if data["date"] != CommonUtils::today()
-        data["rt"]
-    end
-
-    # Cliques::select3Cliques()
-    def self.select3Cliques()
-        puts "select 3 cliques"
-        selected, _ = LucilleCore::selectZeroOrMore("clique", [], Cliques::nx37s(), lambda {|nx37| nx37["name"] })
-        if selected.size == 3 then
-            return selected
+    # Cliques::rtTargetForClique(cliqueuuid)
+    def self.rtTargetForClique(cliqueuuid)
+        filepath = "#{Config::pathToCatalystDataRepository()}/cliques-targets/#{cliqueuuid}.txt"
+        if !File.exist?(filepath) then
+            return 1
         end
-        Cliques::select3Cliques()
+        IO.read(filepath).to_f
     end
 
     # Cliques::clique_epsilon(cliqueuuid)
     def self.clique_epsilon(cliqueuuid)
-        cliqueRTTarget = Cliques::rtTargetForCliqueTodayOrNull(cliqueuuid)
-        return nil if cliqueRTTarget.nil?
-        BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(cliqueuuid).to_f/cliqueRTTarget
+        target = Cliques::rtTargetForClique(cliqueuuid)
+        BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(cliqueuuid).to_f/target
+    end
+
+    # Cliques::dimension()
+    def self.dimension()
+        15
     end
 
     # ---------------------------------------
@@ -178,12 +178,13 @@ class Cliques
             items = Cliques::cliqueToItemsInOrder(cliqueuuid)
             store = ItemStore.new()
             puts ""
+            puts "#{Cliques::cliqueuuidToName(cliqueuuid)}".yellow
             items
                 .each{|item|
                     store.register(item, FrontPage::canBeDefault(item))
                     puts FrontPage::toString2(store, item)
                 }
-            puts "new | sort"
+            puts "new | sort | hours"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -213,6 +214,34 @@ class Cliques
                 next
             end
 
+            if input == "hours" then
+                hours = LucilleCore::askQuestionAnswerAsString("hours : ")
+                filepath = "#{Config::pathToCatalystDataRepository()}/cliques-targets/#{cliqueuuid}.txt"
+                File.open(filepath, "w"){|f| f.write(hours) }
+                next
+            end
+
+            CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # Cliques::dive()
+    def self.dive()
+        loop {
+            nxcliques = Cliques::nxCliques().sort_by{|clique| Cliques::clique_epsilon(clique["uuid"]) }
+            store = ItemStore.new()
+            puts ""
+            nxcliques
+                .each{|nxclique|
+                    store.register(nxclique, false)
+                    puts "(#{store.prefixString()}) #{Cliques::toStringWithDimension(nxclique["uuid"])}"
+                }
+            total = nxcliques.map{|nxclique| Cliques::rtTargetForClique(nxclique["uuid"]) }.sum
+            puts "                 total: #{"%4.2f" % total} hours"
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
