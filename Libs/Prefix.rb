@@ -13,7 +13,7 @@ class Prefix
                 if selected.size >= 3 then
                     selected
                 else
-                    if DoNotShowUntil::isVisible(item) then
+                    if DoNotShowUntil::isVisible(item) and FrontPage::isAccessible(item) then
                         selected + [item]
                     else
                         selected

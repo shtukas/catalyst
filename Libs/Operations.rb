@@ -176,18 +176,18 @@ class Operations
                     return ["exit"]
                 end
                 if input == "clique" then
-                    if item["mikuType"] == "NxTask" then
-                        nx38s = item["clique8"] # Array[Nx38]
+                    if cursor["mikuType"] == "NxTask" then
+                        nx38s = cursor["clique8"] # Array[Nx38]
                         nx38 = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", memberships, lambda{|nx38| Cliques::toStringWithDimension(nx38["uuid"]) })
                         Cliques::diveClique(nx38["uuid"])
                     end
                     next
                 end
                 if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
-                    PolyActions::stop(item)
-                    ListingPosition::delist(item)
+                    PolyActions::stop(cursor)
+                    ListingPosition::delist(cursor)
                     "dot not show until: #{Time.at(unixtime).to_s}".yellow
-                    DoNotShowUntil::doNotShowUntil(item, unixtime)
+                    DoNotShowUntil::doNotShowUntil(cursor, unixtime)
                     return ["stack", removeLastElement.call(stack)]
                 end
             }

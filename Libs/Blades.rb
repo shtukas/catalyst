@@ -288,8 +288,9 @@ class Blades
         data = {}
         Blades::itemsEnumeratorUseTheForce().each{|item|
             if data[item["uuid"]] then
-                puts "Looks like we have a duplicate uuid 🤔, this is not supposed to happen."
-                puts item
+                puts "(error: 27aaf626) Looks like we have a duplicate uuid 🤔, this is not supposed to happen."
+                puts "already known: #{JSON.pretty_generate(data[item["uuid"]])}"
+                puts "just found   : #{JSON.pretty_generate(data[item])}"
                 exit
             end
             data[item["uuid"]] = item

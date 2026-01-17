@@ -47,6 +47,16 @@ class FrontPage
         end
     end
 
+    # FrontPage::isAccessible(item)
+    def self.isAccessible(item)
+        if item["payload-37"] and item["payload-37"]["mikuType"] == "Dx8Unit" then
+            if Config::instanceId() == "Lucille26-pascal-honore" then
+                return false
+            end
+        end
+        true
+    end
+
     # FrontPage::itemsForListing()
     def self.itemsForListing()
         [
@@ -59,6 +69,7 @@ class FrontPage
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| FrontPage::isAccessible(item) }
             .map{|item| {
                 "item" => item,
                 "position" => ListingPosition::decideItemListingPositionOrNull(item)
@@ -143,7 +154,7 @@ class FrontPage
             }
         }
 
-        Operations::xstream()
+        #Operations::xstream()
 
         loop {
             FrontPage::preliminaries(initialCodeTrace)
