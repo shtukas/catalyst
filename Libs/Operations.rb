@@ -117,59 +117,100 @@ class Operations
 
     # Operations::xstream()
     def self.xstream()
-        processItem = lambda {|item|
+        removeLastElement = lambda{|stack|
+            stack.reverse.drop(1).reverse
+        }
+        processItem = lambda {|stack|
             loop {
-                input = LucilleCore::askQuestionAnswerAsString("#{FrontPage::toString2(nil, item)}: start | access | run (start+access) | ... | stop | done | push : ")
+                puts ""
+                cursor = nil
+                stack.each{|i|
+                    puts FrontPage::toString2(nil, i).strip
+                    cursor = i
+                }
+                input = LucilleCore::askQuestionAnswerAsString("start | access | run (start+access) | ... | stop | done | +(datecode) | clique | sort | stack | unstack: ")
                 if input == "start" then
-                    PolyActions::start(item)
+                    PolyActions::start(cursor)
                     next
                 end
                 if input == "stop" then
-                    PolyActions::stop(item)
-                    break
+                    PolyActions::stop(cursor)
+                    return ["stack", removeLastElement.call(stack)]
                 end
                 if input == "done" then
-                    PolyActions::done(item)
-                    break
-                end
-                if input == "push" then
-                    Operations::interactivelyPush(item)
-                    break
+                    PolyActions::done(cursor)
+                    return ["stack", removeLastElement.call(stack)]
                 end
                 if input == "access" then
-                    PolyActions::access(item)
+                    PolyActions::access(cursor)
                     next
                 end
                 if input == "..." then
                     puts "starting"
-                    PolyActions::start(item)
+                    PolyActions::start(cursor)
                     puts "accessing"
-                    PolyActions::access(item)
-                    PolyActions::done(item)
-                    break
+                    PolyActions::access(cursor)
+                    PolyActions::done(cursor)
+                    return ["stack", removeLastElement.call(stack)]
                 end
                 if input == "run" then
                     puts "starting"
-                    PolyActions::start(item)
+                    PolyActions::start(cursor)
                     puts "accessing"
-                    PolyActions::access(item)
+                    PolyActions::access(cursor)
+                    next
+                end
+                if input == "sort" then
+                    s1, s2 = LucilleCore::selectZeroOrMore("element", [], stack, lambda{|i| FrontPage::toString2(nil, i) })
+                    stack = s1 + s2
+                    next
+                end
+                if input == "stack" then
+                    return ["stack", stack]
+                end
+                if input == "unstack" then
+                    stack = removeLastElement.call(stack)
                     next
                 end
                 if input == "exit" then
-                    break
+                    return ["exit"]
+                end
+                if input == "clique" then
+                    if item["mikuType"] == "NxTask" then
+                        nx38s = item["clique8"] # Array[Nx38]
+                        nx38 = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", memberships, lambda{|nx38| Cliques::toStringWithDimension(nx38["uuid"]) })
+                        Cliques::diveClique(nx38["uuid"])
+                    end
+                    next
+                end
+                if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
+                    PolyActions::stop(item)
+                    ListingPosition::delist(item)
+                    "dot not show until: #{Time.at(unixtime).to_s}".yellow
+                    DoNotShowUntil::doNotShowUntil(item, unixtime)
+                    return ["stack", removeLastElement.call(stack)]
                 end
             }
+            raise "d576acb8: error incorrect path"
         }
-        getNextItem = lambda {
+        getNextItem = lambda {|stack|
             FrontPage::itemsForListing().each{|i1|
                 Prefix::prefix(i1).each{|i2|
                     next if BankDerivedData::recoveredAverageHoursPerDay(i2["uuid"]) > 1
-                    return i2
+                    next if stack.map{|i| i["uuid"] }.include?(i2["uuid"])
+                    return stack + [i2]
                 }
             }
         }
+        stack = NxBalls::activePackets().map{|packet| packet["item"] }
         loop {
-            processItem.call(getNextItem.call())
+            answer = processItem.call(getNextItem.call(stack))
+            if answer[0] == "exit" then
+                return
+            end
+            if answer[0] == "stack" then
+                stack = answer[1]
+            end
         }
     end
 end

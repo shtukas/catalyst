@@ -143,6 +143,8 @@ class FrontPage
             }
         }
 
+        Operations::xstream()
+
         loop {
             FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)
