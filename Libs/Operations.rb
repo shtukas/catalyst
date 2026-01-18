@@ -178,7 +178,7 @@ class Operations
                 if input == "clique" then
                     if cursor["mikuType"] == "NxTask" then
                         nx38s = cursor["clique8"] # Array[Nx38]
-                        nx38 = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", memberships, lambda{|nx38| Cliques::toStringWithDimension(nx38["uuid"]) })
+                        nx38 = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", memberships, lambda{|nx38| Cliques::toString2(nx38["uuid"]) })
                         Cliques::diveClique(nx38["uuid"])
                     end
                     next

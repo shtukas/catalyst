@@ -82,13 +82,14 @@ class Cliques
     # Cliques::toString(cliqueuuid)
     def self.toString(cliqueuuid)
         name1 = Cliques::cliqueuuidToName(cliqueuuid)
-        "⛵️ #{name1} (#{Cliques::rtTargetForClique(cliqueuuid)} hours) (#{Cliques::cliqueSizeCached(cliqueuuid)} items)"
+        "⛵️ #{name1} (#{Cliques::getCliqueTargetData(cliqueuuid)["hours"]} hours) (#{Cliques::cliqueSizeCached(cliqueuuid)} items)"
     end
 
-    # Cliques::toStringWithDimension(cliqueuuid)
-    def self.toStringWithDimension(cliqueuuid)
+    # Cliques::toString2(cliqueuuid)
+    def self.toString2(cliqueuuid)
         name1 = Cliques::cliqueuuidToName(cliqueuuid)
-        "⛵️ #{name1.ljust(Cliques::dimension())} #{"%4.2f" % Cliques::rtTargetForClique(cliqueuuid)} hours #{Cliques::cliqueSizeCached(cliqueuuid).to_s.rjust(6)} items"
+        data = Cliques::getCliqueTargetData(cliqueuuid)
+        "⛵️ #{name1.ljust(Cliques::dimension())} #{"%4.2f" % Cliques::getCliqueTargetData(cliqueuuid)["hours"]} hours #{Cliques::cliqueSizeCached(cliqueuuid).to_s.rjust(6)} items, is priority: #{data["priority"]}"
     end
 
     # Cliques::nxCliques()
@@ -141,24 +142,33 @@ class Cliques
         Cliques::cliqueToItemsInOrder(cliqueuuid).size
     end
 
-    # Cliques::rtTargetForClique(cliqueuuid)
-    def self.rtTargetForClique(cliqueuuid)
-        filepath = "#{Config::pathToCatalystDataRepository()}/cliques-targets/#{cliqueuuid}.txt"
-        if !File.exist?(filepath) then
-            return 1
-        end
-        IO.read(filepath).to_f
-    end
-
     # Cliques::clique_epsilon(cliqueuuid)
     def self.clique_epsilon(cliqueuuid)
-        target = Cliques::rtTargetForClique(cliqueuuid)
+        target = Cliques::getCliqueTargetData(cliqueuuid)["hours"]
         BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(cliqueuuid).to_f/target
     end
 
     # Cliques::dimension()
     def self.dimension()
         15
+    end
+
+    # Cliques::getCliqueTargetData(cliqueuuid)
+    def self.getCliqueTargetData(cliqueuuid)
+        filepath = "#{Config::pathToCatalystDataRepository()}/cliques-targets/#{cliqueuuid}.json"
+        if !File.exist?(filepath) then
+            return {
+                "hours" => 1.5,
+                "priority" => false
+            }
+        end
+        JSON.parse(IO.read(filepath))
+    end
+
+    # Cliques::commitCliqueData(cliqueuuid, data)
+    def self.commitCliqueData(cliqueuuid, data)
+        filepath = "#{Config::pathToCatalystDataRepository()}/cliques-targets/#{cliqueuuid}.json"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(data)) }
     end
 
     # ---------------------------------------
@@ -184,7 +194,7 @@ class Cliques
                     store.register(item, FrontPage::canBeDefault(item))
                     puts FrontPage::toString2(store, item)
                 }
-            puts "new | sort | hours"
+            puts "new | sort | set hours | set priority"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -214,10 +224,19 @@ class Cliques
                 next
             end
 
-            if input == "hours" then
+            if input == "set hours" then
+                data = Cliques::getCliqueTargetData(cliqueuuid)
                 hours = LucilleCore::askQuestionAnswerAsString("hours : ")
-                filepath = "#{Config::pathToCatalystDataRepository()}/cliques-targets/#{cliqueuuid}.txt"
-                File.open(filepath, "w"){|f| f.write(hours) }
+                data["hours"] = hours
+                Cliques::commitCliqueData(cliqueuuid, data)
+                next
+            end
+
+            if input == "set priority" then
+                data = Cliques::getCliqueTargetData(cliqueuuid)
+                flag = LucilleCore::askQuestionAnswerAsBoolean("is priority ? : ")
+                data["priority"] = flag
+                Cliques::commitCliqueData(cliqueuuid, data)
                 next
             end
 
@@ -231,12 +250,11 @@ class Cliques
             nxcliques = Cliques::nxCliques().sort_by{|clique| Cliques::clique_epsilon(clique["uuid"]) }
             store = ItemStore.new()
             puts ""
-            nxcliques
-                .each{|nxclique|
-                    store.register(nxclique, false)
-                    puts "(#{store.prefixString()}) #{Cliques::toStringWithDimension(nxclique["uuid"])}"
-                }
-            total = nxcliques.map{|nxclique| Cliques::rtTargetForClique(nxclique["uuid"]) }.sum
+            nxcliques.each{|nxclique|
+                store.register(nxclique, false)
+                puts "(#{store.prefixString()}) #{Cliques::toString2(nxclique["uuid"])}"
+            }
+            total = nxcliques.map{|nxclique| Cliques::getCliqueTargetData(nxclique["uuid"])["hours"] }.sum
             puts "                 total: #{"%4.2f" % total} hours"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
