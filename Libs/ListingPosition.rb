@@ -101,7 +101,7 @@ class ListingPosition
         if item["mikuType"] == "NxClique" then
             ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["cliques"]["account"]).to_f/bases["cliques"]["rtTarget"]
             return nil if ratio >= 1
-            epsilon = Cliques::clique_epsilon(item["uuid"])
+            epsilon = Cliques::ratio(item["uuid"])
             return nil if epsilon.nil?
             return 2 + ratio + epsilon.to_f/1000
         end

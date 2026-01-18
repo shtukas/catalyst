@@ -133,9 +133,9 @@ class CommandsAndInterpreters
                 }
             puts ""
             Cliques::nxCliques()
-                .sort_by{|clique| Cliques::clique_epsilon(clique["uuid"]) }
+                .sort_by{|clique| Cliques::ratio(clique["uuid"]) }
                 .each{|clique|
-                    ratio = Cliques::clique_epsilon(clique["uuid"])
+                    ratio = Cliques::ratio(clique["uuid"])
                     puts "#{clique["description"].ljust(Cliques::dimension())}: #{ratio}"
                 }
             LucilleCore::pressEnterToContinue()

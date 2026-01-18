@@ -105,7 +105,12 @@ class Cliques
 
     # Cliques::itemsForListing()
     def self.itemsForListing()
-        Cliques::nxCliques()
+        priority_cliques, regular_cliques = Cliques::nxCliques().partition{|nxclique| Cliques::getCliqueTargetData(nxclique["uuid"])["priority"] }
+        if priority_cliques.all?{|nxclique| Cliques::ratio(nxclique["uuid"]) >= 1 } then
+            regular_cliques
+        else
+            priority_cliques
+        end
     end
 
     # Cliques::interactivelyMakeNewNx37()
@@ -142,8 +147,8 @@ class Cliques
         Cliques::cliqueToItemsInOrder(cliqueuuid).size
     end
 
-    # Cliques::clique_epsilon(cliqueuuid)
-    def self.clique_epsilon(cliqueuuid)
+    # Cliques::ratio(cliqueuuid)
+    def self.ratio(cliqueuuid)
         target = Cliques::getCliqueTargetData(cliqueuuid)["hours"]
         BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(cliqueuuid).to_f/target
     end
@@ -247,7 +252,7 @@ class Cliques
     # Cliques::dive()
     def self.dive()
         loop {
-            nxcliques = Cliques::nxCliques().sort_by{|clique| Cliques::clique_epsilon(clique["uuid"]) }
+            nxcliques = Cliques::nxCliques().sort_by{|clique| Cliques::ratio(clique["uuid"]) }
             store = ItemStore.new()
             puts ""
             nxcliques.each{|nxclique|
