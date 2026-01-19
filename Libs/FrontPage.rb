@@ -5,6 +5,7 @@ class FrontPage
 
     # FrontPage::canBeDefault(item)
     def self.canBeDefault(item)
+        return false if item["mikuType"] == "Float"
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
         return false if TmpSkip1::isSkipped(item)
@@ -66,6 +67,7 @@ class FrontPage
             Waves::listingItems(),
             BufferIn::listingItems(),
             Cliques::itemsForListing(),
+            Floats::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -153,8 +155,6 @@ class FrontPage
                 Operations::globalMaintenanceASync()
             }
         }
-
-        #Operations::xstream()
 
         loop {
             FrontPage::preliminaries(initialCodeTrace)

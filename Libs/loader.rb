@@ -139,6 +139,7 @@ require_relative "Elizabeth.rb"
 
 require_relative "Fsck.rb"
 require_relative "FrontPage.rb"
+require_relative "Floats.rb"
 
 require_relative "Galaxy.rb"
 
