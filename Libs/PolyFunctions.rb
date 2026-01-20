@@ -13,6 +13,15 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        if item["donation-13"] then
+            item["donation-13"].each{|donationuuid|
+                accounts << {
+                    "description" => donationuuid,
+                    "number"      => donationuuid
+                }
+            }
+        end
+
         if item["mikuType"] == "NxTask" then
             item["clique8"].each{|nx38|
                 accounts << {

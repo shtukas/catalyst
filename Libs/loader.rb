@@ -134,6 +134,7 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "DoNotShowUntil.rb"
+require_relative "Donations.rb"
 
 require_relative "Elizabeth.rb"
 
