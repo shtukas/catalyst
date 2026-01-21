@@ -61,9 +61,9 @@ class ListingPosition
         # NxOndate      : 1.100
         # Today         : 1.200
 
-        # Wave          : 2.000 + time shifted base
-        # BufferIn      : 2.000 + time shifted base
-        # Nx38s       : 2.000 + time shifted base
+        # Wave          : 2.000 -> 3.000+
+        # BufferIn      : 2.000 -> 3.000+
+        # NxListing     : 2.000 -> 3.000+
 
         bases = ListingPosition::bases()
 

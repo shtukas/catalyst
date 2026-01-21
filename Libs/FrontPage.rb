@@ -66,7 +66,7 @@ class FrontPage
             Blades::mikuType("NxToday"),
             Waves::listingItems(),
             BufferIn::listingItems(),
-            Blades::mikuType("NxListing"),
+            NxListings::listingItems(),
             Floats::listingItems(),
         ]
             .flatten
