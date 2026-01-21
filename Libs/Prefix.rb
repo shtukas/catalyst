@@ -9,7 +9,7 @@ class Prefix
         # cases it's going to return the item itself, but in some cases (cliques) will reply 
         # more, or even empty.
         if item["mikuType"] == "NxClique" then
-            head = Cliques::cliqueToItemsInOrder(item["uuid"]).reduce([]){|selected, item|
+            head = NxListings::itemsInOrder(item).reduce([]){|selected, item|
                 if selected.size >= 3 then
                     selected
                 else

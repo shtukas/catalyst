@@ -6,11 +6,11 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation *",
-            "NxClique      : dive (*)",
+            "NxListing     : dive (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | numbers | xstream",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | numbers",
         ].join("\n")
     end
 
@@ -76,11 +76,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("xstream", input) then
-            Operations::xstream()
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -132,11 +127,11 @@ class CommandsAndInterpreters
                     puts "#{packet["base"]["name"].ljust(10)}: #{packet["ratio"]}"
                 }
             puts ""
-            Cliques::nxCliques()
-                .sort_by{|clique| Cliques::ratio(clique["uuid"]) }
-                .each{|clique|
-                    ratio = Cliques::ratio(clique["uuid"])
-                    puts "#{clique["description"].ljust(Cliques::dimension())}: #{ratio}"
+            Blades::mikuType("NxListing")
+                .sort_by{|listing| NxListings::ratio(listing) }
+                .each{|listing|
+                    ratio = NxListings::ratio(listing)
+                    puts "#{listing["description"].ljust(Nx38s::dimension())}: #{ratio}"
                 }
             LucilleCore::pressEnterToContinue()
             return
@@ -211,7 +206,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("cliques", input) then
-            Cliques::dive()
+            NxListings::dive()
             return
         end
 
@@ -248,8 +243,8 @@ class CommandsAndInterpreters
         if Interpreting::match("dive", input) then
             item = store.getDefault()
             return if item.nil?
-            return if item["mikuType"] != "NxClique"
-            Cliques::diveClique(item["uuid"])
+            return if item["mikuType"] != "NxListing"
+            NxListings::diveListing(item["uuid"])
             return
         end
 
@@ -257,8 +252,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxClique"
-            Cliques::diveClique(item["uuid"])
+            return if item["mikuType"] != "NxListing"
+            NxListings::diveListing(item["uuid"])
             return
         end
 
@@ -486,12 +481,6 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-
-            if item["mikuType"] == "NxClique" then
-                puts "Nope! We don't push NxCliques"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
 
             PolyActions::stop(item)
             Operations::interactivelyPush(item)

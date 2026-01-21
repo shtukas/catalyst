@@ -18,7 +18,7 @@ class Floats
 
     # Floats::icon(item)
     def self.icon(item)
-        "🌌"
+        "🪸"
     end
 
     # Floats::toString(item)

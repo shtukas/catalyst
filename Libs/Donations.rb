@@ -9,8 +9,8 @@ class Donations
 
     # Donations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        nxcliques, _ = LucilleCore::selectZeroOrMore("cliques", [], Cliques::nxCliques(), lambda{|nxclique| Cliques::toString(nxclique["uuid"]) })
-        donationuuids = nxcliques.map{|nxclique| nxclique["uuid"] }
+        listings, _ = LucilleCore::selectZeroOrMore("cliques", [], Blades::mikuType("NxListing"), lambda{|listing| Listings::toString(listing["uuid"]) })
+        donationuuids = listings.map{|nxclique| nxclique["uuid"] }
         Blades::setAttribute(item["uuid"], "donation-13", donationuuids)
     end
 end

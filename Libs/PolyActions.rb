@@ -7,28 +7,21 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
-        if item["mikuType"] == "NxClique" then
-            return
-        end
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
 
     # PolyActions::access(item)
     def self.access(item)
-        if item["mikuType"] == "NxClique" then
-            Cliques::diveClique(item["uuid"])
+        if item["mikuType"] == "NxListing" then
             return
         end
+
         UxPayloads::access(item["uuid"], item["payload-37"])
     end
 
     # PolyActions::stop(item)
     def self.stop(item)
-        if item["mikuType"] == "NxClique" then
-            return
-        end
-
         NxBalls::stop(item)
         ListingPosition::delist(item)
     end
@@ -38,8 +31,8 @@ class PolyActions
 
         PolyActions::stop(item)
 
-        if item["mikuType"] == "NxClique" then
-            Cliques::diveClique(item["uuid"])
+        if item["mikuType"] == "NxListing" then
+            NxListings::diveListing(item)
             return
         end
 
@@ -144,10 +137,6 @@ class PolyActions
 
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
-        if item["mikuType"] == "NxClique" then
-            PolyActions::access(item)
-            return
-        end
 
         if NxBalls::itemIsPaused(item) then
             NxBalls::pursue(item)
@@ -165,11 +154,6 @@ class PolyActions
     # PolyActions::tripleDots(item)
     def self.tripleDots(item)
 
-        if item["mikuType"] == "NxClique" then
-            PolyActions::access(item)
-            return
-        end
-
         return if NxBalls::itemIsActive(item)
 
         PolyActions::start(item)
@@ -180,11 +164,6 @@ class PolyActions
 
     # PolyActions::destroy(item)
     def self.destroy(item)
-
-        if item["mikuType"] == "NxClique" then
-            Cliques::diveClique(item["uuid"])
-            return
-        end
 
         NxBalls::stop(item)
 
@@ -217,6 +196,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Blades::deleteItem(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxListing" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::deleteItem(item["uuid"])
             end
@@ -256,11 +242,6 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
-        if item["mikuType"] == "NxClique" then
-            puts "I do not know how to update the description of a clique"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""

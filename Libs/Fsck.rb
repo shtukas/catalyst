@@ -34,6 +34,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxListing" then
+            return
+        end
+
         if item["mikuType"] == "NxBackup" then
             return
         end

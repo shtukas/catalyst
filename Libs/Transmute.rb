@@ -4,7 +4,7 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            Cliques::setMembership(item, {
+            Nx38s::setMembership(item, {
                 "uuid"     => "a18c3b3f-e2d2-48a5-9394-dcb9870e51eb",
                 "name"     => "Infinity",
                 "position" => rand * 1000

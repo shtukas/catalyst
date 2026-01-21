@@ -34,7 +34,7 @@ class ListingPosition
                 "rtTarget" => 1
             },
             "cliques" => {
-                "name"     => "Cliques",
+                "name"     => "Nx38s",
                 "account"  => "cliques-general-abe8-29c00fe4f10c",
                 "rtTarget" => 5 # we select 3 each morning that are expected to do 1.5 + 1 + 1
             },
@@ -63,11 +63,11 @@ class ListingPosition
 
         # Wave          : 2.000 + time shifted base
         # BufferIn      : 2.000 + time shifted base
-        # Cliques       : 2.000 + time shifted base
+        # Nx38s       : 2.000 + time shifted base
 
         bases = ListingPosition::bases()
 
-        if item["random"].nil? and (item["mikuType"] != "NxClique") then
+        if item["random"].nil? then
             item["random"] = rand
             Blades::setAttribute(item["uuid"], "random", item["random"])
         end
@@ -103,10 +103,10 @@ class ListingPosition
             return 2 + ratio + item["random"]/1000
         end
 
-        if item["mikuType"] == "NxClique" then
+        if item["mikuType"] == "NxListing" then
             ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["cliques"]["account"]).to_f/bases["cliques"]["rtTarget"]
             return nil if ratio >= 1
-            epsilon = Cliques::ratio(item["uuid"])
+            epsilon = NxListings::ratio(item)
             return nil if epsilon.nil?
             return 2 + ratio + epsilon.to_f/1000
         end

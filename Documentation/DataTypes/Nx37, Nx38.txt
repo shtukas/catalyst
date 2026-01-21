@@ -1,9 +1,0 @@
-
-Nx37 (clique)
-    "uuid"     : String
-    "name"     : String
-
-Nx38 (clique membership)
-    "uuid"     : String
-    "name"     : String
-    "position" : Float

@@ -74,6 +74,9 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
+        if item["mikuType"] == "NxListing" then
+            return NxListings::toString(item)
+        end
         if item["mikuType"] == "NxToday" then
             return NxTodays::toString(item)
         end
@@ -82,9 +85,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
-        end
-        if item["mikuType"] == "NxClique" then
-            return Cliques::toString(item["uuid"])
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
