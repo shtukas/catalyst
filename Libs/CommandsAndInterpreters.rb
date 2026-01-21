@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine *",
             "NxListing     : dive (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats",
@@ -221,6 +221,21 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             UxPayloads::payloadProgram(item)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if !["NxListing", "NxEngine"].include?(item["mikuType"]) then
+                puts "We only add engines to NxListings and NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            engine = NxEngines::interactivelyBuildEngineOrNull()
+            return if engine.nil?
+            Blades::setAttribute(item["uuid"], "engine-24", engine)
             return
         end
 

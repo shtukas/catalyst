@@ -5,3 +5,4 @@ NxListing:
     - description  : String
     - hours-24     : Float
     - priority-19  : Boolean
+    - engine-24    : null or NxEngine

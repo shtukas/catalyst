@@ -137,6 +137,7 @@ require_relative "DoNotShowUntil.rb"
 require_relative "Donations.rb"
 
 require_relative "Elizabeth.rb"
+require_relative "NxEngines.rb"
 
 require_relative "Fsck.rb"
 require_relative "FrontPage.rb"

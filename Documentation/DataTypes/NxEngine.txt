@@ -1,0 +1,3 @@
+NxEngine
+    "type" : "daily-monitoring-do-at-discretion"
+
