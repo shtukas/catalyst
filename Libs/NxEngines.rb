@@ -50,7 +50,7 @@ class NxEngines
             return "daily-monitoring-do-at-discretion"
         end
         if engine["type"] == "monday-to-friday-work" then
-            return "monday-to-friday-work, #{engine["hours-day"]} hours"
+            return "monday-to-friday-work, #{engine["hours-day"]} hours/day"
         end
         raise "(error: 3a9a7c18) unknown engine type: #{engine["type"]}"
     end

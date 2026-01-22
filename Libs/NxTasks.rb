@@ -10,7 +10,7 @@ class NxTasks
         return nil if description == ""
         uuid = SecureRandom.uuid
         payload = UxPayloads::makeNewPayloadOrNull(uuid)
-        nx38 = nx38 || Nx38s::architectNx38()
+        nx38 = nx38 || NxListings::architectNx38()
         Blades::init(uuid)
         Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)

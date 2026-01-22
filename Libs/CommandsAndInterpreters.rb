@@ -87,8 +87,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            puts "We do not have this implemented, but it could be that you want to move a task from a clique to another"
-            LucilleCore::pressEnterToContinue()
+            Transmute::transmuteTo(item, "NxTask")
             return
         end
 
@@ -96,8 +95,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts "We do not have this implemented, but it could be that you want to move a task from a clique to another"
-            LucilleCore::pressEnterToContinue()
+            Transmute::transmuteTo(item, "NxTask")
             return
         end
 

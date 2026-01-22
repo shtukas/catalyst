@@ -95,7 +95,7 @@ class NxListings
         answer.to_f
     end
 
-    # Nx38s::architectNx38()
+    # NxListings::architectNx38()
     def self.architectNx38()
         listing = NxListings::interactivelySelectListingOrNull()
         if listing then
@@ -180,5 +180,4 @@ class NxListings
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
-
 end

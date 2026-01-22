@@ -4,12 +4,8 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            Nx38s::setMembership(item, {
-                "uuid"     => "a18c3b3f-e2d2-48a5-9394-dcb9870e51eb",
-                "name"     => "Infinity",
-                "position" => rand * 1000
-            })
-
+            Nx38s::setMembership(item, NxListings::architectNx38())
+            Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
             Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Blades::itemOrNull(item["uuid"])
         end
