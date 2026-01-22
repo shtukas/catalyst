@@ -64,7 +64,7 @@ class FrontPage
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
-            Waves::listingItems(),
+            #Waves::listingItems(),
             BufferIn::listingItems(),
             NxListings::listingItems(),
             Floats::listingItems(),

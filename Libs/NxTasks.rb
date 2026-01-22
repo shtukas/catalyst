@@ -32,6 +32,6 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}"
+        "#{NxTasks::icon()} #{item["description"]}#{NxEngines::suffix(item)}"
     end
 end

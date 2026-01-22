@@ -1,3 +1,8 @@
 NxEngine
+{
     "type" : "daily-monitoring-do-at-discretion"
-
+}
+{
+    "type" : "monday-to-friday-work",
+    "hours-day": Float
+}

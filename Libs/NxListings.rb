@@ -29,19 +29,14 @@ class NxListings
         15
     end
 
-    # NxListings::toString(listing)
-    def self.toString(listing)
-        ratios = " ratio: #{NxListings::ratio(listing)}".yellow
-        "🌌 #{listing["description"].ljust(NxListings::dimension())} #{"%4.2f" % listing["hours-24"]} hours, #{NxListings::itemsInOrder(listing).size.to_s.rjust(6)} items, is priority: #{listing["priority-19"].to_s.ljust(5)}#{ratios}"
+    # NxListings::toString(item)
+    def self.toString(item)
+        "🌌 #{item["description"].ljust(NxListings::dimension())} #{"%4.2f" % item["hours-24"]} hours, #{NxListings::itemsInOrder(item).size.to_s.rjust(6)} items, is priority: #{item["priority-19"].to_s.ljust(5)}#{NxEngines::suffix(item)}"
     end
 
     # NxListings::listingItems()
     def self.listingItems()
-        priorities, non_priorities = Blades::mikuType("NxListing").partition{|item| item["priority-19"] }
-        if priorities.size > 0 and priorities.any?{|item| NxListings::ratio(item) < 1 } then
-            return priorities.select{|item| NxListings::ratio(item) < 1 }
-        end
-        non_priorities
+        Blades::mikuType("NxListing")
     end
 
     # NxListings::listinguuidToName(listinguuid)
