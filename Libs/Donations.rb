@@ -4,12 +4,13 @@ class Donations
     # Donations::suffix(item)
     def self.suffix(item)
         return "" if item["donation-13"].nil?
-        " (d: #{item["donation-13"].join(", ")})".yellow
+        str = item["donation-13"].map{|uuid| Blades::itemOrNull(uuid) }.compact.map{|i| i["description"] }.join(", ")
+        " (d: #{str})".yellow
     end
 
     # Donations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        listings, _ = LucilleCore::selectZeroOrMore("cliques", [], Blades::mikuType("NxListing"), lambda{|listing| Listings::toString(listing) })
+        listings, _ = LucilleCore::selectZeroOrMore("listing", [], Blades::mikuType("NxListing"), lambda{|listing| PolyFunctions::toString(listing) })
         donationuuids = listings.map{|nxclique| nxclique["uuid"] }
         Blades::setAttribute(item["uuid"], "donation-13", donationuuids)
     end
