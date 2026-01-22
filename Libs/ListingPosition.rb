@@ -60,14 +60,10 @@ class ListingPosition
         # NxBackups     : 0.900
         # NxOndate      : 1.100
         # Today         : 1.200
-
         # Wave          : 1.500 -> 2.500+
-
-        # engined tasks or listing
-        #               : 2.000+
-
+        # engined       : 2.000+
         # BufferIn      : 3.000 -> 4.000+
-        # NxListing     : 3.000 -> 4.000+
+        # NxListing     : 3.500
 
         bases = ListingPosition::bases()
 
@@ -112,11 +108,7 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxListing" then
-            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["cliques"]["account"]).to_f/bases["cliques"]["rtTarget"]
-            return nil if ratio >= 1
-            epsilon = NxListings::ratio(item)
-            return nil if epsilon.nil?
-            return 3 + ratio + epsilon.to_f/1000
+            return 3.500 + item["random"]/1000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"

@@ -5,15 +5,12 @@ class NxListings
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
-        hours = LucilleCore::askQuestionAnswerAsString("daily hours: ").to_f
-        priority = LucilleCore::askQuestionAnswerAsBoolean("is priority ? (must complete first) : ")
         uuid = SecureRandom.uuid
         Blades::init(uuid)
         Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "hours-24", hours)
-        Blades::setAttribute(uuid, "priority-19", priority)
+        Blades::setAttribute(uuid, "engine", NxEngines::interactivelyBuildEngineOrNull())
         Blades::setAttribute(uuid, "mikuType", "NxListing")
         item = Blades::itemOrNull(uuid)
         item
@@ -31,7 +28,7 @@ class NxListings
 
     # NxListings::toString(item)
     def self.toString(item)
-        "🌌 #{item["description"].ljust(NxListings::dimension())} #{"%4.2f" % item["hours-24"]} hours, #{NxListings::itemsInOrder(item).size.to_s.rjust(6)} items, is priority: #{item["priority-19"].to_s.ljust(5)}#{NxEngines::suffix(item)}"
+        "🌌 #{item["description"].ljust(NxListings::dimension())} #{NxListings::itemsInOrder(item).size.to_s.rjust(6)} items#{NxEngines::suffix(item)}"
     end
 
     # NxListings::listingItems()
@@ -114,12 +111,6 @@ class NxListings
         }
     end
 
-    # NxListings::ratio(listing)
-    def self.ratio(listing)
-        hours = listing["hours-24"]
-        BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(listing["uuid"]).to_f/hours
-    end
-
     # --------------------------------------
     # Operations
 
@@ -134,7 +125,7 @@ class NxListings
                     store.register(item, FrontPage::canBeDefault(item))
                     puts FrontPage::toString2(store, item)
                 }
-            puts "new | sort | set hours | set priority"
+            puts "new | sort | engine"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -164,18 +155,10 @@ class NxListings
                 next
             end
 
-            if input == "set hours" then
-                hours = LucilleCore::askQuestionAnswerAsString("daily hours: ").to_f
-                Blades::setAttribute(listing["uuid"], "hours-24", hours)
+            if input == "engine" then
+                Blades::setAttribute(listing["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
                 next
             end
-
-            if input == "set priority" then
-                priority = LucilleCore::askQuestionAnswerAsBoolean("is priority ? (must complete first) : ")
-                Blades::setAttribute(listing["uuid"], "priority-19", priority)
-                next
-            end
-
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
@@ -183,7 +166,7 @@ class NxListings
     # NxListings::dive()
     def self.dive()
         loop {
-            listings = Blades::mikuType("NxListing").sort_by{|clique| NxListings::ratio(clique) }
+            listings = Blades::mikuType("NxListing")
             store = ItemStore.new()
             puts ""
             listings.each{|listing|

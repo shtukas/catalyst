@@ -126,13 +126,6 @@ class CommandsAndInterpreters
                 .each{|packet|
                     puts "#{packet["base"]["name"].ljust(10)}: #{packet["ratio"]}"
                 }
-            puts ""
-            Blades::mikuType("NxListing")
-                .sort_by{|listing| NxListings::ratio(listing) }
-                .each{|listing|
-                    ratio = NxListings::ratio(listing)
-                    puts "#{listing["description"].ljust(Nx38s::dimension())}: #{ratio}"
-                }
             LucilleCore::pressEnterToContinue()
             return
         end
