@@ -70,6 +70,17 @@ class NxListings
             .sort_by{|item| Nx38s::itemToNx38OrNull(item, listing["uuid"])["position"] }
     end
 
+    # NxListings::itemsInOrderWithPosition(listing)
+    def self.itemsInOrderWithPosition(listing)
+        Blades::mikuType("NxTask")
+            .select{|item| NxListings::itemBelongsToListing(item, listing["uuid"]) }
+            .map{|item| {
+                "item"     => item,
+                "position" => Nx38s::itemToNx38OrNull(item, listing["uuid"])["position"]
+            }}
+            .sort_by{|packet| packet["position"] }
+    end
+
     # NxListings::firstPositionInListing(listing)
     def self.firstPositionInListing(listing)
         ([1] + NxListings::itemsInOrder(listing).map{|item| Nx38s::itemToNx38OrNull(item, listing["uuid"])["position"] }).min
@@ -82,11 +93,13 @@ class NxListings
 
     # NxListings::interactivelyDeterminePositionInListing(listing)
     def self.interactivelyDeterminePositionInListing(listing)
-        elements = NxListings::itemsInOrder(listing)
-        return 0 if elements.empty?
-        puts "elements:"
-        elements.each{|item|
-            puts PolyFunctions::toString(item)
+        packets = NxListings::itemsInOrderWithPosition(listing)
+        return 0 if packets.empty?
+        puts "element:"
+        packets.each{|packet|
+            item = packet["item"]
+            position = packet["position"]
+            puts "#{"%8.3f" % position} #{PolyFunctions::toString(item)}"
         }
         answer = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
         if answer == "" then
