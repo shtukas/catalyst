@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine *",
             "NxListing     : dive (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | maintenance | sort | numbers",
         ].join("\n")
@@ -207,6 +207,11 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Blades::mikuType("NxBackup")
             })
+            return
+        end
+
+        if Interpreting::match("listings", input) then
+            NxListings::dive()
             return
         end
 

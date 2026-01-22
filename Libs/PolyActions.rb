@@ -14,6 +14,7 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
         if item["mikuType"] == "NxListing" then
+            NxListings::diveListing(item)
             return
         end
 
@@ -147,6 +148,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxListing" then
+            puts "#{PolyFunctions::toString(item).green}"
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["start", "access"])
+            if option == "start" then
+                PolyActions::start(item)
+            end
+            if option == "access" then
+                PolyActions::access(item)
+            end
+            return
+        end
+
         PolyActions::start(item)
         PolyActions::access(item)
     end
@@ -155,6 +168,12 @@ class PolyActions
     def self.tripleDots(item)
 
         return if NxBalls::itemIsActive(item)
+
+        if item["mikuType"] == "NxListing" then
+            puts "We do not do triple dots for NxListings"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
 
         PolyActions::start(item)
         PolyActions::access(item)

@@ -171,10 +171,8 @@ class NxListings
             puts ""
             listings.each{|listing|
                 store.register(listing, false)
-                puts "(#{store.prefixString()}) #{NxListings::toString(listing)}"
+                puts "#{FrontPage::toString2(store, listing)}"
             }
-            total = listings.map{|listing| listing["hours"] }.sum
-            puts "                 total: #{"%4.2f" % total} hours"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
