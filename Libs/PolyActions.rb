@@ -13,6 +13,10 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
+        if item["uuid"] == "65ab29ad-ffa0-4200-be6e-e4d86cf16094" then
+            Operations::morning()
+            return
+        end
         if item["mikuType"] == "NxListing" then
             NxListings::diveListing(item)
             return
@@ -259,11 +263,12 @@ class PolyActions
         }
     end
 
-    # PolyActions::editDescription(item)
+    # PolyActions::editDescription(item) # item
     def self.editDescription(item)
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
-        return if description == ""
+        return item if description == ""
         Blades::setAttribute(item["uuid"], "description", description)
+        Blades::itemOrNull(item["uuid"])
     end
 end

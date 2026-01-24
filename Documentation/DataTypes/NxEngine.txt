@@ -1,8 +1,10 @@
 NxEngine
 {
+    "uuid" : String
     "type" : "daily-monitoring-do-at-discretion"
 }
 {
+    "uuid" : String
     "type" : "monday-to-friday-work",
     "hours-day": Float
 }

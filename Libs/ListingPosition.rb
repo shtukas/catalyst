@@ -104,7 +104,7 @@ class ListingPosition
         end
 
         if item["engine-24"] then
-            return NxEngines::position(item, item["engine-24"])
+            return NxEngines::positionOrNull(item, item["engine-24"])
         end
 
         if item["mikuType"] == "NxListing" then

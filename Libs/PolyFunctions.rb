@@ -35,6 +35,14 @@ class PolyFunctions
             }
         end
 
+        if item["engine-24"] then
+            engine = item["engine-24"]
+            accounts << {
+                "description" => "engine: #{engine["uuid"]}",
+                "number"      => engine["uuid"]
+            }
+        end
+
         if item["mikuType"] == "Wave" then
             accounts << {
                 "description" => "waves general",

@@ -114,5 +114,39 @@ class Operations
             Blades::deleteItem(item["uuid"])
         end
     end
+
+    # Operations::morning()
+    def self.morning()
+        i1 = [
+            NxBackups::listingItems(),
+            NxOndates::listingItems(),
+            Blades::mikuType("NxToday"),
+            Waves::listingItems(),
+            BufferIn::listingItems(),
+            NxEngines::listingItems()
+        ].map{|items|
+            if items.size > 0 then
+                LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
+            else
+                []
+            end
+        }.flatten
+
+        i2 = Blades::mikuType("NxListing").map{|listing|
+            puts PolyFunctions::toString(listing).green
+            items = NxListings::itemsInOrder(listing)
+            if items.size > 0 then
+                LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
+            else
+                []
+            end
+        }.flatten
+
+        items = i1+i2
+        i1, i2 = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
+        (i1+i2).reverse.each{|item|
+            Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
+        }
+    end
 end
 

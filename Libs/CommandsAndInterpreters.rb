@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine * | transmute * | dismiss",
             "NxListing     : dive (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | numbers",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | numbers | morning",
         ].join("\n")
     end
 
@@ -21,7 +21,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 PolyActions::stop(item)
                 ListingPosition::delist(item)
-                "dot not show until: #{Time.at(unixtime).to_s}".yellow
+                puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::doNotShowUntil(item, unixtime)
                 return
             end
@@ -64,6 +64,30 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             PolyActions::stop(item)
             DoNotShowUntil::doNotShowUntil(item, unixtime)
+            return
+        end
+
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmute::transmute(item)
+            return
+        end
+
+        if Interpreting::match("dismiss", input) then
+            item = store.getDefault()
+            return if item.nil?
+            unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+            puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
+            DoNotShowUntil::doNotShowUntil(item, unixtime)
+        end
+
+        if Interpreting::match("transmute *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmute::transmute(item)
             return
         end
 
@@ -190,14 +214,14 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("backup", input) then
-            item = NxBackups::interactivelyIssueNewOrNull()
-            puts JSON.pretty_generate(item)
+        if Interpreting::match("morning", input) then
+            Operations::morning()
             return
         end
 
-        if Interpreting::match("cliques", input) then
-            NxListings::dive()
+        if Interpreting::match("backup", input) then
+            item = NxBackups::interactivelyIssueNewOrNull()
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -353,6 +377,13 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Blades::mikuType("NxOndate")
                     .select{|item| item["date"] == CommonUtils::tomorrow() }
+            })
+            return
+        end
+
+        if Interpreting::match("engined", input) then
+            Operations::program3(lambda {
+                Blades::items().select{|item| item["engine-24"] }
             })
             return
         end

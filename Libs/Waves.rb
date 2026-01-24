@@ -71,7 +71,7 @@ class Waves
 
     # Waves::toString(item)
     def self.toString(item)
-        "🌊 #{Waves::nx46ToString(item["nx46"]).yellow} #{item["description"]}#{Waves::interruptionToStringSuffix(item)}"
+        "🌊 #{item["description"]}#{Waves::interruptionToStringSuffix(item)} #{Waves::nx46ToString(item["nx46"]).yellow}"
     end
 
     # Waves::listingItems()
