@@ -29,9 +29,14 @@ class BladesConfig
         "#{Config::pathToCatalystDataRepository()}/blades-cache"
     end
 
+    # BladesConfig::fsCacheFilepaths()
+    def self.fsCacheFilepaths()
+        LucilleCore::locationsAtFolder(BladesConfig::cacheDirectory()).select{|filepath| filepath[-12, 12] == ".items.cache" }
+    end
+
     # BladesConfig::getDataFromFSCacheOrNull()
     def self.getDataFromFSCacheOrNull()
-        filepaths = LucilleCore::locationsAtFolder(BladesConfig::cacheDirectory()).select{|filepath| filepath[-12, 12] == ".items.cache" }
+        filepaths = BladesConfig::fsCacheFilepaths()
         if filepaths.size == 1 then
             filepath = filepaths.first
             return JSON.parse(IO.read(filepath))
@@ -41,7 +46,7 @@ class BladesConfig
 
     # BladesConfig::commitDataToFSCache(data)
     def self.commitDataToFSCache(data)
-        filepaths = LucilleCore::locationsAtFolder(BladesConfig::cacheDirectory()).select{|filepath| filepath[-12, 12] == ".items.cache" }
+        filepaths = BladesConfig::fsCacheFilepaths()
         filepaths.each{|filepath|
             FileUtils.rm(filepath)
         }
@@ -272,7 +277,7 @@ class Blades
     def self.items()
 
         # We try @memory1
-        if @memory1.values.size > 0 then
+        if @memory1.values.size > 0 and BladesConfig::fsCacheFilepaths().size < 2 then
             #puts "returning items from memory".yellow
             return @memory1.values
         end
