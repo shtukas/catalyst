@@ -160,6 +160,7 @@ require_relative "NxBackups.rb"
 require_relative "NxTodays.rb"
 require_relative "NxListings.rb"
 require_relative "Nx42s.rb"
+require_relative "NxCounters.rb"
 
 require_relative "Operations.rb"
 

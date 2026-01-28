@@ -34,10 +34,12 @@ class ListingPosition
         # (sorted)      : (negatives)
         # priorities    : (negatives)
         # Interruptions : 0.300
+        # (morning)     : 0.350 -> 0.450
         # Float         : 0.500
         # Wave          : 0.600 -> 4.000
         # Today         : 0.800
         # NxBackups     : 0.900
+        # NxCounter     : 1.000
         # NxOndate      : 1.100
         # Today         : 1.200
         # engined       : 2.000 -> 3.000
@@ -55,7 +57,11 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxBackup" then
-            return 0.900
+            return 0.900 + item["random"]/1000
+        end
+
+        if item["mikuType"] == "NxCounter" then
+            return 1.000 + item["random"]/1000
         end
 
         if item["mikuType"] == "Float" then

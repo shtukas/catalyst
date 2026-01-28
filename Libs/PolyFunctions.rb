@@ -83,6 +83,9 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
+        if item["mikuType"] == "NxCounter" then
+            return NxCounters::toString(item)
+        end
         if item["mikuType"] == "NxListing" then
             return NxListings::toString(item)
         end

@@ -69,7 +69,8 @@ class FrontPage
             NxListings::listingItems(),
             Floats::listingItems(),
             NxEngines::listingItems(),
-            Nx42s::listingItems()
+            Nx42s::listingItems(),
+            NxCounters::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

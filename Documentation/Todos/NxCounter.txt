@@ -1,0 +1,11 @@
+
+NxCounter:
+    - uuid         : String
+    - mikuType     : "NxCounter"
+    - unixtime     :
+    - datetime     :
+    - description  : String
+    - cursorCounter        : Integer
+    - incrementPerDay   : Integer
+    - lastUpdateUnixtime: Integer
+    - doneCounter       : Integer

@@ -116,17 +116,22 @@ class Operations
 
     # Operations::morning()
     def self.morning()
+
         i1 = [
-            NxBackups::listingItems(),
-            NxOndates::listingItems(),
-            Blades::mikuType("NxToday"),
-            Waves::listingItems(),
-            BufferIn::listingItems(),
-            NxEngines::listingItems()
-        ]
-        .flatten
-        .select{|item| DoNotShowUntil::isVisible(item) }
-        i1 = LucilleCore::selectZeroOrMore("item", [], i1, lambda {|item| PolyFunctions::toString(item) })[0]
+                NxBackups::listingItems(),
+                NxOndates::listingItems(),
+                Blades::mikuType("NxToday"),
+                Waves::listingItems(),
+                BufferIn::listingItems(),
+                NxEngines::listingItems()
+            ].map{|items|
+                items = items.select{|item| DoNotShowUntil::isVisible(item) }
+                if items.size > 0 then
+                    LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
+                else
+                    []
+                end
+            }.flatten
 
         i2 = Blades::mikuType("NxListing")
                 .map{|listing|
@@ -148,8 +153,12 @@ class Operations
         }
 
         i1, i2 = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
-        (i1+i2).reverse.each{|item|
-            Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
+
+        position = 0.351
+
+        (i1+i2).each{|item|
+            position = position + 0.001
+            Blades::setAttribute(item["uuid"], "nx42", position)
         }
     end
 

@@ -22,6 +22,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCounter" then
+            NxCounters::interactivelyIncrement(item)
+            return
+        end
+
         UxPayloads::access(item["uuid"], item["payload-37"])
     end
 

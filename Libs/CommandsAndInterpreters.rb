@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine (*) | transmute * | dismiss",
             "NxListing     : dive (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float | counter",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning | resolve",
         ].join("\n")
@@ -347,6 +347,19 @@ class CommandsAndInterpreters
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
                 Blades::mikuType("NxToday")
+            })
+            return
+        end
+
+        if Interpreting::match("counter", input) then
+            item = NxCounters::interactivelyIssueNewOrNull()
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("counters", input) then
+            Operations::program3(lambda { 
+                Blades::mikuType("NxCounter")
             })
             return
         end
