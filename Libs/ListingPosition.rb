@@ -35,14 +35,14 @@ class ListingPosition
         # priorities    : (negatives)
         # Interruptions : 0.300
         # Float         : 0.500
-        # Wave          : 0.600
+        # Wave          : 0.600 -> 4.000
         # Today         : 0.800
         # NxBackups     : 0.900
         # NxOndate      : 1.100
         # Today         : 1.200
-        # engined       : 2.000+
-        # BufferIn      : 3.000 -> 4.000+
-        # active-67     : 3.100
+        # engined       : 2.000 -> 3.000
+        # BufferIn      : 3.000 -> 4.000
+        # active-67     : 3.400
         # NxListing     : 3.500
 
         if item["random"].nil? then
@@ -71,13 +71,15 @@ class ListingPosition
         end
 
         if item["mikuType"] == "Wave" then
-            return 0.600 + item["random"]/1000
+            base = 0.600
+            top = 4.000
+            return base + item["random"] * (top - base)
         end
 
         if item["mikuType"] == "BufferIn" then
-            ratio = BankDerivedData::recoveredAverageHoursPerDay(BufferIn::uuid()).to_f/1
-            return nil if ratio >= 1
-            return 3 + ratio + item["random"]/1000
+            rt = BankDerivedData::recoveredAverageHoursPerDay(BufferIn::uuid()).to_f
+            return nil if rt >= 1
+            return 3 + rt
         end
 
         if item["engine-24"] then
@@ -89,7 +91,7 @@ class ListingPosition
         end
 
         if item["active-67"] then
-            return 3.100 + item["random"]/1000
+            return 3.400 + item["random"]/1000
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"

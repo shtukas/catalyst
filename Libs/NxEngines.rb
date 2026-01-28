@@ -37,20 +37,17 @@ class NxEngines
 
     # NxEngines::positionOrNull(item, engine)
     def self.positionOrNull(item, engine)
-
-        # engined       : 2.000+
-        # BufferIn      : 3.000 -> 4.000+
-        # NxListing     : 3.500
-
+        # 2.000 -> 3.000
         if engine["type"] == "daily-monitoring-do-at-discretion" then
             return 2.000
         end
         if engine["type"] == "monday-to-friday-work" then
             return nil if ![1,2,3,4,5].include?(Time.new.wday)
-            done_hours = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
+            done_hours = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"]).to_f/3600
             target_hours = engine["hours-day"]
             return nil if done_hours >= target_hours
-            return 2.100
+            ratio = done_hours.to_f/target_hours
+            return 2.000 + ratio
         end
         raise "(error: 23de6207) unknown engine type: #{engine["type"]}"
     end
