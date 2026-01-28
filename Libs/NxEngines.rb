@@ -77,4 +77,19 @@ class NxEngines
     def self.listingItems()
         Blades::items().select{|item| item["engine-24"] }
     end
+
+    # ------------------
+    # Ops
+
+    # NxEngines::setEngine(item)
+    def self.setEngine(item)
+        if !["NxListing", "NxTask"].include?(item["mikuType"]) then
+            puts "We only add engines to NxListings and NxTasks"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        engine = NxEngines::interactivelyBuildEngineOrNull()
+        return if engine.nil?
+        Blades::setAttribute(item["uuid"], "engine-24", engine)
+    end
 end

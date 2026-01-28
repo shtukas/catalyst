@@ -10,4 +10,11 @@ Cross types conventions (all optional):
     - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
     - nx42                  : null or Float # Positioning
     - payload-37            : null or UxPayload
-    - donation-13           : null or Array[String] # bank accounts to donate to
+
+    - donation-13           : null or Array[String]
+                              bank accounts to donate to
+
+    - active-67             : boolean
+                              indicates that the item was selected
+                              during morning, and should remain in
+                              the context.

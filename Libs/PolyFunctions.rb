@@ -15,23 +15,24 @@ class PolyFunctions
 
         if item["donation-13"] then
             item["donation-13"].each{|donationuuid|
-                accounts << {
-                    "description" => donationuuid,
-                    "number"      => donationuuid
-                }
+                target = Blades::itemOrNull(donationuuid)
+                if target then
+                    accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+                else
+                    accounts << {
+                        "description" => donationuuid,
+                        "number"      => donationuuid
+                    }
+                end
             }
         end
 
         if item["mikuType"] == "NxTask" then
             item["clique8"].each{|nx38|
                 accounts << {
-                    "description" => nx38["uuid"],
-                    "number"      => nx38["name"]
+                    "description" => "parenting: #{nx38["uuid"]}",
+                    "number"      => nx38["uuid"]
                 }
-            }
-            accounts << {
-                "description" => "cliques-general-abe8-29c00fe4f10c",
-                "number"      => "cliques-general-abe8-29c00fe4f10c"
             }
         end
 

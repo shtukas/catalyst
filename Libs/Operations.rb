@@ -97,8 +97,7 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
-        puts ""
-        puts "front page line: #{FrontPage::toString2(ItemStore.new(), item)}"
+        puts "listing position: #{ListingPosition::decideItemListingPositionOrNull(item)}"
         LucilleCore::pressEnterToContinue()
     end
 
@@ -124,29 +123,43 @@ class Operations
             Waves::listingItems(),
             BufferIn::listingItems(),
             NxEngines::listingItems()
-        ].map{|items|
-            if items.size > 0 then
-                LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
-            else
-                []
-            end
-        }.flatten
+        ]
+        .flatten
+        .select{|item| DoNotShowUntil::isVisible(item) }
+        i1 = LucilleCore::selectZeroOrMore("item", [], i1, lambda {|item| PolyFunctions::toString(item) })[0]
 
-        i2 = Blades::mikuType("NxListing").map{|listing|
-            puts PolyFunctions::toString(listing).green
-            items = NxListings::itemsInOrder(listing)
-            if items.size > 0 then
-                LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
-            else
-                []
-            end
-        }.flatten
+        i2 = Blades::mikuType("NxListing")
+                .map{|listing|
+                    puts PolyFunctions::toString(listing).green
+                    items = NxListings::itemsInOrder(listing)
+                        .select{|item| DoNotShowUntil::isVisible(item) }
+                    if items.size > 0 then
+                        LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
+                    else
+                        []
+                    end
+                }
+                .flatten
 
         items = i1+i2
+
+        items.each{|item|
+            Blades::setAttribute(item["uuid"], "active-67", true)
+        }
+
         i1, i2 = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
         (i1+i2).reverse.each{|item|
             Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
         }
+    end
+
+    # Operations::move(item)
+    def self.move(item)
+        if item["mikuType"] == "NxTask" then
+            ListingParenting::setMembership(item, NxListings::architectNx38())
+            return
+        end
+        Transmute::transmuteTo(item, "NxTask")
     end
 end
 

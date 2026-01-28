@@ -4,19 +4,19 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            Nx38s::setMembership(item, NxListings::architectNx38())
+            ListingParenting::setMembership(item, NxListings::architectNx38())
             Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
             Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Blades::itemOrNull(item["uuid"])
         end
         if item["mikuType"] == "NxToday" and targetType == "NxTask" then
-            Nx38s::setMembership(item, NxListings::architectNx38())
+            ListingParenting::setMembership(item, NxListings::architectNx38())
             Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
             Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Blades::itemOrNull(item["uuid"])
         end
         if item["mikuType"] == "Float" and targetType == "NxTask" then
-            Nx38s::setMembership(item, NxListings::architectNx38())
+            ListingParenting::setMembership(item, NxListings::architectNx38())
             Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
             Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Blades::itemOrNull(item["uuid"])

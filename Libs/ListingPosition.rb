@@ -25,27 +25,6 @@ class ListingPosition
         ([0.500] + positions).min
     end
 
-    # ListingPosition::bases()
-    def self.bases()
-        {
-            "buffer-in" => {
-                "name"     => "Buffer In",
-                "account"  => BufferIn::uuid(),
-                "rtTarget" => 1
-            },
-            "cliques" => {
-                "name"     => "Nx38s",
-                "account"  => "cliques-general-abe8-29c00fe4f10c",
-                "rtTarget" => 5 # we select 3 each morning that are expected to do 1.5 + 1 + 1
-            },
-            "waves" => {
-                "name"     => "Waves",
-                "account"  => "waves-general-fd3c4ac4-1300",
-                "rtTarget" => 2
-            }
-        }
-    end
-
     # ListingPosition::decideItemListingPositionOrNull(item)
     def self.decideItemListingPositionOrNull(item)
         if item["nx42"] then
@@ -63,9 +42,8 @@ class ListingPosition
         # Wave          : 1.500 -> 2.500+
         # engined       : 2.000+
         # BufferIn      : 3.000 -> 4.000+
+        # active-67     : 3.100
         # NxListing     : 3.500
-
-        bases = ListingPosition::bases()
 
         if item["random"].nil? then
             item["random"] = rand
@@ -93,12 +71,12 @@ class ListingPosition
         end
 
         if item["mikuType"] == "Wave" then
-            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["waves"]["account"]).to_f/bases["waves"]["rtTarget"]
+            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache("waves-general-fd3c4ac4-1300").to_f/2
             return 1.500 + ratio + item["random"]/1000
         end
 
         if item["mikuType"] == "BufferIn" then
-            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(bases["buffer-in"]["account"]).to_f/bases["buffer-in"]["rtTarget"]
+            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(BufferIn::uuid()).to_f/1
             return nil if ratio >= 1
             return 3 + ratio + item["random"]/1000
         end
@@ -111,8 +89,15 @@ class ListingPosition
             return 3.500 + item["random"]/1000
         end
 
+        if item["active-67"] then
+            return 3.100 + item["random"]/1000
+        end
+
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
     end
+
+    # ---------------------------------------------------------------
+    # Ops
 
     # ListingPosition::delist(item)
     def self.delist(item)

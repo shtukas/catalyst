@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine * | transmute * | dismiss",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine (*) | transmute * | dismiss",
             "NxListing     : dive (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | numbers | morning",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning | resolve",
         ].join("\n")
     end
 
@@ -75,6 +75,18 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("resolve", input) then
+            uuid = LucilleCore::askQuestionAnswerAsString("uuid: ")
+            item = Blades::itemOrNull(uuid)
+            if item.nil? then
+                puts "could not resolve uuid: #{uuid}"
+            else
+                puts JSON.pretty_generate(item)
+            end
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if Interpreting::match("dismiss", input) then
             item = store.getDefault()
             return if item.nil?
@@ -111,7 +123,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            Transmute::transmuteTo(item, "NxTask")
+            Operations::move(item)
             return
         end
 
@@ -119,7 +131,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Transmute::transmuteTo(item, "NxTask")
+            Operations::move(item)
             return
         end
 
@@ -129,26 +141,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
             Blades::setAttribute(item["uuid"], "nx42", nil)
-            return
-        end
-
-        if Interpreting::match("numbers", input) then
-            puts "domains:"
-            bases = ListingPosition::bases()
-            bases
-                .values
-                .map{|base|
-                    ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(base["account"]).to_f/base["rtTarget"]
-                    {
-                        "base" => base,
-                        "ratio" => ratio
-                    }
-                }
-                .sort_by{|packet| packet["ratio"] }
-                .each{|packet|
-                    puts "#{packet["base"]["name"].ljust(10)}: #{packet["ratio"]}"
-                }
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -244,18 +236,25 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxEngines::setEngine(item)
+            return
+        end
+
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxListing", "NxEngine"].include?(item["mikuType"]) then
-                puts "We only add engines to NxListings and NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            engine = NxEngines::interactivelyBuildEngineOrNull()
-            return if engine.nil?
-            Blades::setAttribute(item["uuid"], "engine-24", engine)
+            NxEngines::setEngine(item)
+            return
+        end
+
+        if Interpreting::match("donation", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Donations::interactivelySetDonation(item)
             return
         end
 
