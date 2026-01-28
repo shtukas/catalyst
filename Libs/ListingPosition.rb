@@ -35,11 +35,11 @@ class ListingPosition
         # priorities    : (negatives)
         # Interruptions : 0.300
         # Float         : 0.500
+        # Wave          : 0.600
         # Today         : 0.800
         # NxBackups     : 0.900
         # NxOndate      : 1.100
         # Today         : 1.200
-        # Wave          : 1.500 -> 2.500+
         # engined       : 2.000+
         # BufferIn      : 3.000 -> 4.000+
         # active-67     : 3.100
@@ -71,8 +71,7 @@ class ListingPosition
         end
 
         if item["mikuType"] == "Wave" then
-            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache("waves-general-fd3c4ac4-1300").to_f/2
-            return 1.500 + ratio + item["random"]/1000
+            return 0.600 + item["random"]/1000
         end
 
         if item["mikuType"] == "BufferIn" then
