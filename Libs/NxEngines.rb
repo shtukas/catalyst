@@ -61,7 +61,7 @@ class NxEngines
             return "daily-monitoring-do-at-discretion, work and dismiss"
         end
         if engine["type"] == "monday-to-friday-work" then
-            done_hours = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
+            done_hours = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"])
             return "monday-to-friday-work, done: #{done_hours.round(2)} hours, target: #{engine["hours-day"]} hours/day, work and dismiss"
         end
         raise "(error: 3a9a7c18) unknown engine type: #{engine["type"]}"

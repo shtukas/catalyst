@@ -76,7 +76,7 @@ class ListingPosition
         end
 
         if item["mikuType"] == "BufferIn" then
-            ratio = BankDerivedData::recoveredAverageHoursPerDayShortLivedCache(BufferIn::uuid()).to_f/1
+            ratio = BankDerivedData::recoveredAverageHoursPerDay(BufferIn::uuid()).to_f/1
             return nil if ratio >= 1
             return 3 + ratio + item["random"]/1000
         end
