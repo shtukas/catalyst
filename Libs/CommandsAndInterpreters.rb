@@ -450,6 +450,7 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
+            item = NxEngines::setEngine(item)
             puts JSON.pretty_generate(item)
             return
         end

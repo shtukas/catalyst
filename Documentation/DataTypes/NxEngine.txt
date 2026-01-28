@@ -8,3 +8,8 @@ NxEngine
     "type" : "monday-to-friday-work",
     "hours-day": Float
 }
+{
+    "uuid" : String
+    "type" : "time-commitment-hours-per-week",
+    "hours": Float
+}

@@ -4,8 +4,9 @@ class NxEngines
     # NxEngines::engine_types()
     def self.engine_types()
         [
+            "monday-to-friday-work",
+            "time-commitment-hours-per-week",
             "daily-monitoring-do-at-discretion",
-            "monday-to-friday-work"
         ]
     end
 
@@ -32,6 +33,14 @@ class NxEngines
                 "hours-day" => hours
             }
         end
+        if engine_type == "time-commitment-hours-per-week" then
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            return {
+                "uuid"  => SecureRandom.hex,
+                "type"  => "time-commitment-hours-per-week",
+                "hours" => hours
+            }
+        end
         raise "(error: 8d8ba6b2) unknown engine type: #{engine_type}"
     end
 
@@ -39,14 +48,21 @@ class NxEngines
     def self.positionOrNull(item, engine)
         # 2.000 -> 3.000
         if engine["type"] == "daily-monitoring-do-at-discretion" then
-            return 2.000
+            return 2.100
         end
         if engine["type"] == "monday-to-friday-work" then
             return nil if ![1,2,3,4,5].include?(Time.new.wday)
-            done_hours = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"]).to_f/3600
-            target_hours = engine["hours-day"]
-            return nil if done_hours >= target_hours
-            ratio = done_hours.to_f/target_hours
+            rt = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"]).to_f
+            hours = engine["hours-day"]
+            return nil if rt >= hours
+            ratio = rt.to_f/hours
+            return 2.000 + ratio
+        end
+        if engine["type"] == "time-commitment-hours-per-week" then
+            rt = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"]).to_f
+            day_hours = engine["hours"].to_f/6
+            return nil if rt >= day_hours
+            ratio = rt.to_f/day_hours
             return 2.000 + ratio
         end
         raise "(error: 23de6207) unknown engine type: #{engine["type"]}"
@@ -58,8 +74,12 @@ class NxEngines
             return "daily-monitoring-do-at-discretion, work and dismiss"
         end
         if engine["type"] == "monday-to-friday-work" then
-            done_hours = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"])
-            return "monday-to-friday-work, done: #{done_hours.round(2)} hours, target: #{engine["hours-day"]} hours/day, work and dismiss"
+            rt = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"])
+            return "monday-to-friday-work, rt: #{rt.round(2)} hours, target: #{engine["hours-day"]} hours/day"
+        end
+        if engine["type"] == "time-commitment-hours-per-week" then
+            rt = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"])
+            return "time-commitment-hours-per-week, rt: #{rt.round(2)} hours, target (day): #{engine["hours"].to_f/7}"
         end
         raise "(error: 3a9a7c18) unknown engine type: #{engine["type"]}"
     end
@@ -83,10 +103,11 @@ class NxEngines
         if !["NxListing", "NxTask"].include?(item["mikuType"]) then
             puts "We only add engines to NxListings and NxTasks"
             LucilleCore::pressEnterToContinue()
-            return
+            return item
         end
         engine = NxEngines::interactivelyBuildEngineOrNull()
-        return if engine.nil?
+        return item if engine.nil?
         Blades::setAttribute(item["uuid"], "engine-24", engine)
+        Blades::itemOrNull(item["uuid"])
     end
 end

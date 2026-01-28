@@ -118,10 +118,15 @@ class NxListings
                 "position" => position
             }
         end
-        {
-            "uuid" => listing["uuid"],
-            "position" => 0
-        }
+        listing = NxListings::interactivelyIssueNewOrNull()
+        if listing then
+            position = NxListings::interactivelyDeterminePositionInListing(listing)
+            return {
+                "uuid" => listing["uuid"],
+                "position" => position
+            }
+        end
+        NxListings::architectNx38()
     end
 
     # --------------------------------------
