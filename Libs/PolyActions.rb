@@ -7,6 +7,10 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
+        if item["mikuType"] == "NxCounter" then
+            return
+        end
+
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
@@ -41,8 +45,11 @@ class PolyActions
 
         PolyActions::stop(item)
 
+        if item["mikuType"] == "NxCounter" then
+            return
+        end
+
         if item["mikuType"] == "NxListing" then
-            NxListings::diveListing(item)
             return
         end
 

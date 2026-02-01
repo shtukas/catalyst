@@ -10,7 +10,7 @@ class Donations
 
     # Donations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        listings, _ = LucilleCore::selectZeroOrMore("listing", [], Blades::mikuType("NxListing"), lambda{|listing| PolyFunctions::toString(listing) })
+        listings = CommonUtils::selectZeroOrMore(Blades::mikuType("NxListing"), lambda{|listing| PolyFunctions::toString(listing) })
         return if listings.empty?
         donationuuids = listings.map{|nxclique| nxclique["uuid"] }
         Blades::setAttribute(item["uuid"], "donation-13", donationuuids)

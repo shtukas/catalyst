@@ -160,7 +160,7 @@ class NxListings
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
+                selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
                 name1 = NxListings::listinguuidToName(listinguuid)
                 selected.reverse.each{|item|
                     position = NxListings::firstPositionInListing(listing) - 1

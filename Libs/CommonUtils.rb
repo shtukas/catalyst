@@ -343,7 +343,7 @@ class CommonUtils
     # CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
     def self.interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
         days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-        LucilleCore::selectZeroOrMore("days", [], days)
+        CommonUtils::selectZeroOrMore(days)
     end
 
     # ----------------------------------------------------
@@ -683,5 +683,39 @@ class CommonUtils
             return pair[0] + rand*(pair[1] - pair[0])
         }
         raise "CommonUtils::computeThatPosition failed: positions: #{positions.join(", ")}"
+    end
+
+    # CommonUtils::selectZeroOrMore(items, printLambda = lambda {|item| item })
+    def self.selectZeroOrMore(items, printLambda = lambda {|item| item })
+        puts "select zero or more (sort):"
+        items.each_with_index{|item, i|
+            puts "    [#{i+1}] #{printLambda.call(item)}"
+        }
+        indices = []
+        loop {
+            indx = LucilleCore::askQuestionAnswerAsString("> ")
+            break if indx == ""
+            if indx == "sort" then
+                i1s, i2s = LucilleCore::selectZeroOrMore("items", [], indices, lambda { |indx| printLambda.call(items[indx]) })
+                indices = i1s + i2s
+                indices.each{|i|
+                    puts "[#{i+1}] #{printLambda.call(items[i])}"
+                }
+                next
+            end
+            indx = indx.to_i - 1
+            if indices.include?(indx) then
+                indices = indices - [indx]
+                indices.each{|i|
+                    puts "[#{i+1}] #{printLambda.call(items[i])}"
+                }
+                next
+            end
+            indices << indx
+            indices.each{|i|
+                puts "[#{i+1}] #{printLambda.call(items[i])}"
+            }
+        }
+        indices.map{|i| items[i] }
     end
 end

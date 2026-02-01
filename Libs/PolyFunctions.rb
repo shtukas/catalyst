@@ -112,17 +112,4 @@ class PolyFunctions
         end
         donation_target_id
     end
-
-    # PolyFunctions::measure(experimentname, lambda)
-    def self.measure(experimentname, lambda)
-        t1 = Time.new.to_f
-        result = lambda.call()
-        puts "measure: #{experimentname}: #{Time.new.to_f-t1}"
-        result
-    end
-
-    # PolyFunctions::ratio(item)
-    def self.ratio(item)
-        raise "(error: 1931-e258c72b)"
-    end
 end

@@ -117,6 +117,12 @@ class Operations
     # Operations::morning()
     def self.morning()
 
+        if !Config::isPrimaryInstance() then
+            puts "You can run morning only on the primary instance"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         i1 = [
                 NxBackups::listingItems(),
                 NxOndates::listingItems(),
@@ -127,7 +133,7 @@ class Operations
             ].map{|items|
                 items = items.select{|item| DoNotShowUntil::isVisible(item) }
                 if items.size > 0 then
-                    LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
+                    CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
                 else
                     []
                 end
@@ -139,7 +145,7 @@ class Operations
                     items = NxListings::itemsInOrder(listing)
                         .select{|item| DoNotShowUntil::isVisible(item) }
                     if items.size > 0 then
-                        LucilleCore::selectZeroOrMore("item", [], items, lambda {|item| PolyFunctions::toString(item) })[0]
+                        CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
                     else
                         []
                     end
@@ -156,10 +162,14 @@ class Operations
 
         position = 0.351
 
-        (i1+i2).each{|item|
+        items = i1+i2
+
+        items.each{|item|
             position = position + 0.001
             Blades::setAttribute(item["uuid"], "nx42", position)
         }
+
+        Operations::planning()
     end
 
     # Operations::move(item)

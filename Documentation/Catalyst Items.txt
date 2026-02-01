@@ -18,3 +18,5 @@ Cross types conventions (all optional):
                               indicates that the item was selected
                               during morning, and should remain in
                               the context.
+
+    - duration-38           : duration in minutes for the morning planning

@@ -280,9 +280,6 @@ class LucilleCore
             mappingDescriptionsToValues[toStringLambda.call(item)] = item
         }
 
-        puts ""
-        puts "-- multi selection ------------------------"
-
         counter = 0
         counterToItemMapping = {}
 
@@ -300,7 +297,6 @@ class LucilleCore
             puts "      #{counter.to_s.rjust(2)}: #{toStringLambda.call(item)}"
         }
 
-        puts ""
         print "index (empty for returning selection): "
         itemNumber = STDIN.gets().strip
         if itemNumber.size == 0 then
