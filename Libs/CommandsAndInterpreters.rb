@@ -17,6 +17,17 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::interpreter(input, store)
     def self.interpreter(input, store)
 
+        # We have a special handling for ++, which doesn't delist, unlike the other timecodes
+        if Interpreting::match("++", input) then
+            item = store.getDefault()
+            return if item.nil?
+            PolyActions::stop(item)
+            unixtime = Time.new.to_i + 3600
+            puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
+            DoNotShowUntil::doNotShowUntil(item, unixtime)
+            return
+        end
+
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 PolyActions::stop(item)
