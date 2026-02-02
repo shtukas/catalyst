@@ -168,8 +168,6 @@ class Operations
             position = position + 0.001
             Blades::setAttribute(item["uuid"], "nx42", position)
         }
-
-        Operations::planning()
     end
 
     # Operations::move(item)
