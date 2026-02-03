@@ -1,11 +1,13 @@
 
 NxCounter:
-    - uuid         : String
-    - mikuType     : "NxCounter"
-    - unixtime     :
-    - datetime     :
-    - description  : String
-    - cursorCounter        : Integer
-    - incrementPerDay   : Integer
-    - lastUpdateUnixtime: Integer
-    - doneCounter       : Integer
+    - uuid            : String
+    - mikuType        : "NxCounter"
+    - unixtime        :
+    - datetime        :
+    - description     : String
+    - incrementPerDay : Integer
+    - dayData         : null or {
+        "date"              : "YYYY-MM-DD",
+        "done"              : Integer,
+        "lastUpdateUnixtime": Integer
+    }

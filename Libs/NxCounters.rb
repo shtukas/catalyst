@@ -15,10 +15,7 @@ class NxCounters
         Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "cursorCounter", cursorCounter)
         Blades::setAttribute(uuid, "incrementPerDay", incrementPerDay)
-        Blades::setAttribute(uuid, "lastUpdateUnixtime", lastUpdateUnixtime)
-        Blades::setAttribute(uuid, "doneCounter", doneCounter)
         Blades::setAttribute(uuid, "mikuType", "NxCounter")
         item = Blades::itemOrNull(uuid)
         item
@@ -29,32 +26,42 @@ class NxCounters
         "🌁"
     end
 
+    # NxCounters::getDayData(item)
+    def self.getDayData(item)
+        if item["dayData"] and item["dayData"]["date"] == CommonUtils::today() then
+            return item["dayData"]
+        end
+        {
+            "date" => CommonUtils::today(),
+            "done" => 0,
+            "lastUpdateUnixtime" => 0,
+        }
+    end
+
+    # NxCounters::missingCount(item)
+    def self.missingCount(item)
+        item["incrementPerDay"] - NxCounters::getDayData(item)["done"]
+    end
+
     # NxCounters::toString(item)
     def self.toString(item)
-        if Time.new.to_i - item["lastUpdateUnixtime"] > 3600 then
-            deltaTimeInDays = (Time.new.to_i - item["lastUpdateUnixtime"]).to_f/86400
-            deltaIncrement = [deltaTimeInDays * item["incrementPerDay"], item["incrementPerDay"]].min
-            cursorCounter = item["cursorCounter"] + deltaIncrement
-            Blades::setAttribute(item["uuid"], "cursorCounter", cursorCounter)
-            Blades::setAttribute(item["uuid"], "lastUpdateUnixtime", Time.new.to_i)
-            item = Blades::itemOrNull(item["uuid"])
-        end
-        missing = item["cursorCounter"] - item["doneCounter"]
-        "#{NxCounters::icon(item)} #{item["description"]} (missing: #{missing})"
+        "#{NxCounters::icon(item)} #{item["description"]} (missing: #{NxCounters::missingCount(item)})"
     end
 
     # NxCounters::interactivelyIncrement(item)
     def self.interactivelyIncrement(item)
+        dayData = NxCounters::getDayData(item)
         increment = LucilleCore::askQuestionAnswerAsString("increment: ").to_i
-        doneCounter = item["doneCounter"] + increment
-        Blades::setAttribute(item["uuid"], "doneCounter", doneCounter)
+        dayData["done"] = dayData["done"] + increment
+        dayData["lastUpdateUnixtime"] = Time.new.to_i
+        Blades::setAttribute(item["uuid"], "dayData", dayData)
     end
 
     # NxCounters::listingItems()
     def self.listingItems()
         Blades::mikuType("NxCounter").select{|item|
-            missing = item["cursorCounter"] - item["doneCounter"]
-            missing > -item["incrementPerDay"].to_f/5
+            dayData = NxCounters::getDayData(item)
+            NxCounters::missingCount(item) > 0 and (Time.new.to_f - dayData["lastUpdateUnixtime"]) >= 3600
         }
     end
 end
