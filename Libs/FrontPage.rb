@@ -41,8 +41,10 @@ class FrontPage
     def self.toString3_main_listing(store, item, bucket)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        bucket_ = "[#{bucket}] ".red
-        line = "#{storePrefix} #{bucket_}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        bucket_ = " [#{bucket.ljust(13)}]".red
+        duration_ = (item["duration-38"] and (item["duration-38"] > 0)) ? " [#{"%6.2f" % (100 * ((Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/60)/item["duration-38"])).round(2)} % of #{"%3d" % item["duration-38"]} mins]".green : ""
+        time_ = item["time-cursor-21"] ? " [#{Time.at(item["time-cursor-21"]).to_s[11, 5]}]".red : ""
+        line = "#{storePrefix}#{bucket_}#{duration_}#{time_} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -81,7 +83,7 @@ class FrontPage
 
     # FrontPage::itemsAndBucketPositionsForListing()
     def self.itemsAndBucketPositionsForListing()
-        [
+        items = [
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
@@ -93,14 +95,33 @@ class FrontPage
             NxCounters::listingItems()
         ]
             .flatten
+
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+
+        items
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
-            .map{|item| {
-                "item" => item,
-                "bucket&position" => ListingPosition::listingBucketAndPositionOrNull(item)
-            }}
+            .select{|item|
+                if NxBalls::itemIsActive(item) then
+                    true
+                else
+                    if item["duration-38"] then
+                        Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < (item["duration-38"] * 60)
+                    else
+                        true
+                    end
+                end
+            }
+            .map{|item|
+                data = ListingPosition::listingBucketAndPositionOrNull(item)
+                item["bucket&position"] = data
+                {
+                    "item" => item,
+                    "bucket&position" => data
+                }
+            }
             .select{|packet| packet["bucket&position"] }
-            .sort_by{|packet| packet["bucket&position"] }
+            .sort_by{|packet| packet["bucket&position"][1] }
     end
 
     # FrontPage::displayListing(initialCodeTrace)
@@ -124,10 +145,22 @@ class FrontPage
 
         displayeduuids = []
 
+        timeCursor = Time.new.to_i
+
         FrontPage::itemsAndBucketPositionsForListing()
             .each{|packet|
                 item = packet["item"]
-                bucket = packet["bucket&position"][0]
+                bucket, position = packet["bucket&position"]
+                if position < 4.00 and item["duration-38"].nil? then # the end of today
+                    duration = LucilleCore::askQuestionAnswerAsString("[1] #{PolyFunctions::toString(item).green}: duration in minutes : ").to_f
+                    item["duration-38"] = duration
+                    Blades::setAttribute(item["uuid"], "duration-38", duration)
+                    item["time-cursor-21"] = timeCursor
+                end
+                if position < 4.00 and item["duration-38"] then
+                    timeCursor = timeCursor + item["duration-38"]*60
+                    item["time-cursor-21"] = timeCursor
+                end
                 Prefix::prefix(item).each{|itemx|
                     next if displayeduuids.include?(itemx["uuid"])
                     displayeduuids << itemx["uuid"]

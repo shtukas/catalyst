@@ -144,7 +144,9 @@ class CommandsAndInterpreters
                             .map{|packet| packet["item"] }
                 selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|item|
-                    Blades::setAttribute(item["uuid"], "nx42", ListingPosition::newTodaySpecialListingPosition())
+                    position = ListingPosition::newTodaySpecialListingPosition()
+                    puts "#{PolyFunctions::toString(item).green} at position: #{position.to_s.green}"
+                    Blades::setAttribute(item["uuid"], "nx42", position)
                 }
                 return
             end

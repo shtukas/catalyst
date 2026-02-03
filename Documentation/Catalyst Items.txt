@@ -17,6 +17,6 @@ Cross types conventions (all optional):
     - active-67             : boolean
                               indicates that the item was selected
                               during morning, and should remain in
-                              the context.
+                              the context
 
     - duration-38           : duration in minutes for the morning planning
