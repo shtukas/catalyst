@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning | resolve",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning | resolve | wind",
         ].join("\n")
     end
 
@@ -31,7 +31,6 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 PolyActions::stop(item)
-                ListingPosition::delist(item)
                 puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::doNotShowUntil(item, unixtime)
                 return
@@ -115,12 +114,40 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items = store.items()
-            selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|item|
-                Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
-            }
-            return
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["global", "priorities", "today special"])
+            return if option.nil?
+
+            if option == "global" then
+                items  = FrontPage::itemsAndBucketPositionsForListing()
+                            .map{|packet| packet["item"] }
+                selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|item|
+                    Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstGlobalListingPosition() - 1)
+                }
+                return
+            end
+
+            if option == "priorities" then
+                items  = FrontPage::itemsAndBucketPositionsForListing()
+                            .select{|packet| packet["bucket&position"][0] == "priorities" }
+                            .map{|packet| packet["item"] }
+                selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|item|
+                    Blades::setAttribute(item["uuid"], "nx42", ListingPosition::newPrioritiesListingPosition())
+                }
+                return
+            end
+
+            if option == "today special" then
+                items  = FrontPage::itemsAndBucketPositionsForListing()
+                            .select{|packet| ["today special", "today", "today or next days"].include?(packet["bucket&position"][0]) }
+                            .map{|packet| packet["item"] }
+                selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|item|
+                    Blades::setAttribute(item["uuid"], "nx42", ListingPosition::newTodaySpecialListingPosition())
+                }
+                return
+            end
         end
 
         if Interpreting::match("transmute *", input) then
@@ -214,7 +241,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstNegativeListingPosition() - 1)
+            Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstGlobalListingPosition() - 1)
             item = Blades::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxBalls::runningItems().each{|i|
@@ -660,10 +687,31 @@ class CommandsAndInterpreters
 
         if input == "waves" then
             Operations::program3(lambda { 
-                Blades::mikuType("Wave")
-                    .sort_by{|item| item["lastDoneUnixtime"] }
+                w1, w2 = Blades::mikuType("Wave").partition{|item| DoNotShowUntil::isVisible(item) }
+                w2 + w1 # we put the done ones first
             })
             return
         end
+
+        if input == "wind" then
+            # We use wind 04 to avoid presenting them in the same order all the time
+            # Once it's been presented, whether or notit's been actioned, it goes to the
+            # end of the line
+            Blades::mikuType("Wave")
+                .select{|item| DoNotShowUntil::isVisible(item) }
+                .sort_by{|item| item["wind-04"] || 0 }
+                .reduce(0){|counter, item|
+                    if counter < 10 then
+                        Blades::setAttribute(item["uuid"], "wind-04", Time.new.to_i)
+                        if LucilleCore::askQuestionAnswerAsBoolean("do '#{PolyFunctions::toString(item).green}' ? ") then
+                            PolyActions::tripleDots(item)
+                            counter = counter + 1
+                        end
+                    end
+                    counter
+                }
+            return
+        end
+
     end
 end

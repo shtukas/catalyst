@@ -44,11 +44,10 @@ class NxEngines
         raise "(error: 8d8ba6b2) unknown engine type: #{engine_type}"
     end
 
-    # NxEngines::positionOrNull(item, engine)
-    def self.positionOrNull(item, engine)
-        # 2.000 -> 3.000
+    # NxEngines::positionOrNull(item, engine, lowerbound, upperbound)
+    def self.positionOrNull(item, engine, lowerbound, upperbound)
         if engine["type"] == "daily-monitoring-do-at-discretion" then
-            return 2.100
+            return lowerbound
         end
         if engine["type"] == "monday-to-friday-work" then
             return nil if ![1,2,3,4,5].include?(Time.new.wday)
@@ -56,14 +55,14 @@ class NxEngines
             hours = engine["hours-day"]
             return nil if rt >= hours
             ratio = rt.to_f/hours
-            return 2.000 + ratio
+            return lowerbound + ratio
         end
         if engine["type"] == "time-commitment-hours-per-week" then
             rt = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"]).to_f
             day_hours = engine["hours"].to_f/6
             return nil if rt >= day_hours
             ratio = rt.to_f/day_hours
-            return 2.000 + ratio
+            return lowerbound + ratio
         end
         raise "(error: 23de6207) unknown engine type: #{engine["type"]}"
     end

@@ -37,6 +37,27 @@ class FrontPage
         line
     end
 
+    # FrontPage::toString3_main_listing(store, item, bucket)
+    def self.toString3_main_listing(store, item, bucket)
+        return nil if item.nil?
+        storePrefix = store ? "(#{store.prefixString()})" : ""
+        bucket_ = "[#{bucket}] ".red
+        line = "#{storePrefix} #{bucket_}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+        if !DoNotShowUntil::isVisible(item) then
+            line = line.yellow
+        end
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+        if NxBalls::itemIsRunning(item) then
+            line = line.green
+        end
+        line
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -58,15 +79,14 @@ class FrontPage
         true
     end
 
-    # FrontPage::itemsForListing()
-    def self.itemsForListing()
+    # FrontPage::itemsAndBucketPositionsForListing()
+    def self.itemsAndBucketPositionsForListing()
         [
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             Blades::mikuType("NxToday"),
             Waves::listingItems(),
             BufferIn::listingItems(),
-            NxListings::listingItems(),
             Floats::listingItems(),
             NxEngines::listingItems(),
             Nx42s::listingItems(),
@@ -77,11 +97,10 @@ class FrontPage
             .select{|item| FrontPage::isAccessible(item) }
             .map{|item| {
                 "item" => item,
-                "position" => ListingPosition::decideItemListingPositionOrNull(item)
+                "bucket&position" => ListingPosition::listingBucketAndPositionOrNull(item)
             }}
-            .select{|packet| packet["position"] }
-            .sort_by{|packet| packet["position"] }
-            .map{|packet| packet["item"] }
+            .select{|packet| packet["bucket&position"] }
+            .sort_by{|packet| packet["bucket&position"] }
     end
 
     # FrontPage::displayListing(initialCodeTrace)
@@ -105,13 +124,15 @@ class FrontPage
 
         displayeduuids = []
 
-        FrontPage::itemsForListing()
-            .each{|item_|
-                Prefix::prefix(item_).each{|item|
-                    next if displayeduuids.include?(item["uuid"])
-                    displayeduuids << item["uuid"]
-                    store.register(item, FrontPage::canBeDefault(item))
-                    line = FrontPage::toString2(store, item)
+        FrontPage::itemsAndBucketPositionsForListing()
+            .each{|packet|
+                item = packet["item"]
+                bucket = packet["bucket&position"][0]
+                Prefix::prefix(item).each{|itemx|
+                    next if displayeduuids.include?(itemx["uuid"])
+                    displayeduuids << itemx["uuid"]
+                    store.register(itemx, FrontPage::canBeDefault(itemx))
+                    line = FrontPage::toString3_main_listing(store, itemx, bucket)
                     puts line
                     sheight = sheight - (line.size/swidth + 1)
                     break if sheight <= 3

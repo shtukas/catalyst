@@ -82,6 +82,7 @@ class Waves
     # Waves::performDone(wave)
     def self.performDone(wave)
         Blades::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Blades::setAttribute(wave["uuid"], "listing-marker-57", nil)
         unixtime = Waves::nx46ToNextDisplayUnixtime(wave["nx46"], Time.new.to_i)
         puts "do not show until #{Time.at(unixtime)}".yellow
         DoNotShowUntil::doNotShowUntil(wave, unixtime)

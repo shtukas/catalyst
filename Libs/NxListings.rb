@@ -31,11 +31,6 @@ class NxListings
         "🌌 #{item["description"].ljust(NxListings::dimension())} #{NxListings::itemsInOrder(item).size.to_s.rjust(6)} items#{NxEngines::suffix(item)}"
     end
 
-    # NxListings::listingItems()
-    def self.listingItems()
-        Blades::mikuType("NxListing")
-    end
-
     # NxListings::listinguuidToName(listinguuid)
     def self.listinguuidToName(listinguuid)
         listing = Blades::itemOrNull(listinguuid)

@@ -37,13 +37,13 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        ListingPosition::delist(item)
     end
 
     # PolyActions::done(item)
     def self.done(item)
 
         PolyActions::stop(item)
+        ListingPosition::delist(item)
 
         if item["mikuType"] == "NxCounter" then
             return

@@ -97,7 +97,7 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
-        puts "listing position: #{ListingPosition::decideItemListingPositionOrNull(item)}"
+        puts "listing position: #{JSON.generate(ListingPosition::listingBucketAndPositionOrNull(item))}"
         LucilleCore::pressEnterToContinue()
     end
 
