@@ -46,7 +46,7 @@ class FrontPage
         nx2 = XCache::getOrNull("nx2:295e252e-9732-4c9d-9020-12374a2c334c:#{item["uuid"]}")
         if nx2 then
             nx2 = JSON.parse(nx2)
-            duration_ = "[#{nx2["end-datetime"][11, 5]}] ".red
+            duration_ = "[#{nx2["start-datetime"][11, 5]}, #{nx2["end-datetime"][11, 5]} (#{"%3d" % nx2["duration"]})] ".red
         else
             duration_ = ""
         end
@@ -159,21 +159,9 @@ class FrontPage
         #    "bucket&position" : data
         #}
 
-        nx1s.each{|nx1|
+        Planning::distribute(nx1s)
 
-            item = nx1["item"]
-            bucket, position = nx1["bucket&position"]
-            duration = 0
-
-            if position < 4.00 then # the end of today
-                if item["duration-38"].nil? then # the end of today
-                    duration = LucilleCore::askQuestionAnswerAsString("#{PolyFunctions::toString(item).green}: duration in minutes : ").to_f
-                    Blades::setAttribute(item["uuid"], "duration-38", duration)
-                end
-            end
-        }
-
-        planningstatus = Operations::planningStatus(nx1s)
+        planningstatus = Planning::planningStatus(nx1s)
         if planningstatus then
             puts "planning status: #{planningstatus}".green
         end
