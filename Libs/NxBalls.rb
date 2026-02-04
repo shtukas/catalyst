@@ -93,7 +93,7 @@ class NxBalls
         return 0 if !NxBalls::itemIsRunning(item)
         nxball = NxBalls::getNxBallOrNull(item)
         return 0 if nxball.nil?
-        NxBalls::ballRunningTime(item)
+        NxBalls::ballRunningTime(nxball)
     end
 
     # NxBalls::nxBallToString(nxball)

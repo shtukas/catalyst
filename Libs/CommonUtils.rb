@@ -689,7 +689,7 @@ class CommonUtils
     def self.selectZeroOrMore(items, printLambda = lambda {|item| item })
         puts "select zero or more (sort):"
         items.each_with_index{|item, i|
-            puts "    [#{i+1}] #{printLambda.call(item)}"
+            puts "    [#{(i+1).to_s.rjust(2)}] #{printLambda.call(item)}"
         }
         indices = []
         loop {
@@ -699,7 +699,7 @@ class CommonUtils
                 i1s, i2s = LucilleCore::selectZeroOrMore("items", [], indices, lambda { |indx| printLambda.call(items[indx]) })
                 indices = i1s + i2s
                 indices.each{|i|
-                    puts "[#{i+1}] #{printLambda.call(items[i])}"
+                    puts "[#{(i+1).to_s.rjust(2)}] #{printLambda.call(items[i])}"
                 }
                 next
             end
@@ -707,13 +707,13 @@ class CommonUtils
             if indices.include?(indx) then
                 indices = indices - [indx]
                 indices.each{|i|
-                    puts "[#{i+1}] #{printLambda.call(items[i])}"
+                    puts "[#{(i+1).to_s.rjust(2)}] #{printLambda.call(items[i])}"
                 }
                 next
             end
             indices << indx
             indices.each{|i|
-                puts "[#{i+1}] #{printLambda.call(items[i])}"
+                puts "[#{(i+1).to_s.rjust(2)}] #{printLambda.call(items[i])}"
             }
         }
         indices.map{|i| items[i] }

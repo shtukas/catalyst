@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | resolve | wind",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | wind | ",
         ].join("\n")
     end
 
@@ -82,18 +82,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmute::transmute(item)
-            return
-        end
-
-        if Interpreting::match("resolve", input) then
-            uuid = LucilleCore::askQuestionAnswerAsString("uuid: ")
-            item = Blades::itemOrNull(uuid)
-            if item.nil? then
-                puts "could not resolve uuid: #{uuid}"
-            else
-                puts JSON.pretty_generate(item)
-            end
-            LucilleCore::pressEnterToContinue()
             return
         end
 

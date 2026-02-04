@@ -42,8 +42,16 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         bucket_ = "[#{bucket.ljust(13)}] ".red
-        duration_ = (item["duration-38"] and (item["duration-38"] > 0)) ? "[#{"%6.2f" % (100 * ((Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/60)/item["duration-38"])).round(2)} % of #{"%3d" % item["duration-38"]} mins] ".green : ""
-        time_ = item["time-cursor-21"] ? "[#{Time.at(item["time-cursor-21"]).to_s[11, 5]}] ".red : ""
+
+        nx2 = XCache::getOrNull("nx2:295e252e-9732-4c9d-9020-12374a2c334c:#{item["uuid"]}")
+        if nx2 then
+            nx2 = JSON.parse(nx2)
+            duration_ = "[#{nx2["end-datetime"][11, 5]}] ".red
+        else
+            duration_ = ""
+        end
+
+        time_ = item["start-time-cursor-21"] ? "[#{Time.at(item["start-time-cursor-21"]).to_s[11, 5]}] ".red : ""
         line = "#{bucket_}#{duration_}#{time_}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -74,7 +82,8 @@ class FrontPage
     # FrontPage::isAccessible(item)
     def self.isAccessible(item)
         if item["payload-37"] and item["payload-37"]["mikuType"] == "Dx8Unit" then
-            if Config::instanceId() == "Lucille26-pascal-honore" then
+            if Config::instanceId().start_with?("Lucille26") then
+                # We don't do Dx8Units on Lucille26
                 return false
             end
         end
@@ -141,26 +150,43 @@ class FrontPage
 
         t1 = Time.new.to_f
 
+        # ----------------------------------------------------------------------
+        # Data Works
+
+        nx1s = FrontPage::itemsAndBucketPositionsForListing()
+        #nx1: {
+        #    "item"            : item,
+        #    "bucket&position" : data
+        #}
+
+        nx1s.each{|nx1|
+
+            item = nx1["item"]
+            bucket, position = nx1["bucket&position"]
+            duration = 0
+
+            if position < 4.00 then # the end of today
+                if item["duration-38"].nil? then # the end of today
+                    duration = LucilleCore::askQuestionAnswerAsString("#{PolyFunctions::toString(item).green}: duration in minutes : ").to_f
+                    Blades::setAttribute(item["uuid"], "duration-38", duration)
+                end
+            end
+        }
+
+        planningstatus = Operations::planningStatus(nx1s)
+        if planningstatus then
+            puts "planning status: #{planningstatus}".green
+        end
+
+        # ----------------------------------------------------------------------
         # Main listing
 
         displayeduuids = []
 
-        timeCursor = Time.new.to_i
-
-        FrontPage::itemsAndBucketPositionsForListing()
-            .each{|packet|
-                item = packet["item"]
-                bucket, position = packet["bucket&position"]
-                if position < 4.00 and item["duration-38"].nil? then # the end of today
-                    duration = LucilleCore::askQuestionAnswerAsString("[1] #{PolyFunctions::toString(item).green}: duration in minutes : ").to_f
-                    item["duration-38"] = duration
-                    Blades::setAttribute(item["uuid"], "duration-38", duration)
-                    item["time-cursor-21"] = timeCursor
-                end
-                if position < 4.00 and item["duration-38"] then
-                    timeCursor = timeCursor + item["duration-38"]*60
-                    item["time-cursor-21"] = timeCursor
-                end
+        nx1s
+            .each{|nx1|
+                item = nx1["item"]
+                bucket, position = nx1["bucket&position"]
                 Prefix::prefix(item).each{|itemx|
                     next if displayeduuids.include?(itemx["uuid"])
                     displayeduuids << itemx["uuid"]
