@@ -8,11 +8,12 @@ class Donations
         " (d: #{str})".yellow
     end
 
-    # Donations::interactivelySetDonation(item)
+    # Donations::interactivelySetDonation(item) # -> item
     def self.interactivelySetDonation(item)
         listings = CommonUtils::selectZeroOrMore(Blades::mikuType("NxListing"), lambda{|listing| PolyFunctions::toString(listing) })
-        return if listings.empty?
+        return item if listings.empty?
         donationuuids = listings.map{|nxclique| nxclique["uuid"] }
         Blades::setAttribute(item["uuid"], "donation-13", donationuuids)
+        Blades::itemOrNull(item["uuid"])
     end
 end

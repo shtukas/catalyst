@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | morning | resolve | wind",
+            "misc          : search | commands | fsck | fsck-force | maintenance | sort | resolve | wind",
         ].join("\n")
     end
 
@@ -252,11 +252,6 @@ class CommandsAndInterpreters
             if LucilleCore::askQuestionAnswerAsBoolean("start `#{item["description"]}` ? ", true) then
                 NxBalls::start(item)
             end
-            return
-        end
-
-        if Interpreting::match("morning", input) then
-            Operations::morning()
             return
         end
 

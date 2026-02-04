@@ -114,62 +114,6 @@ class Operations
         end
     end
 
-    # Operations::morning()
-    def self.morning()
-
-        if !Config::isPrimaryInstance() then
-            puts "You can run morning only on the primary instance"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        i1 = [
-                NxBackups::listingItems(),
-                NxOndates::listingItems(),
-                Blades::mikuType("NxToday"),
-                Waves::listingItems(),
-                BufferIn::listingItems(),
-                NxEngines::listingItems()
-            ].map{|items|
-                items = items.select{|item| DoNotShowUntil::isVisible(item) }
-                if items.size > 0 then
-                    CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
-                else
-                    []
-                end
-            }.flatten
-
-        i2 = Blades::mikuType("NxListing")
-                .map{|listing|
-                    puts PolyFunctions::toString(listing).green
-                    items = NxListings::itemsInOrder(listing)
-                        .select{|item| DoNotShowUntil::isVisible(item) }
-                    if items.size > 0 then
-                        CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
-                    else
-                        []
-                    end
-                }
-                .flatten
-
-        items = i1+i2
-
-        items.each{|item|
-            Blades::setAttribute(item["uuid"], "active-67", true)
-        }
-
-        i1, i2 = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
-
-        position = 0.351
-
-        items = i1+i2
-
-        items.each{|item|
-            position = position + 0.001
-            Blades::setAttribute(item["uuid"], "nx42", position)
-        }
-    end
-
     # Operations::move(item)
     def self.move(item)
         if item["mikuType"] == "NxTask" then

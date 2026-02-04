@@ -11,16 +11,16 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxToday" and item["donation-13"].nil? then
+            item = Donations::interactivelySetDonation(item)
+        end
+
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
 
     # PolyActions::access(item)
     def self.access(item)
-        if item["uuid"] == "65ab29ad-ffa0-4200-be6e-e4d86cf16094" then
-            Operations::morning()
-            return
-        end
         if item["mikuType"] == "NxListing" then
             NxListings::diveListing(item)
             return
