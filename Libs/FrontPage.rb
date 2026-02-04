@@ -41,10 +41,10 @@ class FrontPage
     def self.toString3_main_listing(store, item, bucket)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        bucket_ = " [#{bucket.ljust(13)}]".red
-        duration_ = (item["duration-38"] and (item["duration-38"] > 0)) ? " [#{"%6.2f" % (100 * ((Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/60)/item["duration-38"])).round(2)} % of #{"%3d" % item["duration-38"]} mins]".green : ""
-        time_ = item["time-cursor-21"] ? " [#{Time.at(item["time-cursor-21"]).to_s[11, 5]}]".red : ""
-        line = "#{storePrefix}#{bucket_}#{duration_}#{time_} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        bucket_ = "[#{bucket.ljust(13)}] ".red
+        duration_ = (item["duration-38"] and (item["duration-38"] > 0)) ? "[#{"%6.2f" % (100 * ((Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/60)/item["duration-38"])).round(2)} % of #{"%3d" % item["duration-38"]} mins] ".green : ""
+        time_ = item["time-cursor-21"] ? "[#{Time.at(item["time-cursor-21"]).to_s[11, 5]}] ".red : ""
+        line = "#{bucket_}#{duration_}#{time_}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
