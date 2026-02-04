@@ -37,22 +37,25 @@ class FrontPage
         line
     end
 
-    # FrontPage::toString3_main_listing(store, item, bucket)
-    def self.toString3_main_listing(store, item, bucket)
+    # FrontPage::toString3_main_listing(store, item)
+    def self.toString3_main_listing(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        bucket_ = "[#{bucket.ljust(13)}] ".red
 
-        nx2 = XCache::getOrNull("nx2:295e252e-9732-4c9d-9020-12374a2c334c:#{item["uuid"]}")
-        if nx2 then
-            nx2 = JSON.parse(nx2)
-            duration_ = "[#{nx2["start-datetime"][11, 5]}, #{nx2["end-datetime"][11, 5]} (#{"%3d" % nx2["duration"]})] ".red
+        if Config::isPrimaryInstance() then
+            nx2 = XCache::getOrNull("nx2:295e252e-9732-4c9d-9020-12374a2c334c:#{item["uuid"]}")
+            if nx2 then
+                nx2 = JSON.parse(nx2)
+                duration_ = "[#{nx2["start-datetime"][11, 5]}, #{nx2["end-datetime"][11, 5]} (#{"%3d" % nx2["duration"]})] ".red
+            else
+                duration_ = ""
+            end
         else
             duration_ = ""
         end
 
         time_ = item["start-time-cursor-21"] ? "[#{Time.at(item["start-time-cursor-21"]).to_s[11, 5]}] ".red : ""
-        line = "#{bucket_}#{duration_}#{time_}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{duration_}#{time_}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -159,11 +162,12 @@ class FrontPage
         #    "bucket&position" : data
         #}
 
-        Planning::distribute(nx1s)
-
-        planningstatus = Planning::planningStatus(nx1s)
-        if planningstatus then
-            puts "planning status: #{planningstatus}".green
+        if Config::isPrimaryInstance() then
+            Planning::distribute(nx1s)
+            planningstatus = Planning::planningStatus(nx1s)
+            if planningstatus then
+                puts "planning status: #{planningstatus}".green
+            end
         end
 
         # ----------------------------------------------------------------------
@@ -179,7 +183,7 @@ class FrontPage
                     next if displayeduuids.include?(itemx["uuid"])
                     displayeduuids << itemx["uuid"]
                     store.register(itemx, FrontPage::canBeDefault(itemx))
-                    line = FrontPage::toString3_main_listing(store, itemx, bucket)
+                    line = FrontPage::toString3_main_listing(store, itemx)
                     puts line
                     sheight = sheight - (line.size/swidth + 1)
                     break if sheight <= 3
