@@ -126,10 +126,6 @@ class ListingPosition
             return ["today", position]
         end
 
-        if item["active-67"] then
-            return ["today or next days", 4.000 + rotation.call(item["random"])]
-        end
-
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
 
     end

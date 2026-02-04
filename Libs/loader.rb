@@ -121,7 +121,6 @@ require_relative "Config.rb"
 
 require_relative "Atlas.rb"
 require_relative "Anniversaries.rb"
-require_relative "Active67.rb"
 
 require_relative "Bank.rb"
 require_relative "BufferIn.rb"
