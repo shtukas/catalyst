@@ -6,7 +6,7 @@ class NxEngines
         [
             "monday-to-friday-work",
             "time-commitment-hours-per-week",
-            "daily-monitoring-do-at-discretion",
+            # "daily-monitoring-do-at-discretion", # deprecated
         ]
     end
 
@@ -19,12 +19,6 @@ class NxEngines
     def self.interactivelyBuildEngineOrNull()
         engine_type = NxEngines::interactivelySelectEngineTypeOrNull()
         return nil if engine_type.nil?
-        if engine_type == "daily-monitoring-do-at-discretion" then
-            return {
-                "uuid" => SecureRandom.hex,
-                "type" => "daily-monitoring-do-at-discretion"
-            }
-        end
         if engine_type == "monday-to-friday-work" then
             hours = LucilleCore::askQuestionAnswerAsString("daily hours: ").to_f
             return {
@@ -47,7 +41,8 @@ class NxEngines
     # NxEngines::positionOrNull(item, engine, lowerbound, upperbound)
     def self.positionOrNull(item, engine, lowerbound, upperbound)
         if engine["type"] == "daily-monitoring-do-at-discretion" then
-            return lowerbound
+            engine["type"] = "time-commitment-hours-per-week"
+            engine["hours"] = 2
         end
         if engine["type"] == "monday-to-friday-work" then
             return nil if ![1,2,3,4,5].include?(Time.new.wday)
@@ -70,7 +65,8 @@ class NxEngines
     # NxEngines::toString(engine)
     def self.toString(engine)
         if engine["type"] == "daily-monitoring-do-at-discretion" then
-            return "daily-monitoring-do-at-discretion, work and dismiss"
+            engine["type"] = "time-commitment-hours-per-week"
+            engine["hours"] = 2
         end
         if engine["type"] == "monday-to-friday-work" then
             rt = BankDerivedData::recoveredAverageHoursPerDay(engine["uuid"])
