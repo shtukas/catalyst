@@ -10,8 +10,7 @@ class Dispatch
         else
             structure = {
                 "tasks"              => [],
-                "waves"              => [],
-                "last-done-mikuType" => nil
+                "waves"              => []
             }
         end
     end
@@ -24,16 +23,6 @@ class Dispatch
     # Dispatch::structure_uuids(structure)
     def self.structure_uuids(structure)
         (structure["tasks"] + structure["tasks"]).map{|item| item["uuid"] }
-    end
-
-    # Dispatch::remove(itemuuid)
-    def self.remove(itemuuid)
-        structure = Dispatch::get_structure()
-        if Dispatch::structure_uuids(structure).include?(itemuuid) then
-            structure["waves"] = structure["waves"].select{|i| i["uuid"] != itemuuid }
-            structure["tasks"] = structure["tasks"].select{|i| i["uuid"] != itemuuid }
-            Dispatch::commit_structure(structure)
-        end
     end
 
     # Dispatch::ensure(item)
@@ -49,9 +38,39 @@ class Dispatch
         end
     end
 
+    # Dispatch::remove(itemuuid)
+    def self.remove(itemuuid)
+        structure = Dispatch::get_structure()
+        if Dispatch::structure_uuids(structure).include?(itemuuid) then
+            structure["waves"] = structure["waves"].select{|i| i["uuid"] != itemuuid }
+            structure["tasks"] = structure["tasks"].select{|i| i["uuid"] != itemuuid }
+            Dispatch::commit_structure(structure)
+        end
+    end
+
+    # Dispatch::is_good_planning(items)
+    def self.is_good_planning(items)
+        false
+    end
+
+    # Dispatch::dispatch(prefix, waves, tasks, fallback)
+    def self.dispatch(prefix, waves, tasks, fallback)
+        items = prefix
+        loop {
+            break if (waves + tasks).empty?
+            items << waves.shift
+            items << tasks.shift
+        }
+        items = items.compact
+        if Dispatch::is_good_planning(items) then
+            return Dispatch::dispatch((prefix + waves.take(1)).clone, waves.drop(1).clone, tasks.clone, items.clone)
+        end
+        fallback
+    end
+
     # Dispatch::itemsForListing()
     def self.itemsForListing()
         structure = Dispatch::get_structure()
-        structure["tasks"] + structure["waves"]
+        Dispatch::dispatch([], structure["waves"].clone, structure["tasks"].clone, structure["tasks"].clone + structure["waves"].clone)
     end
 end

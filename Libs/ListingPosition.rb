@@ -84,14 +84,13 @@ class ListingPosition
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
-
     end
 
     # ---------------------------------------------------------------
     # Ops
 
-    # ListingPosition::delist(item)
-    def self.delist(item)
+    # ListingPosition::nullifyNx42(item)
+    def self.nullifyNx42(item)
         Blades::setAttribute(item["uuid"], "nx42", nil)
     end
 end

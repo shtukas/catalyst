@@ -79,17 +79,6 @@ class FrontPage
         items
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
-            .select{|item|
-                if NxBalls::itemIsActive(item) then
-                    true
-                else
-                    if item["duration-38"] then
-                        Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < (item["duration-38"] * 60)
-                    else
-                        true
-                    end
-                end
-            }
             .sort_by{|item| ListingPosition::listingPositionOrNull(item) }
     end
 

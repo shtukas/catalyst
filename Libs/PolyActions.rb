@@ -43,7 +43,8 @@ class PolyActions
     def self.done(item)
 
         PolyActions::stop(item)
-        ListingPosition::delist(item)
+        ListingPosition::nullifyNx42(item)
+        Dispatch::remove(item["uuid"])
 
         if item["mikuType"] == "NxCounter" then
             return
