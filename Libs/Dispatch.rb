@@ -9,33 +9,31 @@ class Dispatch
         sum.to_f/entries.size
     end
 
-    # Dispatch::is_good_planning(items)
-    def self.is_good_planning(items)
-        # A good planning is defined as the last task end time is before 23:00 today
-        # A task is defined as anything that is not a wave
-        tasks_end_unixtime = Time.new.to_i
+    # Dispatch::is_good_sequence(items)
+    def self.is_good_sequence(items)
+        cursor_end_task = Time.new.to_i
+        cursor_end_task_non_wave = Time.new.to_i
         items.each{|item|
-            next if item["mikuType"] != "Wave"
-            next if NxBalls::itemIsRunning(item)
-            tasks_end_unixtime = tasks_end_unixtime + Dispatch::duration_average(item["durations-mins-40"]) * 60
+            cursor_end_task = cursor_end_task + Dispatch::duration_average(item["durations-mins-40"]) * 60
+            if item["mikuType"] != "Wave" then
+                cursor_end_task_non_wave = cursor_end_task
+            end
         }
-        deadline_unixtime = DateTime.parse("#{CommonUtils::today()} 23:00:00").to_time.to_i
-        tasks_end_unixtime < deadline_unixtime
+        deadline_unixtime = DateTime.parse("#{CommonUtils::today()} 22:00:00").to_time.to_i
+        cursor_end_task_non_wave < deadline_unixtime
     end
 
-    # Dispatch::dispatch(prefix, waves, tasks, fallback)
-    def self.dispatch(prefix, waves, tasks, fallback)
-        items = prefix.clone
-        ws = waves.clone
-        ts = tasks.clone
-        loop {
-            break if (ws + ts).empty?
-            items << ws.shift
-            items << ts.shift
-        }
-        items = items.compact
-        if Dispatch::is_good_planning(items) then
-            return Dispatch::dispatch((prefix + waves.take(1)).clone, waves.drop(1).clone, tasks.clone, items.clone)
+    # Dispatch::merge(head, a1, a2)
+    def self.merge(head, a1, a2)
+        return head if (a1+a2).empty?
+        Dispatch::merge(head + a1.take(1) + a2.take(1), a1.drop(1), a2.drop(1))
+    end
+
+    # Dispatch::dispatch(prefix, waves, tasks, depth, fallback)
+    def self.dispatch(prefix, waves, tasks, depth, fallback)
+        items = prefix + Dispatch::merge([], waves.take(depth), tasks + waves.drop(depth))
+        if Dispatch::is_good_sequence(items) then
+            return Dispatch::dispatch(prefix, waves, tasks, depth+1, items)
         end
         fallback
     end
@@ -46,7 +44,13 @@ class Dispatch
             return []
         end
 
+        return [] if items.empty?
+
         active, items = items.partition{|item| NxBalls::itemIsActive(item) }
+
+        if active.size > 0 then
+            return active + items.sort_by{|item| XCache::getOrDefaultValue("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", 0) }
+        end
 
         items = items.map{|item|
             if item["durations-mins-40"].nil? then
@@ -58,7 +62,15 @@ class Dispatch
         }
 
         waves, tasks = items.partition{|item| item["mikuType"] == "Wave" }
-        Dispatch::dispatch(active, waves.clone, tasks.clone, tasks.clone + waves.clone)
+        items = Dispatch::dispatch(active, waves, tasks, 1, active + tasks + waves)
+
+        cursor = Time.new.to_i
+        items.map{|item|
+            XCache::set("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", cursor)
+            cursor = cursor + Dispatch::duration_average(item["durations-mins-40"]) * 60
+        }
+
+        items
     end
 
     # Dispatch::incoming(item, duration_in_seconds)

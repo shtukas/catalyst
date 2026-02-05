@@ -37,7 +37,7 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         timespan_in_second = NxBalls::stop(item)
-        Dispatch::incoming(item, duration_in_seconds)
+        Dispatch::incoming(item, timespan_in_second)
     end
 
     # PolyActions::done(item)

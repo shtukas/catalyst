@@ -16,11 +16,24 @@ class FrontPage
         item["interruption"]
     end
 
-    # FrontPage::toString2(store, item)
-    def self.toString2(store, item)
+    # FrontPage::toString2(store, item, is_main_listing = false)
+    def self.toString2(store, item, is_main_listing = false)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+
+        if is_main_listing then
+            cursor = XCache::getOrNull("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}")
+            if cursor then
+                cursor = cursor.to_i
+                planning = "[#{Time.at(cursor).to_s[11, 5]}] ".red
+            else
+                planning = ""
+            end
+        else
+            planning = ""
+        end
+
+        line = "#{planning}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -109,31 +122,13 @@ class FrontPage
         # ----------------------------------------------------------------------
         # Main listing
 
-        displayeduuids = []
-
-        Dispatch::itemsForListing(FrontPage::itemsForListing())
+        Dispatch::itemsForListing(CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListing(), "uuid"))
             .each{|item|
-                next if displayeduuids.include?(item["uuid"])
-                displayeduuids << item["uuid"]
                 store.register(item, FrontPage::canBeDefault(item))
-                line = FrontPage::toString2(store, item)
+                line = FrontPage::toString2(store, item, true)
                 puts line
                 sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 3
-            }
-
-        activePackets = NxBalls::activePackets()
-        activePackets
-            .sort_by{|packet| packet["startunixtime"] }
-            .reverse
-            .map{|packet| packet["item"] }
-            .each{|item|
-                next if displayeduuids.include?(item["uuid"])
-                displayeduuids << item["uuid"]
-                store.register(item, FrontPage::canBeDefault(item))
-                line = FrontPage::toString2(store, item)
-                puts line.green
-                sheight = sheight - (line.size/swidth + 1)
             }
 
         t2 = Time.new.to_f
