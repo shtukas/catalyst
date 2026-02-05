@@ -9,8 +9,33 @@ class Dispatch
         sum.to_f/entries.size
     end
 
-    # Dispatch::is_good_sequence(items)
-    def self.is_good_sequence(items)
+    # Dispatch::decide_deadline()
+    def self.decide_deadline()
+        if Time.new.hour < 12 then
+            unixtime = DateTime.parse("#{CommonUtils::today()} 12:00:00").to_time.to_i
+            return {
+                "unixtime" => unixtime,
+                "datetime" => Time.at(unixtime).to_s
+            }
+        end
+        if Time.new.hour < 16 then
+            unixtime = DateTime.parse("#{CommonUtils::today()} 16:00:00").to_time.to_i
+            return {
+                "unixtime" => unixtime,
+                "datetime" => Time.at(unixtime).to_s
+            }
+        end
+        if Time.new.hour < 22 then
+            unixtime = DateTime.parse("#{CommonUtils::today()} 21:00:00").to_time.to_i
+            return {
+                "unixtime" => unixtime,
+                "datetime" => Time.at(unixtime).to_s
+            }
+        end
+    end
+
+    # Dispatch::sequence_meets_deadline(items, deadline_unixtime)
+    def self.sequence_meets_deadline(items, deadline_unixtime)
         cursor_end_task = Time.new.to_i
         cursor_end_task_non_wave = Time.new.to_i
         items.each{|item|
@@ -19,7 +44,6 @@ class Dispatch
                 cursor_end_task_non_wave = cursor_end_task
             end
         }
-        deadline_unixtime = DateTime.parse("#{CommonUtils::today()} 22:00:00").to_time.to_i
         cursor_end_task_non_wave < deadline_unixtime
     end
 
@@ -29,22 +53,24 @@ class Dispatch
         Dispatch::merge(head + a1.take(1) + a2.take(1), a1.drop(1), a2.drop(1))
     end
 
-    # Dispatch::dispatch(prefix, waves, tasks, depth, fallback)
-    def self.dispatch(prefix, waves, tasks, depth, fallback)
+    # Dispatch::dispatch(prefix, waves, tasks, depth, fallback, deadline)
+    def self.dispatch(prefix, waves, tasks, depth, fallback, deadline)
+        return fallback if waves.empty?
         items = prefix + Dispatch::merge([], waves.take(depth), tasks + waves.drop(depth))
-        if Dispatch::is_good_sequence(items) then
-            return Dispatch::dispatch(prefix, waves, tasks, depth+1, items)
+        if Dispatch::sequence_meets_deadline(items, deadline["unixtime"]) then
+            return Dispatch::dispatch(prefix, waves, tasks, depth+1, items, deadline)
         end
         fallback
     end
 
     # Dispatch::itemsForListing(items)
     def self.itemsForListing(items)
-        if Time.new.hour >= 23 then
-            return []
-        end
 
-        return [] if items.empty?
+        # From 22:00 we only return waves
+
+        if Time.new.hour >= 22 then
+            return items.select{|item| item["mikuType"] == "Wave" }
+        end
 
         active, items = items.partition{|item| NxBalls::itemIsActive(item) }
 
@@ -61,8 +87,10 @@ class Dispatch
             item
         }
 
+        deadline = Dispatch::decide_deadline()
+
         waves, tasks = items.partition{|item| item["mikuType"] == "Wave" }
-        items = Dispatch::dispatch(active, waves, tasks, 1, active + tasks + waves)
+        items = Dispatch::dispatch(active, waves, tasks, 1, active + tasks + waves, deadline)
 
         cursor = Time.new.to_i
         items.map{|item|
