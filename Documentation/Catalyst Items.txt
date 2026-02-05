@@ -14,4 +14,4 @@ Cross types conventions (all optional):
     - donation-13           : null or Array[String]
                               bank accounts to donate to
 
-    - duration-38           : duration in minutes for the morning planning
+    - durations-mins-40     : durations in minutes for the dispatch
