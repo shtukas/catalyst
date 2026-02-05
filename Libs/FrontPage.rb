@@ -79,7 +79,15 @@ class FrontPage
         items
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
-            .sort_by{|item| ListingPosition::listingPositionOrNull(item) }
+            .map{|item|
+                {
+                    "item" => item,
+                    "position" => ListingPosition::listingPositionOrNull(item)
+                }
+            }
+            .select{|packet| packet["position"]}
+            .sort_by{|packet| packet["position"] }
+            .map{|packet| packet["item"]}
     end
 
     # FrontPage::displayListing(initialCodeTrace)
@@ -104,7 +112,7 @@ class FrontPage
 
         displayeduuids = []
 
-        Dispatch::itemsForListing()
+        Dispatch::itemsForListing(FrontPage::itemsForListing())
             .each{|item|
                 next if displayeduuids.include?(item["uuid"])
                 displayeduuids << item["uuid"]
@@ -139,11 +147,6 @@ class FrontPage
         if input == "exit" then
             return
         end
-
-        Thread.new {
-            FrontPage::itemsForListing()
-                .each{|item| Dispatch::ensure(item) }
-        }
 
         CommandsAndInterpreters::interpreter(input, store)
     end

@@ -44,7 +44,6 @@ class PolyActions
 
         PolyActions::stop(item)
         ListingPosition::nullifyNx42(item)
-        Dispatch::remove(item["uuid"])
 
         if item["mikuType"] == "NxCounter" then
             return

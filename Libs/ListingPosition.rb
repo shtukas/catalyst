@@ -44,27 +44,27 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxCounter" then
-            return 1.000 + rotation.call(item["random"])
+            return 3.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "NxBackup" then
-            return 1.000 + rotation.call(item["random"])
+            return 3.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "Float" then
-            return 1.000 + rotation.call(item["random"])
+            return 3.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "NxOndate" then
-            return 1.000 + rotation.call(item["random"])
+            return 3.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "NxToday" then
-            return 1.000 + rotation.call(item["random"])
+            return 3.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "BufferIn" then
-            return 1.000 + rotation.call(item["random"])
+            return 3.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "Wave" then
@@ -76,7 +76,7 @@ class ListingPosition
             if dt < 1 then
                 return 4.000 + rotation.call(item["random"])
             end
-            return 1.000 + rotation.call(item["random"])
+            return 3.000 + rotation.call(item["random"])
         end
 
         if item["engine-24"] then
