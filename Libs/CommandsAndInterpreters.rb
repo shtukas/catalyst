@@ -102,42 +102,12 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["global", "priorities", "today special"])
-            return if option.nil?
-
-            if option == "global" then
-                items  = FrontPage::itemsAndBucketPositionsForListing()
-                            .map{|packet| packet["item"] }
-                selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|item|
-                    Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstGlobalListingPosition() - 1)
-                }
-                return
-            end
-
-            if option == "priorities" then
-                items  = FrontPage::itemsAndBucketPositionsForListing()
-                            .select{|packet| packet["bucket&position"][0] == "priorities" }
-                            .map{|packet| packet["item"] }
-                selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|item|
-                    Blades::setAttribute(item["uuid"], "nx42", ListingPosition::newPrioritiesListingPosition())
-                }
-                return
-            end
-
-            if option == "today special" then
-                items  = FrontPage::itemsAndBucketPositionsForListing()
-                            .select{|packet| ["today special", "today", "today or next days"].include?(packet["bucket&position"][0]) }
-                            .map{|packet| packet["item"] }
-                selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|item|
-                    position = ListingPosition::newTodaySpecialListingPosition()
-                    puts "#{PolyFunctions::toString(item).green} at position: #{position.to_s.green}"
-                    Blades::setAttribute(item["uuid"], "nx42", position)
-                }
-                return
-            end
+            items  = FrontPage::itemsForListing()
+            selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|item|
+                Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstGlobalListingPosition() - 1)
+            }
+            return
         end
 
         if Interpreting::match("transmute *", input) then
