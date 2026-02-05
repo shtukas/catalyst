@@ -18,7 +18,7 @@ class Floats
 
     # Floats::icon(item)
     def self.icon(item)
-        "🪸"
+        "🐠"
     end
 
     # Floats::toString(item)
@@ -29,6 +29,5 @@ class Floats
     # Floats::listingItems()
     def self.listingItems()
         Blades::mikuType("Float")
-
     end
 end

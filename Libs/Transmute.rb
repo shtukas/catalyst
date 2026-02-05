@@ -3,6 +3,12 @@ class Transmute
 
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
+        if item["mikuType"] == "Float" and targetType == "NxTask" then
+            ListingParenting::setMembership(item, NxListings::architectNx38())
+            Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
+            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
+            return Blades::itemOrNull(item["uuid"])
+        end
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
             ListingParenting::setMembership(item, NxListings::architectNx38())
             Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
@@ -15,10 +21,9 @@ class Transmute
             Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Blades::itemOrNull(item["uuid"])
         end
-        if item["mikuType"] == "Float" and targetType == "NxTask" then
-            ListingParenting::setMembership(item, NxListings::architectNx38())
-            Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
-            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
+
+        if item["mikuType"] == "NxTask" and targetType == "Float" then
+            Blades::setAttribute(item["uuid"], "mikuType", "Float")
             return Blades::itemOrNull(item["uuid"])
         end
         raise "(error a7093fd4-0236) I do not know how to transmute #{item["mikuType"]} to #{targetType}"
@@ -27,11 +32,18 @@ class Transmute
     # Transmute::transmute(item)
     def self.transmute(item)
         mapping = {
-            "NxToday" => ["NxTask"],
+            "NxToday"  => ["NxTask"],
             "NxOndate" => ["NxTask"],
-            "Float" => ["NxTask"],
+            "Float"    => ["NxTask"],
+            "NxTask"   => ["Float"]
         }
-        targetType = LucilleCore::selectEntityFromListOfEntitiesOrNull("target", mapping[item["mikuType"]])
+        targetTypes = mapping[item["mikuType"]]
+        if targetTypes.nil? or targetTypes.empty? then
+            puts "I do not have transmute targets for #{item["mikuType"]}"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        targetType = LucilleCore::selectEntityFromListOfEntitiesOrNull("target", targetTypes)
         if targetType then
             item = PolyActions::editDescription(item)
             Transmute::transmuteTo(item, targetType)

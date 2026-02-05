@@ -1,0 +1,7 @@
+
+Float:
+    - uuid         : String
+    - mikuType     : "Float"
+    - unixtime     :
+    - datetime     :
+    - description  : String
