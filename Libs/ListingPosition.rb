@@ -76,7 +76,7 @@ class ListingPosition
             return 2.000 + rotation.call(item["random"])
         end
 
-        if item["mikuType"] == "Listing" then
+        if item["mikuType"] == "NxListing" then
             return 3.000 + rotation.call(item["random"])
         end
 
