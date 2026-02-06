@@ -144,10 +144,10 @@ class NxListings
             return if input == ""
 
             if input == "new" then
-                position = NxListings::interactivelyDeterminePositionInListing(listinguuid)
+                position = NxListings::interactivelyDeterminePositionInListing(listing["uuid"])
                 nx38 = {
-                    "uuid"     => listinguuid,
-                    "name"     => NxListings::listinguuidToName(listinguuid),
+                    "uuid"     => listing["uuid"],
+                    "name"     => NxListings::listinguuidToName(listing["uuid"]),
                     "position" => position
                 }
                 NxTasks::interactivelyIssueNewOrNull(nx38)
@@ -156,11 +156,11 @@ class NxListings
 
             if input == "sort" then
                 selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
-                name1 = NxListings::listinguuidToName(listinguuid)
+                name1 = NxListings::listinguuidToName(listing["uuid"])
                 selected.reverse.each{|item|
                     position = NxListings::firstPositionInListing(listing) - 1
                     ListingParenting::setMembership(item, {
-                        "uuid"     => listinguuid,
+                        "uuid"     => listing["uuid"],
                         "name"     => name1,
                         "position" => position
                     })
