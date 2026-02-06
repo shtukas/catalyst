@@ -1,7 +1,7 @@
 
-class Floats
+class NxActives
 
-    # Floats::interactivelyIssueNewOrNull()
+    # NxActives::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
@@ -11,23 +11,23 @@ class Floats
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
         Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        Blades::setAttribute(uuid, "mikuType", "Float")
+        Blades::setAttribute(uuid, "mikuType", "NxActive")
         item = Blades::itemOrNull(uuid)
         item
     end
 
-    # Floats::icon(item)
+    # NxActives::icon(item)
     def self.icon(item)
         "🐠"
     end
 
-    # Floats::toString(item)
+    # NxActives::toString(item)
     def self.toString(item)
-        "#{Floats::icon(item)} #{item["description"]}"
+        "#{NxActives::icon(item)} #{item["description"]}"
     end
 
-    # Floats::listingItems()
+    # NxActives::listingItems()
     def self.listingItems()
-        Blades::mikuType("Float")
+        Blades::mikuType("NxActive")
     end
 end

@@ -1,4 +1,4 @@
 
 Nx38 (listing membership)
     "uuid"     : String
-    "position" : Float
+    "position" : float

@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | time commitment * | transmute * | donation * | engine (*) | transmute * | dismiss",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | transmute * | donation * | engine (*) | transmute * | dismiss",
             "NxListing     : dive (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | float | counter",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | floats | listings | engined | counters",
+            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | listings | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | maintenance | sort | wind | ",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | sort | wind | ",
         ].join("\n")
     end
 
@@ -142,28 +142,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("maintenance", input) then
-            Operations::globalMaintenanceSync()
-            return
-        end
-
-        if Interpreting::match("time commitment *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] == "NxTask" then
-                hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
-                Blades::setAttribute(item["uuid"], "tc-15", hours)
-                return
-            end
-            if item["mikuType"] == "NxToday" then
-                hours = LucilleCore::askQuestionAnswerAsString("commitment per day in hours: ").to_f
-                Blades::setAttribute(item["uuid"], "tc-15", hours)
-                Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
-                return
-            end
-            puts "I do not know how to add a time commitment to a #{item["mikuType"]}"
-            LucilleCore::pressEnterToContinue()
+        if Interpreting::match("global-maintenance", input) then
+            Operations::globalMaintenance()
             return
         end
 
@@ -308,38 +288,23 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            item = NxTodays::interactivelyIssueNewOrNull()
+            item = NxActives::interactivelyIssueNewOrNull()
             return if item.nil?
             item = Blades::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("today *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] == "Wave" then
-                uuid = SecureRandom.uuid
-                Blades::init(uuid)
-                Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-                Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-                Blades::setAttribute(uuid, "description", "wavelet: #{item["description"]}")
-                Blades::setAttribute(uuid, "payload-37", item["payload-37"])
-                Blades::setAttribute(uuid, "mikuType", "NxToday")
-                wavelet = Blades::itemOrNull(uuid)
-                puts JSON.pretty_generate(wavelet)
-                Waves::performDone(item)
-                return
-            end
-            puts "I do not know how to today * a #{item["mikuType"]}"
-            LucilleCore::pressEnterToContinue()
+        if Interpreting::match("todays", input) then
+            Operations::program3(lambda { 
+                Blades::mikuType("NxActive")
+            })
             return
         end
 
-        if Interpreting::match("todays", input) then
+        if Interpreting::match("actives", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxToday")
+                Blades::mikuType("NxActive")
             })
             return
         end
@@ -357,15 +322,15 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("float", input) then
-            item = Floats::interactivelyIssueNewOrNull()
+        if Interpreting::match("active", input) then
+            item = NxActives::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("floats", input) then
+        if Interpreting::match("actives", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("Float")
+                Blades::mikuType("NxActive")
             })
             return
         end

@@ -34,7 +34,6 @@ class NxOndates
 
     # NxOndates::icon(item)
     def self.icon(item)
-        return NxTodays::icon() if item["date"] <= CommonUtils::today() 
         "🗓️ "
     end
 
@@ -47,7 +46,12 @@ class NxOndates
     def self.listingItems()
         Blades::mikuType("NxOndate")
                 .select{|item| item["date"] <= CommonUtils::today() }
-                .sort_by{|item| item["unixtime"] }
+                .map{|item|
+                    puts "I am moving '#{PolyFunctions::toString(item).green}' to NxActive"
+                    LucilleCore::pressEnterToContinue()
+                    Blades::setAttribute(item["uuid"], "mikuType", "NxActive")
+                    Blades::itemOrNull(item["uuid"])
+                }
 
     end
 end

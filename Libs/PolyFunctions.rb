@@ -89,11 +89,8 @@ class PolyFunctions
         if item["mikuType"] == "NxListing" then
             return NxListings::toString(item)
         end
-        if item["mikuType"] == "NxToday" then
-            return NxTodays::toString(item)
-        end
-        if item["mikuType"] == "Float" then
-            return Floats::toString(item)
+        if item["mikuType"] == "NxActive" then
+            return NxActives::toString(item)
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)

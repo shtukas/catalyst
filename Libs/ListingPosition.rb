@@ -25,7 +25,8 @@ class ListingPosition
         # listing buckets:
         # global-sort           -infty -> 0.000 (nx42: sorted)
         # interruptions          1.000 -> 2.000
-        # today                  3.000 -> 4.000
+        # active and al          2.000 -> 3.000
+        # listings               3.000 -> 4.000
         # next-days              4.000 -> 5.000
 
         rotation = lambda{|x| 0.5 + 0.5 * Math.sin(x + Time.new.to_f/86400) }
@@ -44,27 +45,23 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxCounter" then
-            return 3.000 + rotation.call(item["random"])
+            return 2.000 + item["random"]/1000
         end
 
         if item["mikuType"] == "NxBackup" then
-            return 3.000 + rotation.call(item["random"])
+            return 2.000 + rotation.call(item["random"])
         end
 
-        if item["mikuType"] == "Float" then
-            return 3.000 + rotation.call(item["random"])
+        if item["mikuType"] == "NxActive" then
+            return 2.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "NxOndate" then
-            return 3.000 + rotation.call(item["random"])
-        end
-
-        if item["mikuType"] == "NxToday" then
-            return 3.000 + rotation.call(item["random"])
+            return 2.000 + rotation.call(item["random"])
         end
 
         if item["mikuType"] == "BufferIn" then
-            return 3.000 + rotation.call(item["random"])
+            return 2.998 + item["random"]/1000
         end
 
         if item["mikuType"] == "Wave" then
@@ -76,11 +73,15 @@ class ListingPosition
             if dt < 1 then
                 return 4.000 + rotation.call(item["random"])
             end
+            return 2.000 + rotation.call(item["random"])
+        end
+
+        if item["mikuType"] == "Listing" then
             return 3.000 + rotation.call(item["random"])
         end
 
         if item["engine-24"] then
-            return NxEngines::positionOrNull(item, item["engine-24"], 3.000, 4.000)
+            return NxEngines::positionOrNull(item, item["engine-24"], 2.000, 4.000)
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"

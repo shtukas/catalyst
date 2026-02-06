@@ -47,16 +47,11 @@ class Dispatch
         cursor_end_task_non_wave < deadline_unixtime
     end
 
-    # Dispatch::merge(head, a1, a2)
-    def self.merge(head, a1, a2)
-        return head if (a1+a2).empty?
-        Dispatch::merge(head + a1.take(1) + a2.take(1), a1.drop(1), a2.drop(1))
-    end
-
     # Dispatch::dispatch(prefix, waves, tasks, depth, fallback, deadline)
     def self.dispatch(prefix, waves, tasks, depth, fallback, deadline)
         return fallback if waves.empty?
-        items = prefix + Dispatch::merge([], waves.take(depth), tasks + waves.drop(depth))
+        return fallback if depth > waves.size
+        items = prefix + waves.take(depth) + tasks + waves.drop(depth)
         if Dispatch::sequence_meets_deadline(items, deadline["unixtime"]) then
             return Dispatch::dispatch(prefix, waves, tasks, depth+1, items, deadline)
         end
@@ -75,7 +70,7 @@ class Dispatch
         active, items = items.partition{|item| NxBalls::itemIsActive(item) }
 
         if active.size > 0 then
-            return active + items.sort_by{|item| XCache::getOrDefaultValue("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", 0) }
+            return active + items.sort_by{|item| XCache::getOrDefaultValue("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", 0).to_i }
         end
 
         items = items.map{|item|
@@ -89,7 +84,7 @@ class Dispatch
 
         deadline = Dispatch::decide_deadline()
 
-        waves, tasks = items.partition{|item| item["mikuType"] == "Wave" }
+        waves, tasks = items.partition{|item| item["mikuType"] == "Wave" and !item["interruption"] }
         items = Dispatch::dispatch(active, waves, tasks, 1, active + tasks + waves, deadline)
 
         cursor = Time.new.to_i

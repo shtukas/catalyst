@@ -7,7 +7,6 @@ class FrontPage
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true  if NxBalls::itemIsRunning(item)
-        return false if item["mikuType"] == "Float"
         true
     end
 
@@ -76,10 +75,9 @@ class FrontPage
         items = [
             NxBackups::listingItems(),
             NxOndates::listingItems(),
-            Blades::mikuType("NxToday"),
             Waves::listingItems(),
             BufferIn::listingItems(),
-            Floats::listingItems(),
+            NxActives::listingItems(),
             NxEngines::listingItems(),
             Nx42s::listingItems(),
             NxCounters::listingItems()
@@ -112,7 +110,7 @@ class FrontPage
 
         if Config::isPrimaryInstance() then
             if (Time.new.to_i - XCache::getOrDefaultValue("e1450d85-3f2b-4c3c-9c57-5e034361e8d6", "0").to_i) > 86400 then
-                Operations::globalMaintenanceSync()
+                Operations::globalMaintenance()
                 XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d6", Time.new.to_i)
             end
         end
@@ -147,16 +145,7 @@ class FrontPage
 
     # FrontPage::main()
     def self.main()
-
         initialCodeTrace = CommonUtils::catalystTraceCode()
-
-        Thread.new {
-            loop {
-                sleep 3600
-                Operations::globalMaintenanceASync()
-            }
-        }
-
         loop {
             FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)

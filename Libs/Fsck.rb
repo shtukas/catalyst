@@ -58,7 +58,7 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxToday" then
+        if item["mikuType"] == "NxActive" then
             return
         end
 

@@ -44,14 +44,29 @@ class Operations
         }
     end
 
-    # Operations::globalMaintenanceSync()
-    def self.globalMaintenanceSync()
-        puts "Running global maintenance sync, every half a day, on primary instance".yellow
-    end
-
-    # Operations::globalMaintenanceASync()
-    def self.globalMaintenanceASync()
+    # Operations::globalMaintenance()
+    def self.globalMaintenance()
+        puts "Running global maintenance".yellow
         Bank::maintenance()
+
+        # Let's check Principle12
+        #  - clique8 is carried by NxTasks and NxActives.
+        #  - engine-24 is only carried by NxActives or NxListings
+
+        Blades::items().each{|item|
+            if item["clique8"] then
+                if !["NxTask", "NxActive"].include?(item["mikuType"]) then
+                    puts "[92596A01] I have found a clique8, not carried by a NxTask or a NxActive (handling need to be written). Aborting."
+                    exit
+                end
+            end
+            if item["engine-24"] then
+                if !["NxActive", "NxListing"].include?(item["mikuType"]) then
+                    puts "[3ACE1B82] I have found a engine-24, not carried by a NxTask or a NxListing (handling need to be written). Aborting."
+                    exit
+                end
+            end
+        }
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
@@ -97,7 +112,10 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
-        puts "listing position: #{ListingPosition::listingPositionOrNull(item)}"
+        begin
+            puts "listing position: #{ListingPosition::listingPositionOrNull(item)}"
+        rescue
+        end
         LucilleCore::pressEnterToContinue()
     end
 

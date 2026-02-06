@@ -3,27 +3,14 @@ class Transmute
 
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
-        if item["mikuType"] == "Float" and targetType == "NxTask" then
-            ListingParenting::setMembership(item, NxListings::architectNx38())
-            Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
-            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
-            return Blades::itemOrNull(item["uuid"])
-        end
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
             ListingParenting::setMembership(item, NxListings::architectNx38())
             Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
             Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Blades::itemOrNull(item["uuid"])
         end
-        if item["mikuType"] == "NxToday" and targetType == "NxTask" then
-            ListingParenting::setMembership(item, NxListings::architectNx38())
-            Blades::setAttribute(item["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
-            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
-            return Blades::itemOrNull(item["uuid"])
-        end
-
-        if item["mikuType"] == "NxTask" and targetType == "Float" then
-            Blades::setAttribute(item["uuid"], "mikuType", "Float")
+        if item["mikuType"] == "NxTask" and targetType == "NxActive" then
+            Blades::setAttribute(item["uuid"], "mikuType", "NxActive")
             return Blades::itemOrNull(item["uuid"])
         end
         raise "(error a7093fd4-0236) I do not know how to transmute #{item["mikuType"]} to #{targetType}"
@@ -32,10 +19,8 @@ class Transmute
     # Transmute::transmute(item)
     def self.transmute(item)
         mapping = {
-            "NxToday"  => ["NxTask"],
             "NxOndate" => ["NxTask"],
-            "Float"    => ["NxTask"],
-            "NxTask"   => ["Float"]
+            "NxTask"   => ["NxActive"]
         }
         targetTypes = mapping[item["mikuType"]]
         if targetTypes.nil? or targetTypes.empty? then
