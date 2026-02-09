@@ -122,6 +122,16 @@ class FrontPage
 
         Dispatch::itemsForListing(CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListing(), "uuid"))
             .each{|item|
+                stored_day = XCache::getOrNull("dispatch-day:c26001e4:#{CommonUtils::today()}:#{item["uuid"]}")
+                if stored_day and stored_day != CommonUtils::today() then
+                    next
+                end
+
+                stored_hour = XCache::getOrNull("dispatch-hour:3b96884a:#{CommonUtils::today()}:#{item["uuid"]}")
+                if stored_hour and stored_hour.to_i >= 22 then
+                    next
+                end
+
                 store.register(item, FrontPage::canBeDefault(item))
                 line = FrontPage::toString2(store, item, true)
                 puts line

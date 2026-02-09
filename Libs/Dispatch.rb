@@ -2,8 +2,8 @@
 
 class Dispatch
 
-    # Dispatch::duration_average(entries)
-    def self.duration_average(entries)
+    # Dispatch::decide_duration_in_mins(entries)
+    def self.decide_duration_in_mins(entries)
         entries = entries.select{|entry| entry["date"] < CommonUtils::today() }
         sum = entries.map{|entry| entry["mins"] }.sum
         sum.to_f/entries.size
@@ -39,7 +39,7 @@ class Dispatch
         cursor_end_task = Time.new.to_i
         cursor_end_task_non_wave = Time.new.to_i
         items.each{|item|
-            cursor_end_task = cursor_end_task + Dispatch::duration_average(item["durations-mins-40"]) * 60
+            cursor_end_task = cursor_end_task + Dispatch::decide_duration_in_mins(item["durations-mins-40"]) * 60
             if item["mikuType"] != "Wave" then
                 cursor_end_task_non_wave = cursor_end_task
             end
@@ -47,15 +47,14 @@ class Dispatch
         cursor_end_task_non_wave < deadline_unixtime
     end
 
-    # Dispatch::dispatch(prefix, waves, tasks, depth, fallback, deadline)
-    def self.dispatch(prefix, waves, tasks, depth, fallback, deadline)
-        return fallback if waves.empty?
-        return fallback if depth > waves.size
-        items = prefix + waves.take(depth) + tasks + waves.drop(depth)
-        if Dispatch::sequence_meets_deadline(items, deadline["unixtime"]) then
-            return Dispatch::dispatch(prefix, waves, tasks, depth+1, items, deadline)
+    # Dispatch::dispatch(prefix, waves, tasks, depth, deadline)
+    def self.dispatch(prefix, waves, tasks, depth, deadline)
+        return prefix + tasks if waves.empty?
+        return prefix + waves + tasks if depth > waves.size
+        if Dispatch::sequence_meets_deadline(prefix + waves.take(depth+1) + tasks + waves.drop(depth+1), deadline["unixtime"]) then
+            return Dispatch::dispatch(prefix, waves, tasks, depth+1, deadline)
         end
-        fallback
+        prefix + waves.take(depth) + tasks + waves.drop(depth)
     end
 
     # Dispatch::itemsForListing(items)
@@ -67,7 +66,7 @@ class Dispatch
             return items.select{|item| item["mikuType"] == "Wave" }
         end
 
-        active, items = items.partition{|item| NxBalls::itemIsActive(item) }
+        active, items = items.partition{|item| NxBalls::itemIsActive(item) or (item["mikuType"] == "Wave" and item["interruption"]) }
 
         if active.size > 0 then
             return active + items.sort_by{|item| XCache::getOrDefaultValue("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", 0).to_i }
@@ -84,13 +83,15 @@ class Dispatch
 
         deadline = Dispatch::decide_deadline()
 
-        waves, tasks = items.partition{|item| item["mikuType"] == "Wave" and !item["interruption"] }
-        items = Dispatch::dispatch(active, waves, tasks, 1, active + tasks + waves, deadline)
+        waves, tasks = items.partition{|item| item["mikuType"] == "Wave" }
+        items = Dispatch::dispatch(active, waves, tasks, 0, deadline)
 
         cursor = Time.new.to_i
         items.map{|item|
             XCache::set("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", cursor)
-            cursor = cursor + Dispatch::duration_average(item["durations-mins-40"]) * 60
+            XCache::set("dispatch-day:c26001e4:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).to_s[0, 10])
+            XCache::set("dispatch-hour:3b96884a:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).hour)
+            cursor = cursor + Dispatch::decide_duration_in_mins(item["durations-mins-40"]) * 60
         }
 
         items
