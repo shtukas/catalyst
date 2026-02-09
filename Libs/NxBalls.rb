@@ -88,11 +88,11 @@ class NxBalls
         Time.new.to_i - nxball["startunixtime"]
     end
 
-    # NxBalls::itemRunningTimeOrZero(item)
-    def self.itemRunningTimeOrZero(item)
-        return 0 if !NxBalls::itemIsRunning(item)
+    # NxBalls::itemRunningTimeOrNull(item)
+    def self.itemRunningTimeOrNull(item)
+        return nil if !NxBalls::itemIsRunning(item)
         nxball = NxBalls::getNxBallOrNull(item)
-        return 0 if nxball.nil?
+        return nil if nxball.nil?
         NxBalls::ballRunningTime(nxball)
     end
 

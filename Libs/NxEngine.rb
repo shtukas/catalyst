@@ -30,7 +30,7 @@ class NxEngine
             if todayComputedDemandInHours <= 0 then
                 return 1
             end
-            return Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/todayComputedDemandInHours
+            return Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/(todayComputedDemandInHours*3600)
         end
 
         daysSinceMondayNotIncludingToday = (lambda{
@@ -60,14 +60,14 @@ class NxEngine
 
         XCache::set("today-demain-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}", todayComputedDemandInHours)
 
-        Bank::getValueAtDate(item["uuid"], CommonUtils::today())/todayComputedDemandInHours
+        Bank::getValueAtDate(item["uuid"], CommonUtils::today())/(todayComputedDemandInHours*3600)
     end
 
     # NxEngine::listingItems()
     def self.listingItems()
-    Blades::items()
-        .select{|item| item["whours-45"] }
-        .select{|item| NxEngine::ratio(item) < 1 }
+        Blades::items()
+            .select{|item| item["whours-45"] }
+            .select{|item| NxEngine::ratio(item) < 1 }
     end
 
     # NxEngine::suffix(item)
