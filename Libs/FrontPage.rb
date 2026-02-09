@@ -26,7 +26,7 @@ class FrontPage
                 cursor = cursor.to_i
                 planning = "[#{Time.at(cursor).to_s[11, 5]}] ".red
             else
-                planning = ""
+                planning = "        "
             end
         else
             planning = ""
@@ -84,9 +84,7 @@ class FrontPage
         ]
             .flatten
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
-
-        items
+        items = items
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
             .map{|item|
@@ -98,6 +96,10 @@ class FrontPage
             .select{|packet| packet["position"]}
             .sort_by{|packet| packet["position"] }
             .map{|packet| packet["item"]}
+
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+
+        items
     end
 
     # FrontPage::displayListing(initialCodeTrace)

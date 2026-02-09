@@ -87,7 +87,7 @@ class Dispatch
         items = Dispatch::dispatch(active, waves, tasks, 0, deadline)
 
         cursor = Time.new.to_i
-        items.map{|item|
+        items.each{|item|
             XCache::set("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", cursor)
             XCache::set("dispatch-day:c26001e4:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).to_s[0, 10])
             XCache::set("dispatch-hour:3b96884a:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).hour)
