@@ -3,4 +3,4 @@ NxListing:
     - uuid         : String
     - mikuType     : "NxListing"
     - description  : String
-    - engine-24    : null or NxEngine
+    - whours-45    : weekly (monday to sunday) time requirement, engine configuration

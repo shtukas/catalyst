@@ -5,12 +5,13 @@ class NxListings
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
+        whours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
         uuid = SecureRandom.uuid
         Blades::init(uuid)
         Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "engine", NxEngines::interactivelyBuildEngineOrNull())
+        Blades::setAttribute(uuid, "whours-45", whours)
         Blades::setAttribute(uuid, "mikuType", "NxListing")
         item = Blades::itemOrNull(uuid)
         item
@@ -28,7 +29,7 @@ class NxListings
 
     # NxListings::toString(item)
     def self.toString(item)
-        "🌌 #{item["description"].ljust(NxListings::dimension())} #{NxListings::itemsInOrder(item).size.to_s.rjust(6)} items#{NxEngines::suffix(item)}"
+        "🌌 #{item["description"].ljust(NxListings::dimension())} (#{NxListings::itemsInOrder(item).size.to_s.rjust(6)} items)#{NxEngine::suffix(item)}"
     end
 
     # NxListings::listinguuidToName(listinguuid)
@@ -130,6 +131,7 @@ class NxListings
     # NxListings::diveListing(listing)
     def self.diveListing(listing)
         loop {
+            listing = Blades::itemOrNull(listing["uuid"])
             store = ItemStore.new()
             puts ""
             puts "#{NxListings::toString(listing)}".yellow
@@ -169,7 +171,7 @@ class NxListings
             end
 
             if input == "engine" then
-                Blades::setAttribute(listing["uuid"], "engine-24", NxEngines::interactivelyBuildEngineOrNull())
+                NxEngine::set_value(listing)
                 next
             end
             CommandsAndInterpreters::interpreter(input, store)

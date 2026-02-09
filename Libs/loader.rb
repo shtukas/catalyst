@@ -138,7 +138,6 @@ require_relative "Donations.rb"
 require_relative "Dispatch.rb"
 
 require_relative "Elizabeth.rb"
-require_relative "NxEngines.rb"
 
 require_relative "Fsck.rb"
 require_relative "FrontPage.rb"
@@ -159,6 +158,7 @@ require_relative "NxListings.rb"
 require_relative "Nx42s.rb"
 require_relative "NxCounters.rb"
 require_relative "NxActives.rb"
+require_relative "NxEngine.rb"
 
 require_relative "Operations.rb"
 

@@ -6,4 +6,4 @@ NxActive:
     - datetime     :
     - description  : String
     - clique8      : Array[Nx38] # not empty
-    - engine-24    : null or NxEngine
+    - whours-45    : weekly (monday to sunday) time requirement, engine configuration

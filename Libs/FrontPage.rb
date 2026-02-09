@@ -78,7 +78,7 @@ class FrontPage
             Waves::listingItems(),
             BufferIn::listingItems(),
             NxActives::listingItems(),
-            NxEngines::listingItems(),
+            NxEngine::listingItems(),
             Nx42s::listingItems(),
             NxCounters::listingItems()
         ]

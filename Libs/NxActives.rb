@@ -23,7 +23,7 @@ class NxActives
 
     # NxActives::toString(item)
     def self.toString(item)
-        "#{NxActives::icon(item)} #{item["description"]}"
+        "#{NxActives::icon(item)} #{item["description"]}#{NxEngine::suffix(item)}"
     end
 
     # NxActives::listingItems()

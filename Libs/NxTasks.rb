@@ -22,6 +22,24 @@ class NxTasks
         item
     end
 
+    # NxTasks::interactivelyIssueNewListingChildOrNull()
+    def self.interactivelyIssueNewListingChildOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        return nil if description == ""
+        uuid = SecureRandom.uuid
+        payload = UxPayloads::makeNewPayloadOrNull(uuid)
+        nx38 = nx38 || NxListings::architectNx38()
+        Blades::init(uuid)
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "payload-37", payload)
+        Blades::setAttribute(uuid, "clique8", [nx38])
+        Blades::setAttribute(uuid, "mikuType", "NxTask")
+        item = Blades::itemOrNull(uuid)
+        item
+    end
+
     # ----------------------
     # Data
 
@@ -32,6 +50,6 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}#{NxEngines::suffix(item)}"
+        "#{NxTasks::icon()} #{item["description"]}#{NxEngine::suffix(item)}"
     end
 end

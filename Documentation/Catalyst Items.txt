@@ -15,8 +15,3 @@ Cross types conventions (all optional):
                               bank accounts to donate to
 
     - durations-mins-40     : durations in minutes for the dispatch
-
-Principle12
-    - clique8 is carried by NxTasks and NxActive.
-    - engine-24 is only carried by NxActive, or NxListings
-

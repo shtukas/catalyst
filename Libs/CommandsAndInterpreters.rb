@@ -212,7 +212,7 @@ class CommandsAndInterpreters
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            NxEngines::setEngine(item)
+            NxEngine::set_value(item)
             return
         end
 
@@ -220,7 +220,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxEngines::setEngine(item)
+            NxEngine::set_value(item)
             return
         end
 
@@ -353,7 +353,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("engined", input) then
             Operations::program3(lambda {
-                Blades::items().select{|item| item["engine-24"] }
+                Blades::items().select{|item| item["whours-45"] }
             })
             return
         end
@@ -419,9 +419,22 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
-            item = NxEngines::setEngine(item)
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["child of a listing (default)", "active with optional engine"])
+            if option.nil? or option == "child of a listing (default)" then
+                listing = NxListings::interactivelySelectListingOrNull()
+                return if listing.nil?
+                position = NxListings::interactivelyDeterminePositionInListing(listing["uuid"])
+                nx38 = {
+                    "uuid"     => listing["uuid"],
+                    "name"     => NxListings::listinguuidToName(listing["uuid"]),
+                    "position" => position
+                }
+                item = NxTasks::interactivelyIssueNewOrNull(nx38)
+            end
+            if option == "active with optional engine" then
+                item = NxActives::interactivelyIssueNewOrNull()
+                item = NxEngine::set_value_proposal(item)
+            end
             puts JSON.pretty_generate(item)
             return
         end

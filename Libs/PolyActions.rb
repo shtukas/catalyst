@@ -11,6 +11,17 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxActive" and !item["no-donation-0D939389"] then
+            puts "You are starting a NxActive that doesn't have a donation instruction and no directive to avoid one"
+            item = Donations::interactivelySetDonation(item)
+            if item["donation-13"].nil? then
+                if LucilleCore::askQuestionAnswerAsBoolean("You did not set up a donation, do you want to avoid donations for this item ? ") then
+                    Blades::setAttribute(item["uuid"], "no-donation-0D939389", true)
+                    item = Blades::itemOrNull(item["uuid"])
+                end
+            end
+        end
+
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
