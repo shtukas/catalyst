@@ -11,7 +11,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxActive" and !item["no-donation-0D939389"] then
+        if item["mikuType"] == "NxActive" and !item["donation-13"] and !item["no-donation-0D939389"] then
             puts "You are starting a NxActive that doesn't have a donation instruction and no directive to avoid one"
             item = Donations::interactivelySetDonation(item)
             if item["donation-13"].nil? then
