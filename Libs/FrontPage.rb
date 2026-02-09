@@ -158,18 +158,6 @@ class FrontPage
     # FrontPage::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
-        Thread.new {
-            loop {
-                NxBalls::runningItems().each {|item|
-                    running_time = NxBalls::itemRunningTimeOrNull(item)
-                    if running_time and running_time > (Dispatch::decide_duration_in_mins(item) * 60) then
-                        CommonUtils::onScreenNotification("catalyst", "one item is overruning")
-                    end
-                    sleep 2
-                }
-                sleep 120
-            }
-        }
         loop {
             FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)
