@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        if is_main_listing then
+        if is_main_listing and Time.new.hour < 22 then
             cursor = XCache::getOrNull("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}")
             if cursor then
                 cursor = cursor.to_i
