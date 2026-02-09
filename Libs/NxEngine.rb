@@ -23,7 +23,44 @@ class NxEngine
     def self.ratio(item)
         return 0 if item["whours-45"].nil?
         return 0 if item["whours-45"] == 0
-        BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])/item["whours-45"]
+
+        todayComputedDemandInHours = XCache::getOrNull("today-demain-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}")
+        if todayComputedDemandInHours then
+            todayComputedDemandInHours = todayComputedDemandInHours.to_f
+            if todayComputedDemandInHours <= 0 then
+                return 1
+            end
+            return Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/todayComputedDemandInHours
+        end
+
+        daysSinceMondayNotIncludingToday = (lambda{
+            today = Date.today
+            monday = today - (today.wday - 1) % 7
+            dates = (monday...today).map { |d| d.strftime("%Y-%m-%d") }
+            dates
+        }).call()
+
+        #puts "daysSinceMondayNotIncludingToday: #{daysSinceMondayNotIncludingToday.join(", ")}"
+
+        daysToCommingSunday = (lambda {
+            today = Date.today
+            sunday = today + ((7 - today.wday) % 7)
+            dates = (today..sunday).map { |d| d.strftime("%Y-%m-%d") }
+            dates
+        }).call()
+
+        #puts "daysToCommingSunday: #{daysToCommingSunday.join(", ")}"
+        #exit
+
+        timeDoneUntilTodayInSeconds = daysSinceMondayNotIncludingToday.map{|date| Bank::getValueAtDate(item["uuid"], date) }.sum
+        timeLeftToDoThisWeekInSeconds = item["whours-45"]*3600 - timeDoneUntilTodayInSeconds
+        timeLeftToDoThisWeekInHours = timeLeftToDoThisWeekInSeconds.to_f/3600
+
+        todayComputedDemandInHours = timeLeftToDoThisWeekInHours.to_f/daysToCommingSunday.size
+
+        XCache::set("today-demain-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}", todayComputedDemandInHours)
+
+        Bank::getValueAtDate(item["uuid"], CommonUtils::today())/todayComputedDemandInHours
     end
 
     # NxEngine::listingItems()
@@ -36,6 +73,6 @@ class NxEngine
     # NxEngine::suffix(item)
     def self.suffix(item)
         return "" if item["whours-45"].nil?
-        " (#{(100 * NxEngine::ratio(item)).round(2)} % of daily #{(item["whours-45"].to_f/7).round(2)})".green
+        " (#{"%6.2f" % (100 * NxEngine::ratio(item)).round(2)} % of daily #{"%4.2f" % (item["whours-45"].to_f/7)})".green
     end
 end

@@ -76,8 +76,8 @@ class ListingPosition
             return 2.000 + rotation.call(item["random"])
         end
 
-        if item["whours-45"] then
-            return 3.000 + NxEngine::ratio(item) + rotation.call(item["random"])
+        if item["mikuType"] == "NxListing" then
+            return 3.000 + NxEngine::ratio(item)
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
