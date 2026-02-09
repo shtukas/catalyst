@@ -109,6 +109,7 @@ class Operations
             puts "listing position: #{ListingPosition::listingPositionOrNull(item)}"
         rescue
         end
+        puts "duration in minutes: #{Dispatch::decide_duration_in_mins(item)}"
         LucilleCore::pressEnterToContinue()
     end
 

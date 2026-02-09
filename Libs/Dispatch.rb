@@ -2,8 +2,15 @@
 
 class Dispatch
 
-    # Dispatch::decide_duration_in_mins(entries)
-    def self.decide_duration_in_mins(entries)
+    # Dispatch::decide_duration_in_mins(item)
+    def self.decide_duration_in_mins(item)
+        todayComputedDemandInHours = XCache::getOrNull("today-demain-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}")
+        if todayComputedDemandInHours then
+            todayComputedDemandInHours = todayComputedDemandInHours.to_f
+            return todayComputedDemandInHours * 60
+        end
+
+        entries = item["durations-mins-40"]
         entries = entries.select{|entry| entry["date"] < CommonUtils::today() }
         sum = entries.map{|entry| entry["mins"] }.sum
         sum.to_f/entries.size
@@ -39,7 +46,7 @@ class Dispatch
         cursor_end_task = Time.new.to_i
         cursor_end_task_non_wave = Time.new.to_i
         items.each{|item|
-            cursor_end_task = cursor_end_task + Dispatch::decide_duration_in_mins(item["durations-mins-40"]) * 60
+            cursor_end_task = cursor_end_task + Dispatch::decide_duration_in_mins(item) * 60
             if item["mikuType"] != "Wave" then
                 cursor_end_task_non_wave = cursor_end_task
             end
@@ -91,7 +98,7 @@ class Dispatch
             XCache::set("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", cursor)
             XCache::set("dispatch-day:c26001e4:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).to_s[0, 10])
             XCache::set("dispatch-hour:3b96884a:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).hour)
-            cursor = cursor + Dispatch::decide_duration_in_mins(item["durations-mins-40"]) * 60
+            cursor = cursor + Dispatch::decide_duration_in_mins(item) * 60
         }
 
         items
