@@ -8,6 +8,7 @@ class BufferIn
 
     # BufferIn::listingItems()
     def self.listingItems()
+        return [] if BankDerivedData::recoveredAverageHoursPerDay(BufferIn::uuid()) >= 1
         [Blades::itemOrNull(BufferIn::uuid())]
     end
 
