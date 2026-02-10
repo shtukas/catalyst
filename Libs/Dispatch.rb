@@ -16,8 +16,8 @@ class Dispatch
         sum.to_f/entries.size
     end
 
-    # Dispatch::decide_deadline()
-    def self.decide_deadline()
+    # Dispatch::decide_deadline_or_null()
+    def self.decide_deadline_or_null()
         if Time.new.hour < 12 then
             unixtime = DateTime.parse("#{CommonUtils::today()} 12:00:00").to_time.to_i
             return {
@@ -39,10 +39,11 @@ class Dispatch
                 "datetime" => Time.at(unixtime).to_s
             }
         end
+        nil
     end
 
-    # Dispatch::sequence_meets_deadline(items, deadline_unixtime)
-    def self.sequence_meets_deadline(items, deadline_unixtime)
+    # Dispatch::sequence_meets_deadline(items, deadline)
+    def self.sequence_meets_deadline(items, deadline)
         cursor_end_task = Time.new.to_i
         cursor_end_task_non_wave = Time.new.to_i
         items.each{|item|
@@ -51,13 +52,14 @@ class Dispatch
                 cursor_end_task_non_wave = cursor_end_task
             end
         }
-        cursor_end_task_non_wave < deadline_unixtime
+        cursor_end_task_non_wave < deadline["unixtime"]
     end
 
     # Dispatch::dispatch(prefix, waves, tasks, depth, deadline)
     def self.dispatch(prefix, waves, tasks, depth, deadline)
         return prefix + tasks if waves.empty?
         return prefix + waves + tasks if depth > waves.size
+        return prefix + waves + tasks if deadline.nil?
         if Dispatch::sequence_meets_deadline(prefix + waves.take(depth+1) + tasks + waves.drop(depth+1), deadline) then
             return Dispatch::dispatch(prefix, waves, tasks, depth+1, deadline)
         end
@@ -82,7 +84,7 @@ class Dispatch
             item
         }
 
-        deadline = Dispatch::decide_deadline()
+        deadline = Dispatch::decide_deadline_or_null()
 
         waves, tasks = items.partition{|item| item["mikuType"] == "Wave" }
         items = Dispatch::dispatch(active, waves, tasks, 0, deadline)
