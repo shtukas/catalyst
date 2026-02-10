@@ -109,7 +109,12 @@ class FrontPage
             three = NxListings::itemsInOrder(item)
                         .select{|i| DoNotShowUntil::isVisible(i) }
                         .take(3)
-            three = three.sort_by{|i| BankDerivedData::recoveredAverageHoursPerDay(i["uuid"]) }
+            rtprime = lambda {|i|
+                rt = BankDerivedData::recoveredAverageHoursPerDay(i["uuid"])
+                return 0.4 if rt == 0
+                rt
+            }
+            three = three.sort_by{|i| rtprime.call(i) }
             return three + [item]
         end
         [item]

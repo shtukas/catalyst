@@ -225,6 +225,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxListing" then
+            if NxListings::itemsInOrder(item).size > 0 then
+                puts "You cannot destroy a listing that has some elements in it."
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::deleteItem(item["uuid"])
             end

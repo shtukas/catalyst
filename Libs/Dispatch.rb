@@ -58,7 +58,7 @@ class Dispatch
     def self.dispatch(prefix, waves, tasks, depth, deadline)
         return prefix + tasks if waves.empty?
         return prefix + waves + tasks if depth > waves.size
-        if Dispatch::sequence_meets_deadline(prefix + waves.take(depth+1) + tasks + waves.drop(depth+1), deadline["unixtime"]) then
+        if Dispatch::sequence_meets_deadline(prefix + waves.take(depth+1) + tasks + waves.drop(depth+1), deadline) then
             return Dispatch::dispatch(prefix, waves, tasks, depth+1, deadline)
         end
         prefix + waves.take(depth) + tasks + waves.drop(depth)
