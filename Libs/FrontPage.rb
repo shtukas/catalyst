@@ -20,16 +20,17 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        if is_main_listing and Time.new.hour < 22 then
-            cursor = XCache::getOrNull("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}")
-            if cursor then
-                cursor = cursor.to_i
-                planning = "[#{Time.at(cursor).to_s[11, 5]}] ".red
+        cursor = XCache::getOrNull("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}")
+        if cursor then
+            cursor = cursor.to_i
+            if cursor >= Time.new.to_i then
+                planning = "[#{Time.at(cursor).to_s[11, 5]}] "
             else
-                planning = "        "
+                planning = "[#{Time.at(cursor).to_s[11, 5]}] ".red
             end
+            
         else
-            planning = ""
+            planning = "        "
         end
 
         line = "#{planning}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingParenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
@@ -102,6 +103,18 @@ class FrontPage
         items
     end
 
+    # FrontPage::prefix(item)
+    def self.prefix(item) # -> items
+        if item["mikuType"] == "NxListing" then
+            three = NxListings::itemsInOrder(item)
+                        .select{|i| DoNotShowUntil::isVisible(i) }
+                        .take(3)
+            three = three.sort_by{|i| BankDerivedData::recoveredAverageHoursPerDay(i["uuid"]) }
+            return three + [item]
+        end
+        [item]
+    end 
+
     # FrontPage::displayListing(initialCodeTrace)
     def self.displayListing(initialCodeTrace)
         store = ItemStore.new()
@@ -122,24 +135,19 @@ class FrontPage
         # ----------------------------------------------------------------------
         # Main listing
 
-        Dispatch::itemsForListing(CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListing(), "uuid"))
-            .each{|item|
-                stored_day = XCache::getOrNull("dispatch-day:c26001e4:#{CommonUtils::today()}:#{item["uuid"]}")
-                if stored_day and stored_day != CommonUtils::today() then
-                    next
-                end
+        items = Dispatch::itemsForListing(CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListing(), "uuid"))
+        
+        if !items.empty? then
+            items = FrontPage::prefix(items[0]) + items.drop(1)
+        end
 
-                stored_hour = XCache::getOrNull("dispatch-hour:3b96884a:#{CommonUtils::today()}:#{item["uuid"]}")
-                if stored_hour and stored_hour.to_i >= 22 then
-                    next
-                end
-
-                store.register(item, FrontPage::canBeDefault(item))
-                line = FrontPage::toString2(store, item, true)
-                puts line
-                sheight = sheight - (line.size/swidth + 1)
-                break if sheight <= 3
-            }
+        items.each{|item|
+            store.register(item, FrontPage::canBeDefault(item))
+            line = FrontPage::toString2(store, item, true)
+            puts line
+            sheight = sheight - (line.size/swidth + 1)
+            break if sheight <= 3
+        }
 
         t2 = Time.new.to_f
         renderingTime = t2-t1

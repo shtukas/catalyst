@@ -67,12 +67,6 @@ class Dispatch
     # Dispatch::itemsForListing(items)
     def self.itemsForListing(items)
 
-        # From 22:00 we only return waves
-
-        if Time.new.hour >= 22 then
-            return items.select{|item| item["mikuType"] == "Wave" }
-        end
-
         active, items = items.partition{|item| NxBalls::itemIsActive(item) or (item["mikuType"] == "Wave" and item["interruption"]) }
 
         if active.size > 0 then
@@ -93,13 +87,14 @@ class Dispatch
         waves, tasks = items.partition{|item| item["mikuType"] == "Wave" }
         items = Dispatch::dispatch(active, waves, tasks, 0, deadline)
 
-        cursor = Time.new.to_i
-        items.each{|item|
-            XCache::set("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", cursor)
-            XCache::set("dispatch-day:c26001e4:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).to_s[0, 10])
-            XCache::set("dispatch-hour:3b96884a:#{CommonUtils::today()}:#{item["uuid"]}", Time.at(cursor).hour)
-            cursor = cursor + Dispatch::decide_duration_in_mins(item) * 60
-        }
+        if XCache::getOrNull("c416f157-735f-49c3-9270-92e3968c7b82:#{CommonUtils::today()}").nil? then
+            cursor = Time.new.to_i
+            items.each{|item|
+                XCache::set("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", cursor)
+                cursor = cursor + Dispatch::decide_duration_in_mins(item) * 60
+            }
+            XCache::set("c416f157-735f-49c3-9270-92e3968c7b82:#{CommonUtils::today()}", "true")
+        end
 
         items
     end
