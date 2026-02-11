@@ -216,7 +216,9 @@ class Blades
     # Blades::itemOrNull(uuid)
     def self.itemOrNull(uuid)
         filepath = Blades::uuidToFilepathOrNull(uuid)
-        return nil if filepath.nil?
+        if filepath.nil? then
+            return nil
+        end
         Blades::filepathToItem(filepath)
     end
 
