@@ -17,6 +17,13 @@ class ListingParenting
         ListingParenting::itemToNx38s(item).select{|nx38| nx38["uuid"] == listinguuid }.first
     end
 
+    # ListingParenting::itemPositionInListingOrZero(item, listinguuid)
+    def self.itemPositionInListingOrZero(item, listinguuid)
+        claim = ListingParenting::itemMembershipClaimInlistingOrNull(item, listinguuid)
+        return 0 if claim.nil?
+        claim["position"]
+    end
+
     # ListingParenting::suffix(item)
     def self.suffix(item)
         resolve = lambda {|listinguuid|
