@@ -30,7 +30,7 @@ class NxEngine
             if todayComputedDemandInHours <= 0 then
                 return 1
             end
-            return Bank::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/(todayComputedDemandInHours*3600)
+            return BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]).to_f/todayComputedDemandInHours
         end
 
         daysSinceMondayNotIncludingToday = (lambda{
@@ -60,7 +60,7 @@ class NxEngine
 
         XCache::set("today-demain-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}", todayComputedDemandInHours)
 
-        Bank::getValueAtDate(item["uuid"], CommonUtils::today())/(todayComputedDemandInHours*3600)
+        BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])/todayComputedDemandInHours
     end
 
     # NxEngine::listingItems()

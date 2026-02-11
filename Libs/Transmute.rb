@@ -4,7 +4,7 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            ListingParenting::setMembership(item, NxListings::architectNx38())
+            ListingMembership::setMembership(item, NxListings::architectNx38())
             Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Blades::itemOrNull(item["uuid"])
         end

@@ -129,7 +129,7 @@ class Operations
     # Operations::move(item)
     def self.move(item)
         if item["mikuType"] == "NxTask" then
-            ListingParenting::setMembership(item, NxListings::architectNx38())
+            ListingMembership::setMembership(item, NxListings::architectNx38())
             return
         end
         Transmute::transmuteTo(item, "NxTask")

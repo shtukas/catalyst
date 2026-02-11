@@ -77,7 +77,7 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxListing" then
-            return 3.000 + NxEngine::ratio(item)
+            return 3.000 + NxListings::ratio(item)
         end
 
         raise "[error: 4DC6AEBD] I do not know how to decide the listing position for item: #{item}"
