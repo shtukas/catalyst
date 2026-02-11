@@ -72,7 +72,7 @@ class Dispatch
         active, items = items.partition{|item| NxBalls::itemIsActive(item) or (item["mikuType"] == "Wave" and item["interruption"]) }
 
         if active.size > 0 then
-            return active + items.sort_by{|item| XCache::getOrDefaultValue("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", 0).to_i }
+            return active + items
         end
 
         items = items.map{|item|
@@ -87,16 +87,11 @@ class Dispatch
         deadline = Dispatch::decide_deadline_or_null()
 
         waves, tasks = items.partition{|item| item["mikuType"] == "Wave" }
-        items = Dispatch::dispatch(active, waves, tasks, 0, deadline)
 
-        if XCache::getOrNull("c416f157-735f-49c3-9270-92e3968c7b82:#{CommonUtils::today()}").nil? then
-            cursor = Time.new.to_i
-            items.each{|item|
-                XCache::set("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}", cursor)
-                cursor = cursor + Dispatch::decide_duration_in_mins(item) * 60
-            }
-            XCache::set("c416f157-735f-49c3-9270-92e3968c7b82:#{CommonUtils::today()}", "true")
-        end
+        # We prioritise the waves that have been listed for more than 2 days.
+        w1, w2 = waves.partition{|wave| wave["listing-marker-57"] and (Time.new.to_i - wave["listing-marker-57"] ) > 86400 * 2 }
+
+        items = Dispatch::dispatch(active + w1, w2, tasks, 0, deadline)
 
         items
     end

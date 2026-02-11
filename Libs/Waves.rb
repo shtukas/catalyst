@@ -76,7 +76,8 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        Blades::mikuType("Wave").select{|item| DoNotShowUntil::isVisible(item) }
+        Blades::mikuType("Wave")
+            .select{|item| DoNotShowUntil::isVisible(item) }
     end
 
     # Waves::performDone(wave)

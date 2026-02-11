@@ -20,20 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        cursor = XCache::getOrNull("dispatch-start-unixtime:96282efed924:#{CommonUtils::today()}:#{item["uuid"]}")
-        if cursor then
-            cursor = cursor.to_i
-            if cursor >= Time.new.to_i then
-                planning = "[#{Time.at(cursor).to_s[11, 5]}] "
-            else
-                planning = "[#{Time.at(cursor).to_s[11, 5]}] ".red
-            end
-            
-        else
-            planning = "        "
-        end
-
-        line = "#{planning}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingMembership::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingMembership::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
