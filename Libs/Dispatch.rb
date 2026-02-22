@@ -96,8 +96,8 @@ class Dispatch
         items
     end
 
-    # Dispatch::incoming(item, duration_in_seconds)
-    def self.incoming(item, duration_in_seconds)
+    # Dispatch::incoming_duration_for_the_record(item, duration_in_seconds)
+    def self.incoming_duration_for_the_record(item, duration_in_seconds)
         if item["durations-mins-40"].nil? then
             durations = [{"date" => CommonUtils::nDaysInTheFuture(-1), "mins" => 20}]
             item["durations-mins-40"] = durations

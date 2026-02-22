@@ -44,7 +44,7 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         timespan_in_second = NxBalls::stop(item)
-        Dispatch::incoming(item, timespan_in_second)
+        Dispatch::incoming_duration_for_the_record(item, timespan_in_second)
     end
 
     # PolyActions::done(item)
@@ -265,7 +265,7 @@ class PolyActions
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
             Bank::insertValue(account["number"], CommonUtils::today(), timeInSeconds)
         }
-        Dispatch::incoming(item, timeInSeconds)
+        Dispatch::incoming_duration_for_the_record(item, timeInSeconds)
     end
 
     # PolyActions::editDescription(item) # item
