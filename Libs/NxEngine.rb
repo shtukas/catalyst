@@ -24,7 +24,7 @@ class NxEngine
         return 0 if item["whours-45"].nil?
         return 0 if item["whours-45"] == 0
 
-        todayComputedDemandInHours = XCache::getOrNull("today-demain-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}")
+        todayComputedDemandInHours = XCache::getOrNull("today-demand-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}")
         if todayComputedDemandInHours then
             todayComputedDemandInHours = todayComputedDemandInHours.to_f
             if todayComputedDemandInHours <= 0 then
@@ -58,7 +58,7 @@ class NxEngine
 
         todayComputedDemandInHours = timeLeftToDoThisWeekInHours.to_f/daysToCommingSunday.size
 
-        XCache::set("today-demain-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}", todayComputedDemandInHours)
+        XCache::set("today-demand-in-hours-112c8ddfee17:#{CommonUtils::today()}:#{item["uuid"]}", todayComputedDemandInHours)
 
         BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])/todayComputedDemandInHours
     end

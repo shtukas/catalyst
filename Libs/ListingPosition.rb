@@ -66,14 +66,11 @@ class ListingPosition
 
         if item["mikuType"] == "Wave" then
             if item["listing-marker-57"].nil? then
-                item["listing-marker-57"] = Time.new.to_i
+                item["listing-marker-57"] = Time.new.to_f
                 Blades::setAttribute(item["uuid"], "listing-marker-57", item["listing-marker-57"])
             end
-            dt = (Time.new.to_i - item["listing-marker-57"]).to_i/86400
-            if dt < 1 then
-                return 4.000 + rotation.call(item["random"])
-            end
-            return 2.000 + rotation.call(item["random"])
+            dt = (Time.new.to_f - item["listing-marker-57"])/86400
+            return 4.000 + (1 - ListingPosition::realLineTo01Increasing(dt))
         end
 
         if item["mikuType"] == "NxListing" then

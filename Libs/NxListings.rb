@@ -43,7 +43,8 @@ class NxListings
 
     # NxListings::interactivelySelectListingOrNull()
     def self.interactivelySelectListingOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("nxlisting", Blades::mikuType("NxListing"), lambda {|listing| PolyFunctions::toString(listing) })
+        items = Blades::mikuType("NxListing").sort_by{|item| NxListings::ratio(item) }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("nxlisting", items, lambda {|listing| PolyFunctions::toString(listing) })
     end
 
     # NxListings::itemBelongsToListing(item, listinguuid)
