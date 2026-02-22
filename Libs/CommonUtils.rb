@@ -551,7 +551,7 @@ class CommonUtils
         message = message.gsub("'","")
         message = message.gsub("[","|")
         message = message.gsub("]","|")
-        command = "terminal-notifier -title '#{title}' -message '#{message}'"
+        command = "alerter --message '#{message}' --title '#{title}' --ignore-dnd"
         system(command)
     end
 
