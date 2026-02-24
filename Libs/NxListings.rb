@@ -115,13 +115,20 @@ class NxListings
                 "position" => position
             }
         end
-        listing = NxListings::interactivelyIssueNewOrNull()
-        if listing then
-            position = NxListings::interactivelyDeterminePositionInListing(listing)
-            return {
-                "uuid" => listing["uuid"],
-                "position" => position
-            }
+        puts "You have not selected a listing"
+        option = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("option", ["go back to listings", "architect new"])
+        if option == "go back to listings" then
+            return NxListings::architectNx38()
+        end
+        if option == "architect new" then
+            listing = NxListings::interactivelyIssueNewOrNull()
+            if listing then
+                position = NxListings::interactivelyDeterminePositionInListing(listing)
+                return {
+                    "uuid" => listing["uuid"],
+                    "position" => position
+                }
+            end
         end
         NxListings::architectNx38()
     end
