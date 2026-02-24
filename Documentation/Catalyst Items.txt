@@ -15,3 +15,8 @@ Cross types conventions (all optional):
                               bank accounts to donate to
 
     - durations-mins-40     : durations in minutes for the dispatch
+    - clique9               : Nx38
+
+Nx38 (listing membership)
+    - uuid     : String # uuid of the listing the item belong to
+    - position : float  # position in that listing

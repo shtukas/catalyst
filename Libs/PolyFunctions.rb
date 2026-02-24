@@ -20,19 +20,18 @@ class PolyFunctions
                     accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
                 else
                     accounts << {
-                        "description" => donationuuid,
+                        "description" => "donation: #{PolyFunctions::uuid_to_string_or_null(donationuuid) || donationuuid}",
                         "number"      => donationuuid
                     }
                 end
             }
         end
 
-        if item["mikuType"] == "NxTask" then
-            item["clique8"].each{|nx38|
-                accounts << {
-                    "description" => "parenting: #{nx38["uuid"]}",
-                    "number"      => nx38["uuid"]
-                }
+        if item["clique9"] then
+            parentuuid = item["clique9"]["uuid"]
+            accounts << {
+                "description" => "parenting: #{PolyFunctions::uuid_to_string_or_null(parentuuid) || parentuuid}",
+                "number"      => item["clique9"]["uuid"]
             }
         end
 
@@ -91,6 +90,13 @@ class PolyFunctions
             return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
+    end
+
+    # PolyFunctions::uuid_to_string_or_null(uuid)
+    def self.uuid_to_string_or_null(uuid)
+        item = Blades::itemOrNull(uuid)
+        return nil if item
+        item["description"]
     end
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)

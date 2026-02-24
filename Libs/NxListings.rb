@@ -49,22 +49,22 @@ class NxListings
 
     # NxListings::itemBelongsToListing(item, listinguuid)
     def self.itemBelongsToListing(item, listinguuid)
-        return false if item["clique8"].nil?
-        item["clique8"].any?{|nx38| nx38["uuid"] == listinguuid }
+        return false if item["clique9"].nil?
+        item["clique9"]["uuid"] == listinguuid
     end
 
     # NxListings::listinguuidToItemsInOrder(listinguuid)
     def self.listinguuidToItemsInOrder(listinguuid)
         Blades::mikuType("NxTask")
             .select{|item| NxListings::itemBelongsToListing(item, listinguuid) }
-            .sort_by{|item| ListingMembership::itemPositionInListingOrZero(item, listinguuid) }
+            .sort_by{|item| Parenting::itemPositionInListingOrZero(item, listinguuid) }
     end
 
     # NxListings::itemsInOrder(listing)
     def self.itemsInOrder(listing)
         Blades::mikuType("NxTask")
             .select{|item| NxListings::itemBelongsToListing(item, listing["uuid"]) }
-            .sort_by{|item| ListingMembership::itemPositionInListingOrZero(item, listing["uuid"]) }
+            .sort_by{|item| Parenting::itemPositionInListingOrZero(item, listing["uuid"]) }
     end
 
     # NxListings::itemsInOrderWithPosition(listing)
@@ -73,19 +73,19 @@ class NxListings
             .select{|item| NxListings::itemBelongsToListing(item, listing["uuid"]) }
             .map{|item| {
                 "item"     => item,
-                "position" => ListingMembership::itemPositionInListingOrZero(item, listing["uuid"])
+                "position" => Parenting::itemPositionInListingOrZero(item, listing["uuid"])
             }}
             .sort_by{|packet| packet["position"] }
     end
 
     # NxListings::firstPositionInListing(listing)
     def self.firstPositionInListing(listing)
-        ([1] + NxListings::itemsInOrder(listing).map{|item| ListingMembership::itemMembershipClaimInlistingOrNull(item, listing["uuid"])["position"] }).min
+        ([1] + NxListings::itemsInOrder(listing).map{|item| Parenting::itemBelongsToListing(item, listing["uuid"])["position"] }).min
     end
 
     # NxListings::lastPositionInListing(listing)
     def self.lastPositionInListing(listing)
-        ([1] + NxListings::itemsInOrder(listing).map{|item| ListingMembership::itemMembershipClaimInlistingOrNull(item, listing["uuid"])["position"] }).max
+        ([1] + NxListings::itemsInOrder(listing).map{|item| Parenting::itemBelongsToListing(item, listing["uuid"])["position"] }).max
     end
 
     # NxListings::interactivelyDeterminePositionInListing(listing)
@@ -167,7 +167,7 @@ class NxListings
                 name1 = NxListings::listinguuidToName(listing["uuid"])
                 selected.reverse.each{|item|
                     position = NxListings::firstPositionInListing(listing) - 1
-                    ListingMembership::setMembership(item, {
+                    Parenting::setMembership(item, {
                         "uuid"     => listing["uuid"],
                         "name"     => name1,
                         "position" => position

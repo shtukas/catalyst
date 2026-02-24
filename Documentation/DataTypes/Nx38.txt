@@ -1,4 +1,0 @@
-
-Nx38 (listing membership)
-    "uuid"     : String # uuid of the listing the item belong to
-    "position" : float  # position in that listing

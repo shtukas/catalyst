@@ -48,18 +48,6 @@ class Operations
     def self.globalMaintenance()
         puts "Running global maintenance".yellow
         Bank::maintenance()
-
-        # Let's check Principle12
-        #  - clique8 is carried by NxTasks and NxActives.
-
-        Blades::items().each{|item|
-            if item["clique8"] then
-                if !["NxTask", "NxActive"].include?(item["mikuType"]) then
-                    puts "[92596A01] I have found a clique8, not carried by a NxTask or a NxActive (handling need to be written). Aborting."
-                    exit
-                end
-            end
-        }
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
@@ -129,7 +117,7 @@ class Operations
     # Operations::move(item)
     def self.move(item)
         if item["mikuType"] == "NxTask" then
-            ListingMembership::setMembership(item, NxListings::architectNx38())
+            Parenting::setMembership(item, NxListings::architectNx38())
             return
         end
         Transmute::transmuteTo(item, "NxTask")

@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{ListingMembership::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Parenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -76,9 +76,10 @@ class FrontPage
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
             .map{|item|
+                position = ListingPosition::listingPositionOrNull(item)
                 {
                     "item" => item,
-                    "position" => ListingPosition::listingPositionOrNull(item)
+                    "position" => position
                 }
             }
             .select{|packet| packet["position"]}

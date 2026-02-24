@@ -53,7 +53,7 @@ class ListingPosition
         end
 
         if item["mikuType"] == "NxActive" then
-            return 2.000 + rotation.call(item["random"])
+            return 2.000 + NxActives::completionRatio(item) + item["random"].to_f/1000
         end
 
         if item["mikuType"] == "NxOndate" then

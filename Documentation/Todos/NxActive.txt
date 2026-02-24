@@ -5,5 +5,4 @@ NxActive:
     - unixtime     :
     - datetime     :
     - description  : String
-    - clique8      : Array[Nx38] # not empty
     - whours-45    : weekly (monday to sunday) time requirement, engine configuration

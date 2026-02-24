@@ -16,7 +16,7 @@ class NxTasks
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
         Blades::setAttribute(uuid, "payload-37", payload)
-        Blades::setAttribute(uuid, "clique8", [nx38])
+        Blades::setAttribute(uuid, "clique9", nx38)
         Blades::setAttribute(uuid, "mikuType", "NxTask")
         item = Blades::itemOrNull(uuid)
         item
@@ -34,7 +34,7 @@ class NxTasks
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
         Blades::setAttribute(uuid, "payload-37", payload)
-        Blades::setAttribute(uuid, "clique8", [nx38])
+        Blades::setAttribute(uuid, "clique9", nx38)
         Blades::setAttribute(uuid, "mikuType", "NxTask")
         item = Blades::itemOrNull(uuid)
         item

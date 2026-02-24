@@ -30,4 +30,15 @@ class NxActives
     def self.listingItems()
         Blades::mikuType("NxActive")
     end
+
+    # NxActives::completionRatio(item)
+    def self.completionRatio(item)
+        # If we have a parent, we get the completion ratio of the parent
+        # Otherwise, it's zero
+        return 0 if item["clique9"].nil?
+        parent = Blades::itemOrNull(item["clique9"]["uuid"])
+        return 0 if parent.nil?
+        NxListings::ratio(parent)
+    end
+
 end

@@ -22,6 +22,10 @@ class Fsck
             return
         end
 
+        if item["clique9"] then
+            Fsck::fsckNx38OrError(item["clique9"])
+        end
+
         if item["mikuType"] == "BufferIn" then
             return
         end
@@ -47,10 +51,6 @@ class Fsck
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["clique8"].nil? then
-                raise "We have a missing clique8 on #{item}"
-            end
-            item["clique8"].each{|nx38| Fsck::fsckNx38OrError(nx38) }
             return
         end
 
