@@ -119,7 +119,8 @@ class Dispatch
         head, items = items.partition{|item| NxBalls::itemIsActive(item) or (item["mikuType"] == "Wave" and item["interruption"]) }
 
         if head.size > 0 then
-            return head + items
+            # section alpha
+            return head + items.sort_by{|item| XCache::getOrDefaultValue("daee4d1a-94fd-4ed1-9233-a659615f73af:#{item["uuid"]}", "6").to_f }
         end
 
         deadline = Dispatch::decide_deadline_or_null()
@@ -131,6 +132,17 @@ class Dispatch
 
         items = Dispatch::dispatch(head + w1, tasks, w2, 0, deadline)
 
+        # Now that we have an ordering, I am going to store it so that it can be
+        # used again if we enter section alpha above. This means that things
+        # will keep their place if and when a head appears, which happens when
+        # an there is a running item.
+        items.each_with_index{|item, i|
+            XCache::set("daee4d1a-94fd-4ed1-9233-a659615f73af:#{item["uuid"]}", i)
+        }
+
         items
+
+
+
     end
 end

@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | listings | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | sort | wind | ",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | sort | wind",
         ].join("\n")
     end
 
@@ -91,6 +91,12 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
             DoNotShowUntil::doNotShowUntil(item, unixtime)
+            return
+        end
+
+        if Interpreting::match("morning", input) then
+            Operations::morning()
+            return
         end
 
         if Interpreting::match("transmute *", input) then

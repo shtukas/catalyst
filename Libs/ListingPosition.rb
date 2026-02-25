@@ -24,8 +24,9 @@ class ListingPosition
 
         # listing buckets:
         # global-sort           -infty -> 0.000 (nx42: sorted)
-        # interruptions          1.000 -> 2.000
-        # active and al          2.000 -> 3.000
+        # interruptions          1.000 -> 1.500
+        # NxActives (today)      1.500 -> 2.000
+        # today activities       2.000 -> 3.000
         # listings               3.000 -> 4.000
         # next-days              4.000 -> 5.000
 
@@ -41,7 +42,7 @@ class ListingPosition
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then
-            return 1.000 + rotation.call(item["random"])
+            return 1.000 + 0.5 * rotation.call(item["random"])
         end
 
         if item["mikuType"] == "NxCounter" then
@@ -52,7 +53,13 @@ class ListingPosition
             return 2.000 + rotation.call(item["random"])
         end
 
-        if item["mikuType"] == "NxActive" then
+        if item["mikuType"] == "NxActive" and item["indicator-0827"] == "today" then
+            # This case should not really happen because we expect the indicator-0827:today
+            # Items to also have received a Nx42 as part of the morning setting process
+            return 1.500 + 0.5 * NxActives::completionRatio(item) + item["random"].to_f/1000
+        end
+
+        if item["mikuType"] == "NxActive" and  item["indicator-0827"].nil? then
             return 2.000 + NxActives::completionRatio(item) + item["random"].to_f/1000
         end
 
@@ -71,6 +78,10 @@ class ListingPosition
             end
             dt = (Time.new.to_f - item["listing-marker-57"])/86400
             return 4.000 + (1 - ListingPosition::realLineTo01Increasing(dt))
+        end
+
+        if item["mikuType"] == "NxActive" and item["indicator-0827"] == "ideal" then
+            return 4.000 + NxActives::completionRatio(item) + item["random"].to_f/1000
         end
 
         if item["mikuType"] == "NxListing" then
