@@ -122,5 +122,26 @@ class Operations
         end
         Transmute::transmuteTo(item, "NxTask")
     end
+
+    # Operations::morning()
+    def self.morning()
+        actives = Blades::mikuType("NxActive").select{|item| DoNotShowUntil::isVisible(item) }
+
+        puts "Select the items you really need to to today"
+        absolutely_today, actives = LucilleCore::selectZeroOrMore("item", [], actives, lambda { |item| PolyFunctions::toString(item) })
+
+        puts "Select the items you ideally would like to do today"
+        ideal_today, actives = LucilleCore::selectZeroOrMore("item", [], actives, lambda { |item| PolyFunctions::toString(item) })
+
+        absolutely_today.each{|item| 
+            Blades::setAttribute(item["uuid"], "indicator-0827", "today")
+        }
+        ideal_today.each{|item| 
+            Blades::setAttribute(item["uuid"], "indicator-0827", "ideal")
+        }
+        actives.each{|item| 
+            Blades::setAttribute(item["uuid"], "indicator-0827", nil)
+        }
+    end
 end
 

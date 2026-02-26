@@ -35,10 +35,16 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "Wave" then
+        # operation stratcom trading interception
+        if item["uuid"] == "b61f7e245313b7183627b3ec0f1c59cc" then
             accounts << {
-                "description" => "waves general",
-                "number"      => "waves-general-fd3c4ac4-1300"
+                "description" => "stratcom-trading-interception:trading",
+                "number"      => "883287db-871b-4c9a-9d8e-85fed2cbd1a3"
+            }
+        else
+            accounts << {
+                "description" => "stratcom-trading-interception:everything-else",
+                "number"      => "5167c421-dc33-42f0-81be-4c813e9df455"
             }
         end
 

@@ -28,6 +28,12 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
+
+        if item["uuid"] == "6540f1f7-9fcd-4afd-b357-cbfbbd7992fd" then
+            Operations::morning()
+            return
+        end
+
         if item["mikuType"] == "NxListing" then
             NxListings::diveListing(item)
             return

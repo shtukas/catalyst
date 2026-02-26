@@ -40,9 +40,4 @@ class NxActives
         return 0 if parent.nil?
         NxListings::ratio(parent)
     end
-
-    # NxActives::items_in_ratio_order()
-    def self.items_in_ratio_order()
-        Blades::mikuType("NxActive").sort_by{|item| NxActives::completionRatio(item) }
-    end
 end
