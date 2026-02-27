@@ -1,6 +1,83 @@
 # encoding: UTF-8
 
+=begin
+
+The reason why we have structure is because I love seeing this
+
+[
+  {
+    "name": "non trading",
+    "account": "5167c421-dc33-42f0-81be-4c813e9df455",
+    "data": [
+      {
+        "name": "waves",
+        "account": "30185703-3A38-4030-B77A-477D6F2B7889",
+        "rt": 0.0
+      },
+      {
+        "name": "items non wave",
+        "account": "BBC40E2A-C54F-4637-A6E1-F3DC62D37607",
+        "rt": 0.4
+      }
+    ],
+    "rt": 1.4755555555555555
+  },
+  {
+    "name": "trading",
+    "account": "b61f7e245313b7183627b3ec0f1c59cc",
+    "rt": 4.024236111111111
+  }
+]
+
+=end
+
 class Dispatch
+
+    # Dispatch::structure()
+    def self.structure()
+        a = [
+            {"name" => "items non wave", "account" => "BBC40E2A-C54F-4637-A6E1-F3DC62D37607"},
+            {"name" => "waves", "account" => "30185703-3A38-4030-B77A-477D6F2B7889"},
+        ]
+            .map{|packet|
+                packet["rt"] = BankDerivedData::recoveredAverageHoursPerDay(packet["account"])
+                packet
+            }
+            .sort_by{|packet| packet["rt"] }
+        [
+            {"name" => "trading", "account" => "b61f7e245313b7183627b3ec0f1c59cc"},
+            {"name" => "non trading", "account" => "5167c421-dc33-42f0-81be-4c813e9df455", "data" => a}
+        ]
+            .map{|packet|
+                packet["rt"] = BankDerivedData::recoveredAverageHoursPerDay(packet["account"])
+                packet
+            }
+            .sort_by{|packet| packet["rt"] }
+    end
+
+    # Dispatch::packet_to_items(packet, collection)
+    def self.packet_to_items(packet, collection)
+        if packet["data"] then
+            return Dispatch::structure_to_items(packet["data"], collection)
+        end
+        if packet["name"] == "items non wave" then
+            return collection.select{|item| item["mikuType"] != "Wave" }
+        end
+        if packet["name"] == "waves" then
+            return collection.select{|item| item["mikuType"] == "Wave" }
+        end
+        if packet["name"] == "trading" then
+            return collection.select{|item| item["uuid"] == "b61f7e245313b7183627b3ec0f1c59cc" }
+        end
+        if packet["name"] == "non trading" then
+            return collection.select{|item| item["uuid"] != "b61f7e245313b7183627b3ec0f1c59cc" }
+        end
+    end
+
+    # Dispatch::structure_to_items(structure, collection)
+    def self.structure_to_items(structure, collection)
+        structure.map{|packet| Dispatch::packet_to_items(packet, collection) }.flatten
+    end
 
     # Dispatch::itemsForListing(items)
     def self.itemsForListing(items)
@@ -16,26 +93,7 @@ class Dispatch
             return head + items.sort_by{|item| XCache::getOrDefaultValue("daee4d1a-94fd-4ed1-9233-a659615f73af:#{item["uuid"]}", "6").to_f }
         end
 
-        # operation stratcom trading interception
-        interception = []
-        #  trading < everything-else
-        if BankDerivedData::recoveredAverageHoursPerDay("883287db-871b-4c9a-9d8e-85fed2cbd1a3") < BankDerivedData::recoveredAverageHoursPerDay("5167c421-dc33-42f0-81be-4c813e9df455") then
-            interception = [ Blades::itemOrNull("b61f7e245313b7183627b3ec0f1c59cc") ].compact
-        end
-
-        # We are now in the case where we do not have active or wave:interruption items
-        # and we do not have to focus on trading.
-        # The choice now is between regular waves and other items
-
-        non_waves, waves = items.partition{|item| item["mikuType"] != "Wave" }
-
-        metric_wave = BankDerivedData::recoveredAverageHoursPerDay("30185703-3A38-4030-B77A-477D6F2B7889")
-        metric_non_wave = BankDerivedData::recoveredAverageHoursPerDay("BBC40E2A-C54F-4637-A6E1-F3DC62D37607")
-        if metric_wave < metric_non_wave then
-            items = waves + non_waves
-        else
-            items = non_waves + waves
-        end
+        items = Dispatch::structure_to_items(Dispatch::structure(), items)
 
         items.each_with_index{|item, i|
             XCache::set("daee4d1a-94fd-4ed1-9233-a659615f73af:#{item["uuid"]}", i)
