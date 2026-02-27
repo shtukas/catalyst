@@ -13,8 +13,6 @@ Cross types conventions (all optional):
 
     - donation-13           : null or Array[String]
                               bank accounts to donate to
-
-    - durations-mins-40     : durations in minutes for the dispatch
     - clique9               : Nx38
 
 Nx38 (listing membership)

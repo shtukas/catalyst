@@ -46,6 +46,18 @@ class PolyFunctions
                 "description" => "stratcom-trading-interception:everything-else",
                 "number"      => "5167c421-dc33-42f0-81be-4c813e9df455"
             }
+            # waves versus non waves sub priotirisation
+            if item["mikuType"] == "Wave" then
+                accounts << {
+                    "description" => "sub classification: wave",
+                    "number"      => "30185703-3A38-4030-B77A-477D6F2B7889"
+                }
+            else
+                accounts << {
+                    "description" => "sub classification: non wave",
+                    "number"      => "BBC40E2A-C54F-4637-A6E1-F3DC62D37607"
+                }
+            end
         end
 
         accounts.reduce([]){|as, account|
