@@ -13,18 +13,16 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["donation-13"] then
-            item["donation-13"].each{|donationuuid|
-                target = Blades::itemOrNull(donationuuid)
-                if target then
-                    accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-                else
-                    accounts << {
-                        "description" => "donation: #{PolyFunctions::uuid_to_string_or_null(donationuuid) || donationuuid}",
-                        "number"      => donationuuid
-                    }
-                end
-            }
+        if item["donation-14"] then
+            target = Blades::itemOrNull(item["donation-14"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            else
+                accounts << {
+                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null(donationuuid) || item["donation-14"]}",
+                    "number"      => donationuuid
+                }
+            end
         end
 
         if item["clique9"] then

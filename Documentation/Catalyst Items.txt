@@ -11,8 +11,7 @@ Cross types conventions (all optional):
     - nx42                  : null or Float # Positioning
     - payload-37            : null or UxPayload
 
-    - donation-13           : null or Array[String]
-                              bank accounts to donate to
+    - donation-14           : null or String # bank account to donate to
     - clique9               : Nx38
 
 Nx38 (listing membership)
