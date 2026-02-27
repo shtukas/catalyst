@@ -11,8 +11,8 @@ class Donations
 
     # Donations::interactivelySetDonation(item) # -> item
     def self.interactivelySetDonation(item)
-        listing = CommonUtils::selectEntityFromListOfEntitiesOrNull("item", Blades::mikuType("NxListing"), lambda{|listing| PolyFunctions::toString(listing) })
-        return item if listings.nil?
+        listing = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", Blades::mikuType("NxListing"), lambda{|listing| PolyFunctions::toString(listing) })
+        return item if listing.nil?
         Blades::setAttribute(item["uuid"], "donation-14", listing["uuid"])
         Blades::itemOrNull(item["uuid"])
     end

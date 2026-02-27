@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | listings | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | sort | wind",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | sort | wind | numbers",
         ].join("\n")
     end
 
@@ -150,6 +150,12 @@ class CommandsAndInterpreters
 
         if Interpreting::match("global-maintenance", input) then
             Operations::globalMaintenance()
+            return
+        end
+
+        if Interpreting::match("numbers", input) then
+            puts JSON.pretty_generate(Dispatch::structure())
+            LucilleCore::pressEnterToContinue()
             return
         end
 
