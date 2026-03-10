@@ -12,8 +12,8 @@ class ListingPosition
     # ListingPosition::firstGlobalListingPosition()
     def self.firstGlobalListingPosition()
         positions = Blades::items()
-            .select{|item| item["nx42"] }
-            .map{|item| item["nx42"] }
+            .select{|item| item["nx43"] and item["nx43"]["date"] == CommonUtils::today() }
+            .map{|item| item["nx43"]["position"] }
         ([-1] + positions).min
     end
 
@@ -23,7 +23,7 @@ class ListingPosition
         # directive: Nx42s are not delisted, unless `done`
 
         # listing buckets:
-        # global-sort           -infty -> 0.000 (nx42: sorted)
+        # global-sort           -infty -> 0.000 (nx43: sorted)
         # interruptions          1.000 -> 1.500
         # NxActives (today)      1.500 -> 2.000
         # today activities       2.000 -> 3.000
@@ -32,8 +32,8 @@ class ListingPosition
 
         rotation = lambda{|x| 0.5 + 0.5 * Math.sin(x + Time.new.to_f/86400) }
 
-        if item["nx42"] then
-            return item["nx42"]
+        if item["nx43"] and item["nx43"]["date"] == CommonUtils::today() then
+            return item["nx43"]["position"]
         end
 
         if item["random"].nil? then
@@ -96,6 +96,6 @@ class ListingPosition
 
     # ListingPosition::nullifyNx42(item)
     def self.nullifyNx42(item)
-        Blades::setAttribute(item["uuid"], "nx42", nil)
+        Blades::setAttribute(item["uuid"], "nx43", nil)
     end
 end

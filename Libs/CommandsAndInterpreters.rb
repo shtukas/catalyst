@@ -111,7 +111,10 @@ class CommandsAndInterpreters
             items  = FrontPage::itemsForListing()
             selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstGlobalListingPosition() - 1)
+                Blades::setAttribute(item["uuid"], "nx43", {
+                    "date" => CommonUtils::today(),
+                    "position" => ListingPosition::firstGlobalListingPosition() - 1
+                })
             }
             return
         end
@@ -144,7 +147,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "delisting #{PolyFunctions::toString(item)}"
-            Blades::setAttribute(item["uuid"], "nx42", nil)
+            Blades::setAttribute(item["uuid"], "nx43", nil)
             return
         end
 
@@ -184,7 +187,10 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            Blades::setAttribute(item["uuid"], "nx42", ListingPosition::firstGlobalListingPosition() - 1)
+            Blades::setAttribute(item["uuid"], "nx43", {
+                "date" => CommonUtils::today(),
+                "position" => ListingPosition::firstGlobalListingPosition() - 1
+            })
             item = Blades::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxBalls::runningItems().each{|i|
