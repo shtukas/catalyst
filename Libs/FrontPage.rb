@@ -58,8 +58,8 @@ class FrontPage
         true
     end
 
-    # FrontPage::itemsForListing()
-    def self.itemsForListing()
+    # FrontPage::itemsForListingOrdered()
+    def self.itemsForListingOrdered()
         items = [
             NxBackups::listingItems(),
             NxOndates::listingItems(),
@@ -128,7 +128,7 @@ class FrontPage
         # ----------------------------------------------------------------------
         # Main listing
 
-        items = Dispatch::itemsForListing(CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListing(), "uuid"))
+        items = Dispatch::makeDispatch(CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid"))
         if !items.empty? then
             items = FrontPage::prefix(items[0]) + items.drop(1)
         end

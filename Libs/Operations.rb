@@ -124,28 +124,23 @@ class Operations
 
     # Operations::morning()
     def self.morning()
-        actives = Blades::mikuType("NxActive").select{|item| DoNotShowUntil::isVisible(item) }
-
-        puts "Select the items you really need to to today"
-        absolutely_today, actives = LucilleCore::selectZeroOrMore("item", [], actives, lambda { |item| PolyFunctions::toString(item) })
-
-        puts "Select the items you ideally would like to do today"
-        ideal_today, actives = LucilleCore::selectZeroOrMore("item", [], actives, lambda { |item| PolyFunctions::toString(item) })
-
-        absolutely_today.each{|item| 
-            Blades::setAttribute(item["uuid"], "indicator-0827", "today")
+        puts "Select the active items you are going to to today".yellow
+        items1 = Blades::mikuType("NxActive").select{|item| DoNotShowUntil::isVisible(item) }
+        selected, notselected = LucilleCore::selectZeroOrMore("item", [], items1, lambda { |item| PolyFunctions::toString(item) })
+        selected.each{|item|
+            Blades::setAttribute(item["uuid"], "nx43", {
+                "date" => CommonUtils::today(),
+                "position" => ListingPosition::firstGlobalListingPosition() - 1
+            })
         }
-        ideal_today.each{|item| 
-            Blades::setAttribute(item["uuid"], "indicator-0827", "ideal")
-        }
-        actives.each{|item| 
-            Blades::setAttribute(item["uuid"], "indicator-0827", nil)
+        notselected.each{|item|
+            Blades::setAttribute(item["uuid"], "indicator-1515", CommonUtils::today())
         }
     end
 
     # Operations::generate_sort()
     def self.generate_sort()
-        items  = FrontPage::itemsForListing()
+        items  = FrontPage::itemsForListingOrdered()
         selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
         selected.reverse.each{|item|
             Blades::setAttribute(item["uuid"], "nx43", {
