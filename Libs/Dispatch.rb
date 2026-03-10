@@ -93,6 +93,13 @@ class Dispatch
             return head + items.sort_by{|item| XCache::getOrDefaultValue("daee4d1a-94fd-4ed1-9233-a659615f73af:#{item["uuid"]}", "6").to_f }
         end
 
+        priority_items = Nx43s::listingItems().sort_by{|item| item["nx43"]["position"] }
+        if priority_items.size > 0 then
+            items = priority_items + items.sort_by{|item| XCache::getOrDefaultValue("daee4d1a-94fd-4ed1-9233-a659615f73af:#{item["uuid"]}", "6").to_f }
+            items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+            return items
+        end
+
         items = Dispatch::structure_to_items(Dispatch::structure(), items)
 
         items.each_with_index{|item, i|

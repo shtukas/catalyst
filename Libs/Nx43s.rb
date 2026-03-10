@@ -1,7 +1,7 @@
 
-class Nx42s
+class Nx43s
 
-    # Nx42s::listingItems()
+    # Nx43s::listingItems()
     def self.listingItems()
         Blades::items().select{|item| item["nx43"] and item["nx43"]["date"] == CommonUtils::today() }
     end

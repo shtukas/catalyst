@@ -97,7 +97,6 @@ class Operations
             puts "listing position: #{ListingPosition::listingPositionOrNull(item)}"
         rescue
         end
-        puts "duration in minutes: #{Dispatch::decide_duration_in_mins(item)}"
         LucilleCore::pressEnterToContinue()
     end
 
@@ -143,5 +142,16 @@ class Operations
             Blades::setAttribute(item["uuid"], "indicator-0827", nil)
         }
     end
-end
 
+    # Operations::generate_sort()
+    def self.generate_sort()
+        items  = FrontPage::itemsForListing()
+        selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
+        selected.reverse.each{|item|
+            Blades::setAttribute(item["uuid"], "nx43", {
+                "date" => CommonUtils::today(),
+                "position" => ListingPosition::firstGlobalListingPosition() - 1
+            })
+        }
+    end
+end

@@ -108,14 +108,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items  = FrontPage::itemsForListing()
-            selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|item|
-                Blades::setAttribute(item["uuid"], "nx43", {
-                    "date" => CommonUtils::today(),
-                    "position" => ListingPosition::firstGlobalListingPosition() - 1
-                })
-            }
+            Operations::generate_sort()
             return
         end
 

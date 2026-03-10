@@ -20,7 +20,7 @@ class ListingPosition
     # ListingPosition::listingPositionOrNull(item) # float
     def self.listingPositionOrNull(item)
 
-        # directive: Nx42s are not delisted, unless `done`
+        # directive: Nx43s are not delisted, unless `done`
 
         # listing buckets:
         # global-sort           -infty -> 0.000 (nx43: sorted)

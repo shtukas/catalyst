@@ -67,7 +67,7 @@ class FrontPage
             BufferIn::listingItems(),
             NxActives::listingItems(),
             NxEngine::listingItems(),
-            Nx42s::listingItems(),
+            Nx43s::listingItems(),
             NxCounters::listingItems()
         ]
             .flatten
