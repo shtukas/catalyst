@@ -1,0 +1,65 @@
+class TimeCores
+
+    # TimeCores::core_items_in_global_positioning_order(uuid)
+    def self.core_items_in_global_positioning_order(uuid)
+        Blades::items()
+            .select{|item| item["timecore-57"] and item["timecore-57"]["uuid"] == uuid }
+            .sort_by {|item| item["global-pos-07"] || 0 }
+    end
+
+    # TimeCores::get_time_core_or_null(uuid)
+    def self.get_time_core_or_null(uuid)
+        # the canonical one is carried by the first element
+        items = TimeCores::core_items_in_global_positioning_order(uuid)
+        return nil if items.empty?
+        items.first["timecore-57"]
+    end
+
+    # TimeCores::daily_ratio(uuid)
+    def self.daily_ratio(uuid)
+        # Here we are defaulting to zero if the core doesn't exists
+        core = TimeCores::get_time_core_or_null(uuid)
+        return 0 if core.nil?
+        rt = BankDerivedData::recoveredAverageHoursPerDay(core["uuid"])
+        daily_expectation = core["day-expectation-hours"] || 0
+        rt.to_f/daily_expectation
+    end
+
+    # TimeCores::sort(uuid)
+    def self.sort(uuid)
+        items = TimeCores::core_items_in_global_positioning_order(uuid)
+        selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
+        selected.reverse.each{|item|
+            GlobalPositioning::insert_first(item)
+        }
+    end
+
+    # TimeCores::time_cores()
+    def self.time_cores()
+        timecores = Blades::items()
+            .select{|item| item["timecore-57"] }
+            .map{|item| item["timecore-57"]["uuid"] }
+            .uniq
+            .map{|uuid| TimeCores::get_time_core_or_null(uuid) }
+            .compact
+    end
+
+    # TimeCores::interactively_select_core_or_null()
+    def self.interactively_select_core_or_null()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", TimeCores::time_cores(), lambda {|core| core["description"] })
+    end
+
+    # TimeCores::architect_or_null()
+    def self.architect_or_null()
+        core = TimeCores::interactively_select_core_or_null()
+        return core if core
+        if LucilleCore::askQuestionAnswerAsBoolean("You did not select a core, would you like to make a new one ? ") then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return {
+                "uuid" => SecureRandom.uuid,
+                "name" => description
+            }
+        end
+        nil
+    end
+end

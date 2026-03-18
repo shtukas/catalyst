@@ -14,48 +14,31 @@ class PolyFunctions
         }
 
         if item["donation-14"] then
-            target = Blades::itemOrNull(item["donation-14"])
+            if XCache::getOrNull("4ae8961b-204c-44ea-8e1e-fd576ffac499:#{item["donation-14"]}") then
+                accounts << {
+                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(donationuuid) || item["donation-14"]}",
+                    "number"      => donationuuid
+                }
+            else
+
+            end
+
+            target = PolyFunctions::uuid_to_item_or_null_cache_results(item["donation-14"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             else
                 accounts << {
-                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null(donationuuid) || item["donation-14"]}",
+                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(donationuuid) || item["donation-14"]}",
                     "number"      => donationuuid
                 }
             end
         end
 
-        if item["clique9"] then
-            parentuuid = item["clique9"]["uuid"]
+        if item["timecore-57"] then
             accounts << {
-                "description" => "parenting: #{PolyFunctions::uuid_to_string_or_null(parentuuid) || parentuuid}",
-                "number"      => item["clique9"]["uuid"]
+                "description" => "timecore: #{item["timecore-57"]["name"]}",
+                "number"      => item["timecore-57"]["uuid"]
             }
-        end
-
-        # operation stratcom trading interception
-        if item["uuid"] == "b61f7e245313b7183627b3ec0f1c59cc" then
-            accounts << {
-                "description" => "stratcom-trading-interception:trading",
-                "number"      => "883287db-871b-4c9a-9d8e-85fed2cbd1a3"
-            }
-        else
-            accounts << {
-                "description" => "stratcom-trading-interception:everything-else",
-                "number"      => "5167c421-dc33-42f0-81be-4c813e9df455"
-            }
-            # waves versus non waves sub priotirisation
-            if item["mikuType"] == "Wave" then
-                accounts << {
-                    "description" => "sub classification: wave",
-                    "number"      => "30185703-3A38-4030-B77A-477D6F2B7889"
-                }
-            else
-                accounts << {
-                    "description" => "sub classification: non wave",
-                    "number"      => "BBC40E2A-C54F-4637-A6E1-F3DC62D37607"
-                }
-            end
         end
 
         accounts.reduce([]){|as, account|
@@ -93,9 +76,6 @@ class PolyFunctions
         if item["mikuType"] == "NxCounter" then
             return NxCounters::toString(item)
         end
-        if item["mikuType"] == "NxListing" then
-            return NxListings::toString(item)
-        end
         if item["mikuType"] == "NxActive" then
             return NxActives::toString(item)
         end
@@ -108,11 +88,64 @@ class PolyFunctions
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
 
-    # PolyFunctions::uuid_to_string_or_null(uuid)
-    def self.uuid_to_string_or_null(uuid)
+    # PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(uuid)
+    def self.uuid_to_string_or_null_for_bank_account_display_cache_results(uuid)
+        use_the_force = lambda {|uuid|
+            item = Blades::itemOrNull(uuid)
+            if item then
+                return item["description"]
+            end
+            TimeCores::time_cores().each{|core|
+                if core["uuid"] == uuid then
+                    return core["name"]
+                end
+            }
+            nil
+        }
+
+        # let's check the cached result
+        str = XCache::getOrNull("cached-result-41f0-b611-d23395a8a7d1:#{uuid}")
+        return str if str
+
+        # Now we check if we have already registered it as not found
+        if XCache::getFlag("null-result-4041-b57e-d6f5d7447277:#{uuid}") then
+            return nil
+        end
+
+        str = use_the_force.call(uuid)
+
+        if str.nil? then
+            XCache::setFlag("null-result-4041-b57e-d6f5d7447277:#{uuid}")
+            return nil
+        end
+
+        XCache::set("cached-result-41f0-b611-d23395a8a7d1:#{uuid}", str)
+
+        str
+    end
+
+    # PolyFunctions::uuid_to_item_or_null_cache_results(uuid)
+    def self.uuid_to_item_or_null_cache_results(uuid)
+
+        # let's check the cached result
+        item = XCache::getOrNull("cached-result-b1494ef9-f068:#{uuid}")
+        return JSON.parse(item) if item
+
+        # Now we check if we have already registered it as not found
+        if XCache::getFlag("null-result-e615993d-1f43:#{uuid}") then
+            return nil
+        end
+
         item = Blades::itemOrNull(uuid)
-        return nil if item
-        item["description"]
+
+        if item.nil? then
+            XCache::setFlag("null-result-e615993d-1f43:#{uuid}", true)
+            return nil
+        end
+
+        XCache::set("cached-result-b1494ef9-f068:#{uuid}", JSON.generate(item))
+
+        item
     end
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)

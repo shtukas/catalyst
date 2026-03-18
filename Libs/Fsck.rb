@@ -1,12 +1,6 @@
 
 class Fsck
 
-    # Fsck::fsckNx38OrError(nx38)
-    def self.fsckNx38OrError(nx38)
-        return if nx38["position"]
-        raise "error with Nx38: #{nx38}"
-    end
-
     # Fsck::fsckItemOrError(item, verbose)
     def self.fsckItemOrError(item, verbose)
         if verbose then
@@ -22,10 +16,6 @@ class Fsck
             return
         end
 
-        if item["clique9"] then
-            Fsck::fsckNx38OrError(item["clique9"])
-        end
-
         if item["mikuType"] == "BufferIn" then
             return
         end
@@ -35,10 +25,6 @@ class Fsck
         end
 
         if item["mikuType"] == "NxOndate" then
-            return
-        end
-
-        if item["mikuType"] == "NxListing" then
             return
         end
 

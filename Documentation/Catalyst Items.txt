@@ -8,13 +8,12 @@ Database:
 Cross types conventions (all optional):
     - skip-0843             : unixtime (skipped until this time)
     - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
-    - nx42                  : null or Float # Positioning
-    - nx43                  : { "date": Date, "position": Float } # Positioning
     - payload-37            : null or UxPayload
-
     - donation-14           : null or String # bank account to donate to
-    - clique9               : Nx38
+    - global-pos-07         : global positioning, Real
+    - timecore-57           : TimeCore57
 
-Nx38 (listing membership)
-    - uuid     : String # uuid of the listing the item belong to
-    - position : float  # position in that listing
+TimeCore57 
+    - uuid                  : String
+    - name                  : String
+    - day-expectation-hours : REAL or null defaults to 1

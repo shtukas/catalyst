@@ -1,6 +1,0 @@
-
-NxListing:
-    - uuid         : String
-    - mikuType     : "NxListing"
-    - description  : String
-    - whours-45    : weekly (monday to sunday) time requirement, engine configuration

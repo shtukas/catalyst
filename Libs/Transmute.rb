@@ -4,15 +4,12 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            Parenting::setMembership(item, NxListings::architectNx38())
-            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
+            core = TimeCores::architect_or_null()
+            return if core.nil?
+            Blades::setAttribute(item["uuid"], "timecore-57", core)
             return Blades::itemOrNull(item["uuid"])
         end
         if item["mikuType"] == "NxTask" and targetType == "NxActive" then
-            if LucilleCore::askQuestionAnswerAsBoolean("set engine value for #{PolyFunctions::toString(item).green} ? ") then
-                whours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-                Blades::setAttribute(item["uuid"], "whours-45", whours)
-            end
             Blades::setAttribute(item["uuid"], "mikuType", "NxActive")
             return Blades::itemOrNull(item["uuid"])
         end

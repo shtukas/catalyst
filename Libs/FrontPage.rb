@@ -20,7 +20,13 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Parenting::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        timecorestr = ""
+        if item["timecore-57"] then
+            timecorestr = " (timecore: #{item["timecore-57"]["name"]})"
+        end
+
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{timecorestr}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -61,52 +67,24 @@ class FrontPage
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         items = [
-            NxBackups::listingItems(),
             NxOndates::listingItems(),
+            NxBackups::listingItems(),
+            NxCounters::listingItems(),
+            NxActives::listingItems(),
             Waves::listingItems(),
             BufferIn::listingItems(),
-            NxActives::listingItems(),
-            NxEngine::listingItems(),
-            Nx43s::listingItems(),
-            NxCounters::listingItems()
+            NxTasks::listingItems()
         ]
             .flatten
 
         items = items
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
-            .map{|item|
-                position = ListingPosition::listingPositionOrNull(item)
-                {
-                    "item" => item,
-                    "position" => position
-                }
-            }
-            .select{|packet| packet["position"]}
-            .sort_by{|packet| packet["position"] }
-            .map{|packet| packet["item"]}
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         items
     end
-
-    # FrontPage::prefix(item)
-    def self.prefix(item) # -> items
-        if item["mikuType"] == "NxListing" then
-            three = NxListings::itemsInOrder(item)
-                        .select{|i| DoNotShowUntil::isVisible(i) }
-                        .take(3)
-            rtprime = lambda {|i|
-                rt = BankDerivedData::recoveredAverageHoursPerDay(i["uuid"])
-                return 0.4 if rt == 0
-                rt
-            }
-            three = three.sort_by{|i| rtprime.call(i) }
-            return three + [item]
-        end
-        [item]
-    end 
 
     # FrontPage::displayListing(initialCodeTrace)
     def self.displayListing(initialCodeTrace)
@@ -128,10 +106,7 @@ class FrontPage
         # ----------------------------------------------------------------------
         # Main listing
 
-        items = Dispatch::makeDispatch(CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid"))
-        if !items.empty? then
-            items = FrontPage::prefix(items[0]) + items.drop(1)
-        end
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
 
         items.each{|item|
             store.register(item, FrontPage::canBeDefault(item))

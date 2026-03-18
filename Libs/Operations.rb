@@ -93,10 +93,6 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
-        begin
-            puts "listing position: #{ListingPosition::listingPositionOrNull(item)}"
-        rescue
-        end
         LucilleCore::pressEnterToContinue()
     end
 
@@ -111,42 +107,5 @@ class Operations
         if option == "destroy" then
             Blades::deleteItem(item["uuid"])
         end
-    end
-
-    # Operations::move(item)
-    def self.move(item)
-        if item["mikuType"] == "NxTask" then
-            Parenting::setMembership(item, NxListings::architectNx38())
-            return
-        end
-        Transmute::transmuteTo(item, "NxTask")
-    end
-
-    # Operations::morning()
-    def self.morning()
-        puts "Select the active items you are going to to today".yellow
-        items1 = Blades::mikuType("NxActive").select{|item| DoNotShowUntil::isVisible(item) }
-        selected, notselected = LucilleCore::selectZeroOrMore("item", [], items1, lambda { |item| PolyFunctions::toString(item) })
-        selected.each{|item|
-            Blades::setAttribute(item["uuid"], "nx43", {
-                "date" => CommonUtils::today(),
-                "position" => ListingPosition::firstGlobalListingPosition() - 1
-            })
-        }
-        notselected.each{|item|
-            Blades::setAttribute(item["uuid"], "indicator-1515", CommonUtils::today())
-        }
-    end
-
-    # Operations::generate_sort()
-    def self.generate_sort()
-        items  = FrontPage::itemsForListingOrdered()
-        selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
-        selected.reverse.each{|item|
-            Blades::setAttribute(item["uuid"], "nx43", {
-                "date" => CommonUtils::today(),
-                "position" => ListingPosition::firstGlobalListingPosition() - 1
-            })
-        }
     end
 end

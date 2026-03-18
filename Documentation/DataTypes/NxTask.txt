@@ -5,4 +5,3 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
-    - whours-45    : weekly (monday to sunday) time requirement, engine configuration

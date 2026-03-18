@@ -34,11 +34,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxListing" then
-            NxListings::diveListing(item)
-            return
-        end
-
         if item["mikuType"] == "NxCounter" then
             NxCounters::interactivelyIncrement(item)
             return
@@ -56,13 +51,8 @@ class PolyActions
     def self.done(item)
 
         PolyActions::stop(item)
-        ListingPosition::nullifyNx42(item)
 
         if item["mikuType"] == "NxCounter" then
-            return
-        end
-
-        if item["mikuType"] == "NxListing" then
             return
         end
 
@@ -163,18 +153,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxListing" then
-            puts "#{PolyFunctions::toString(item).green}"
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["start", "access"])
-            if option == "start" then
-                PolyActions::start(item)
-            end
-            if option == "access" then
-                PolyActions::access(item)
-            end
-            return
-        end
-
         PolyActions::start(item)
         PolyActions::access(item)
     end
@@ -183,12 +161,6 @@ class PolyActions
     def self.tripleDots(item)
 
         return if NxBalls::itemIsActive(item)
-
-        if item["mikuType"] == "NxListing" then
-            puts "We do not do triple dots for NxListings"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
 
         PolyActions::start(item)
         PolyActions::access(item)
@@ -223,18 +195,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxListing" then
-            if NxListings::itemsInOrder(item).size > 0 then
-                puts "You cannot destroy a listing that has some elements in it."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::deleteItem(item["uuid"])
             end

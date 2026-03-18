@@ -5,12 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | delist * | move (*) | transmute * | donation * | engine (*) | transmute * | dismiss",
-            "NxListing     : dive (*)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute * | donation * | transmute * | dismiss",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | listings | engined | counters",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | sort | wind | numbers",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind",
         ].join("\n")
     end
 
@@ -94,11 +93,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("morning", input) then
-            Operations::morning()
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -107,51 +101,16 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sort", input) then
-            Operations::generate_sort()
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Transmute::transmute(item)
-            return
-        end
-
-        if Interpreting::match("move", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Operations::move(item)
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Operations::move(item)
-            return
-        end
-
-        if Interpreting::match("delist *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            puts "delisting #{PolyFunctions::toString(item)}"
-            Blades::setAttribute(item["uuid"], "nx43", nil)
             return
         end
 
         if Interpreting::match("global-maintenance", input) then
             Operations::globalMaintenance()
-            return
-        end
-
-        if Interpreting::match("numbers", input) then
-            puts JSON.pretty_generate(Dispatch::structure())
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -180,11 +139,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            Blades::setAttribute(item["uuid"], "nx43", {
-                "date" => CommonUtils::today(),
-                "position" => ListingPosition::firstGlobalListingPosition() - 1
-            })
-            item = Blades::itemOrNull(item["uuid"])
+            item = GlobalPositioning::insert_first(item)
             puts JSON.pretty_generate(item)
             NxBalls::runningItems().each{|i|
                 NxBalls::pause(i)
@@ -208,30 +163,10 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("listings", input) then
-            NxListings::dive()
-            return
-        end
-
         if Interpreting::match("payload", input) then
             item = store.getDefault()
             return if item.nil?
             UxPayloads::payloadProgram(item)
-            return
-        end
-
-        if Interpreting::match("engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxEngine::set_value(item)
-            return
-        end
-
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxEngine::set_value(item)
             return
         end
 
@@ -255,23 +190,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             UxPayloads::payloadProgram(item)
-            return
-        end
-
-        if Interpreting::match("dive", input) then
-            item = store.getDefault()
-            return if item.nil?
-            return if item["mikuType"] != "NxListing"
-            NxListings::diveListing(item["uuid"])
-            return
-        end
-
-        if Interpreting::match("dive *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["mikuType"] != "NxListing"
-            NxListings::diveListing(item["uuid"])
             return
         end
 
@@ -362,13 +280,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engined", input) then
-            Operations::program3(lambda {
-                Blades::items().select{|item| item["whours-45"] }
-            })
-            return
-        end
-
         if Interpreting::match("ondate", input) then
             item = NxOndates::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
@@ -430,22 +341,9 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["child of a listing (default)", "active with optional engine"])
-            if option.nil? or option == "child of a listing (default)" then
-                listing = NxListings::interactivelySelectListingOrNull()
-                return if listing.nil?
-                position = NxListings::interactivelyDeterminePositionInListing(listing["uuid"])
-                nx38 = {
-                    "uuid"     => listing["uuid"],
-                    "name"     => NxListings::listinguuidToName(listing["uuid"]),
-                    "position" => position
-                }
-                item = NxTasks::interactivelyIssueNewOrNull(nx38)
-            end
-            if option == "active with optional engine" then
-                item = NxActives::interactivelyIssueNewOrNull()
-                item = NxEngine::set_value_proposal(item)
-            end
+            core = TimeCores::architect_or_null()
+            return if core.nil?
+            item = NxTasks::interactivelyIssueNewOrNull(core)
             puts JSON.pretty_generate(item)
             return
         end
