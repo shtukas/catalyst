@@ -46,7 +46,7 @@ class TimeCores
 
     # TimeCores::interactively_select_core_or_null()
     def self.interactively_select_core_or_null()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", TimeCores::time_cores(), lambda {|core| core["description"] })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", TimeCores::time_cores(), lambda {|core| core["name"] })
     end
 
     # TimeCores::architect_or_null()

@@ -1,15 +1,9 @@
 
 class BufferIn
 
-    # BufferIn::uuid()
-    def self.uuid()
-        "0a8ca68f-d931-4110-825c-8fd290ad7853"
-    end
-
     # BufferIn::listingItems()
     def self.listingItems()
-        return [] if BankDerivedData::recoveredAverageHoursPerDay(BufferIn::uuid()) >= 1
-        [Blades::itemOrNull(BufferIn::uuid())]
+        Blades::mikuType("BufferIn")
     end
 
     # BufferIn::toString(item)

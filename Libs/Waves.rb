@@ -74,10 +74,18 @@ class Waves
         "🌊 #{item["description"]}#{Waves::interruptionToStringSuffix(item)} #{Waves::nx46ToString(item["nx46"]).yellow}"
     end
 
-    # Waves::listingItems()
-    def self.listingItems()
+    # Waves::listingItemsInterruption()
+    def self.listingItemsInterruption()
         Blades::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| item["interruption"] }
+    end
+
+    # Waves::listingItemsNonInterruption()
+    def self.listingItemsNonInterruption()
+        Blades::mikuType("Wave")
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| !item["interruption"] }
     end
 
     # Waves::performDone(wave)

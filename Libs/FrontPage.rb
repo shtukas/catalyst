@@ -64,26 +64,75 @@ class FrontPage
         true
     end
 
+    # FrontPage::blockid(item)
+    def self.blockid(item)
+        if item["uuid"] == "5b1d0568-28e6-4613-b012-7e4e497baed7" then # trading
+            return "68195738-ff92-4579-9af9-28969f858f3a"
+        end
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            return "955f4d23-03ac-4da1-8eb3-7413d2f8a6a4"
+        end
+        if item["mikuType"] == "NxActive" then
+            return "c28bf563-5754-4e02-8fa1-82ee0f5ad584"
+        end
+        if item["mikuType"] == "NxTask" then
+            return "1cfc792f-28e8-46d4-9667-c2f96a928e01"
+        end
+        if item["mikuType"] == "BufferIn" then
+            return "d64da179-576a-41ba-a6a4-efa1640bcf51"
+        end
+        nil
+    end
+
+    # FrontPage::structure()
+    def self.structure()
+        ratio_given_expectation = lambda {|uuid, hours_to_1|
+            BankDerivedData::recoveredAverageHoursPerDay(uuid).to_f/hours_to_1
+        }
+
+        [
+            {
+                "name" => "BufferIn",
+                "ratio" => ratio_given_expectation.call("d64da179-576a-41ba-a6a4-efa1640bcf51", 1), # BufferIn
+                "items" => BufferIn::listingItems()
+            },
+            {
+                "name" => "The trading NxActive",
+                "ratio" => ratio_given_expectation.call("68195738-ff92-4579-9af9-28969f858f3a", 4), # the trading NxActive
+                "items" => [Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")]
+            },
+            {
+                "name" => "Waves (non interruption)",
+                "ratio" => ratio_given_expectation.call("955f4d23-03ac-4da1-8eb3-7413d2f8a6a4", 2), # non interruption waves
+                "items" => Waves::listingItemsNonInterruption()
+            },
+            {
+                "name" => "NxActives",
+                "ratio" => ratio_given_expectation.call("c28bf563-5754-4e02-8fa1-82ee0f5ad584", 3), # NxActives
+                "items" => NxActives::listingItems()
+            },
+            {
+                "name" => "NxTasks",
+                "ratio" => ratio_given_expectation.call("1cfc792f-28e8-46d4-9667-c2f96a928e01", 2), # NxTasks
+                "items" => NxTasks::listingItems()
+            }
+        ]
+        .sort_by{|packet| packet["rt"] }
+    end
+
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
-        items = [
+        [
+            Waves::listingItemsInterruption(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxCounters::listingItems(),
-            NxActives::listingItems(),
-            Waves::listingItems(),
-            BufferIn::listingItems(),
-            NxTasks::listingItems()
+            BufferIn::listingItems(), # comes with its own throttle
+            FrontPage::structure().map{|packet| packet["items"] }.flatten
         ]
             .flatten
-
-        items = items
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
-
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
-
-        items
     end
 
     # FrontPage::displayListing(initialCodeTrace)
