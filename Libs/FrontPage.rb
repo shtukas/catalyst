@@ -81,7 +81,7 @@ class FrontPage
         if item["mikuType"] == "BufferIn" then
             return "d64da179-576a-41ba-a6a4-efa1640bcf51"
         end
-        nil
+        "8ee59d48-c0a9-40d8-bdee-d62b20422409" # the complement
     end
 
     # FrontPage::structure()
@@ -117,7 +117,7 @@ class FrontPage
                 "items" => NxTasks::listingItems()
             }
         ]
-        .sort_by{|packet| packet["rt"] }
+        .sort_by{|packet| packet["ratio"] }
     end
 
     # FrontPage::itemsForListingOrdered()
@@ -127,7 +127,6 @@ class FrontPage
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxCounters::listingItems(),
-            BufferIn::listingItems(), # comes with its own throttle
             FrontPage::structure().map{|packet| packet["items"] }.flatten
         ]
             .flatten

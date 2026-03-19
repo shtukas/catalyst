@@ -13,6 +13,11 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        accounts << {
+            "description" => "listing blockid",
+            "number"      => FrontPage::blockid(item)
+        }
+
         if item["donation-14"] then
             if XCache::getOrNull("4ae8961b-204c-44ea-8e1e-fd576ffac499:#{item["donation-14"]}") then
                 accounts << {
