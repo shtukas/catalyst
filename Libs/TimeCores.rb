@@ -62,4 +62,13 @@ class TimeCores
         end
         nil
     end
+
+    # TimeCores::suffix(item)
+    def self.suffix(item)
+        timecorestr = ""
+        if item["timecore-57"] then
+            timecorestr = " (timecore: #{item["timecore-57"]["name"]})".yellow
+        end
+        timecorestr
+    end
 end

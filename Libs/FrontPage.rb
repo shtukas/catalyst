@@ -20,12 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        timecorestr = ""
-        if item["timecore-57"] then
-            timecorestr = " (timecore: #{item["timecore-57"]["name"]})"
-        end
-
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{timecorestr}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
