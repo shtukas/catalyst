@@ -159,6 +159,14 @@ class FrontPage
             break if sheight <= 3
         }
 
+
+        palmer_missing_pl_for_today = `/Users/pascal_honore/Galaxy/Palmer/binaries/palmer performance:missing-pl-for-today`.to_f
+        if palmer_missing_pl_for_today > 0 then
+            puts ""
+            puts "> 🧧 palmer missing pl for today: #{palmer_missing_pl_for_today} USD"
+            puts ""
+        end
+
         t2 = Time.new.to_f
         renderingTime = t2-t1
         if renderingTime > 0.5 then
