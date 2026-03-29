@@ -153,9 +153,12 @@ class FrontPage
         if !XCache::getFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}") then
             puts "- ☀️  run morning"
         end
-        palmer_missing_pl_for_today = `/Users/pascal_honore/Galaxy/Palmer/binaries/palmer performance:missing-pl-for-today`.to_f
-        if palmer_missing_pl_for_today > 0 then
-            puts "- 🧧 palmer missing pl for today: #{palmer_missing_pl_for_today.round(2)} USD"
+        path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
+        if File.exist?(path_to_palmer) then
+            palmer_missing_pl_for_today = `#{path_to_palmer} performance:missing-pl-for-today`.to_f
+            if palmer_missing_pl_for_today > 0 then
+                puts "- 🧧 palmer missing pl for today: #{palmer_missing_pl_for_today.round(2)} USD"
+            end
         end
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
