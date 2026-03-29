@@ -18,7 +18,7 @@ class NxActives
 
     # NxActives::icon(item)
     def self.icon(item)
-        "🐠"
+        "👩🏻‍💻"
     end
 
     # NxActives::toString(item)
