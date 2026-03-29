@@ -12,6 +12,7 @@ Cross types conventions (all optional):
     - donation-14           : null or String # bank account to donate to
     - global-pos-07         : global positioning, Real
     - timecore-57           : TimeCore57
+    - is-priority-01        : boolean, always displayed first
 
 TimeCore57 
     - uuid                  : String

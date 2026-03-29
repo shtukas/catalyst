@@ -164,6 +164,7 @@ class Blades
 
     # Blades::destroyBlade(uuid)
     def self.destroyBlade(uuid)
+        return if uuid.nil?
         filepath = Blades::uuidToFilepathOrNull(uuid)
         if filepath then
             FileUtils.rm(filepath)
@@ -215,6 +216,7 @@ class Blades
 
     # Blades::itemOrNull(uuid)
     def self.itemOrNull(uuid)
+        return nil if uuid.nil?
         filepath = Blades::uuidToFilepathOrNull(uuid)
         if filepath.nil? then
             return nil
@@ -224,6 +226,7 @@ class Blades
 
     # Blades::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
+        return if uuid.nil?
         filepath = Blades::uuidToFilepathOrNull(uuid)
         return if filepath.nil?
         db = SQLite3::Database.new(filepath)

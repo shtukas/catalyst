@@ -108,4 +108,41 @@ class Operations
             Blades::deleteItem(item["uuid"])
         end
     end
+
+    # Operations::sort_frontpage()
+    def self.sort_frontpage()
+        items = FrontPage::itemsForListingOrdered()
+        selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
+        selected.reverse.each{|item|
+            Blades::setAttribute(item["uuid"], "is-priority-01", true)
+            Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
+        }
+    end
+
+    # Operations::morning()
+    def self.morning()
+        # We are selecting the element we are going to prioritize and that 
+        # should all be done today
+        [
+            Waves::listingItemsInterruption(),
+            NxOndates::listingItems(),
+            NxBackups::listingItems(),
+            NxCounters::listingItems(),
+            BufferIn::listingItems(),
+            [Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")],
+            Waves::listingItemsNonInterruption(),
+            NxActives::listingItems(),
+            NxTasks::listingItems()
+        ].map{|items|
+            if items.size > 0 then
+                CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
+            else
+                []
+            end
+        }.flatten.each{|item|
+            Blades::setAttribute(item["uuid"], "is-priority-01", true)
+            Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
+        }
+        XCache::setFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}", true)
+    end
 end

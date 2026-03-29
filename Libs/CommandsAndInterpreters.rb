@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | engined | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | numbers",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | numbers | morning",
         ].join("\n")
     end
 
@@ -145,18 +145,42 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("priority", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
-            item = GlobalPositioning::insert_first(item)
-            puts JSON.pretty_generate(item)
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return nil if description == ""
+            uuid = SecureRandom.uuid
+            Blades::init(uuid)
+            Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+            Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+            Blades::setAttribute(uuid, "description", description)
+            Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
+            Blades::setAttribute(uuid, "timecore-57", TimeCores::interactively_select_core())
+            Blades::setAttribute(uuid, "is-priority-01", true)
+            Blades::setAttribute(uuid, "mikuType", "NxTask")
+            #item = Blades::itemOrNull(uuid)
             NxBalls::runningItems().each{|i|
                 NxBalls::pause(i)
             }
-            if LucilleCore::askQuestionAnswerAsBoolean("start `#{item["description"]}` ? ", true) then
-                NxBalls::start(item)
-            end
+            Operations::sort_frontpage()
+            i = FrontPage::itemsForListingOrdered().first
+            NxBalls::start(i)
             return
         end
+
+        if Interpreting::match("sort", input) then
+            items = FrontPage::itemsForListingOrdered()
+            selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|item|
+                Blades::setAttribute(item["uuid"], "is-priority-01", true)
+                Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
+            }
+            return
+        end
+
+        if Interpreting::match("morning", input) then
+            Operations::morning()
+            return
+        end
+
 
         if Interpreting::match("backup", input) then
             item = NxBackups::interactivelyIssueNewOrNull()

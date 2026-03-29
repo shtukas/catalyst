@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix}#{item["is-priority-01"] ? " 🔥 " : " "}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -118,6 +118,7 @@ class FrontPage
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         [
+            Blades::items().select{|item| item["is-priority-01"] }.sort_by{|item| item["global-pos-07"] || 0},
             Waves::listingItemsInterruption(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
@@ -134,7 +135,7 @@ class FrontPage
         store = ItemStore.new()
         puts ""
 
-        sheight = CommonUtils::screenHeight()
+        sheight = CommonUtils::screenHeight() - 5
         swidth = CommonUtils::screenWidth()
 
         if Config::isPrimaryInstance() then
@@ -149,6 +150,14 @@ class FrontPage
         # ----------------------------------------------------------------------
         # Main listing
 
+        if !XCache::getFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}") then
+            puts "- ☀️  run morning"
+        end
+        palmer_missing_pl_for_today = `/Users/pascal_honore/Galaxy/Palmer/binaries/palmer performance:missing-pl-for-today`.to_f
+        if palmer_missing_pl_for_today > 0 then
+            puts "- 🧧 palmer missing pl for today: #{palmer_missing_pl_for_today.round(2)} USD"
+        end
+
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
 
         items.each{|item|
@@ -156,16 +165,8 @@ class FrontPage
             line = FrontPage::toString2(store, item, true)
             puts line
             sheight = sheight - (line.size/swidth + 1)
-            break if sheight <= 3
+            break if sheight <= 0
         }
-
-
-        palmer_missing_pl_for_today = `/Users/pascal_honore/Galaxy/Palmer/binaries/palmer performance:missing-pl-for-today`.to_f
-        if palmer_missing_pl_for_today > 0 then
-            puts ""
-            puts "> 🧧 palmer missing pl for today: #{palmer_missing_pl_for_today} USD"
-            puts ""
-        end
 
         t2 = Time.new.to_f
         renderingTime = t2-t1
