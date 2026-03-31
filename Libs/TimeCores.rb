@@ -43,7 +43,7 @@ class TimeCores
         core = TimeCores::get_time_core_or_null(uuid)
         return 0 if core.nil?
         rt = BankDerivedData::recoveredAverageHoursPerDay(core["uuid"])
-        daily_expectation = core["day-expectation-hours"] || 0
+        daily_expectation = core["day-expectation-hours"] || 2
         rt.to_f/daily_expectation
     end
 
@@ -105,7 +105,8 @@ class TimeCores
     # TimeCores::dive()
     def self.dive()
         loop {
-            timecore = LucilleCore::selectEntityFromListOfEntitiesOrNull("timecore", TimeCores::timecores(), lambda{|item| item["name"] })
+            timecores = TimeCores::timecores().sort_by{|timecore| TimeCores::daily_ratio(timecore["uuid"]) }
+            timecore = LucilleCore::selectEntityFromListOfEntitiesOrNull("timecore", timecores, lambda{|timecore| "(" + "#{"%5.2f" % TimeCores::daily_ratio(timecore["uuid"])}".green + ")" + " #{timecore["name"]}" })
             break if timecore.nil?
             Operations::program3(lambda{
                 TimeCores::core_items_in_global_positioning_order(timecore["uuid"])
