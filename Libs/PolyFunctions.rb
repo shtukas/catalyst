@@ -100,7 +100,7 @@ class PolyFunctions
             if item then
                 return item["description"]
             end
-            TimeCores::time_cores().each{|core|
+            TimeCores::timecores().each{|core|
                 if core["uuid"] == uuid then
                     return core["name"]
                 end

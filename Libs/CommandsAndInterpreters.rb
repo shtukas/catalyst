@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute * | donation * | transmute * | dismiss",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | timecores",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | numbers | morning",
         ].join("\n")
@@ -174,6 +174,10 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("timecores", input) then
+            TimeCores::dive()
+            return
+        end
 
         if Interpreting::match("backup", input) then
             item = NxBackups::interactivelyIssueNewOrNull()

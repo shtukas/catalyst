@@ -56,8 +56,8 @@ class TimeCores
         }
     end
 
-    # TimeCores::time_cores()
-    def self.time_cores()
+    # TimeCores::timecores()
+    def self.timecores()
         timecores = Blades::items()
             .select{|item| item["timecore-57"] }
             .map{|item| item["timecore-57"]["uuid"] }
@@ -68,7 +68,7 @@ class TimeCores
 
     # TimeCores::interactively_select_core_or_null()
     def self.interactively_select_core_or_null()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", TimeCores::time_cores(), lambda {|core| core["name"] })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", TimeCores::timecores(), lambda {|core| core["name"] })
     end
 
     # TimeCores::interactively_select_core()
@@ -100,5 +100,16 @@ class TimeCores
             timecorestr = " (timecore: #{item["timecore-57"]["name"]})".yellow
         end
         timecorestr
+    end
+
+    # TimeCores::dive()
+    def self.dive()
+        loop {
+            timecore = LucilleCore::selectEntityFromListOfEntitiesOrNull("timecore", TimeCores::timecores(), lambda{|item| item["name"] })
+            break if timecore.nil?
+            Operations::program3(lambda{
+                TimeCores::core_items_in_global_positioning_order(timecore["uuid"])
+            })
+        }
     end
 end
