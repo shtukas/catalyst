@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute * | donation * | transmute * | dismiss",
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | engined | counters",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | numbers | morning",
         ].join("\n")
@@ -154,15 +154,8 @@ class CommandsAndInterpreters
             Blades::setAttribute(uuid, "description", description)
             Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
             Blades::setAttribute(uuid, "timecore-57", TimeCores::interactively_select_core())
-            Blades::setAttribute(uuid, "is-priority-01", true)
+            Blades::setAttribute(uuid, "is-priority-02", [CommonUtils::today()])
             Blades::setAttribute(uuid, "mikuType", "NxTask")
-            #item = Blades::itemOrNull(uuid)
-            NxBalls::runningItems().each{|i|
-                NxBalls::pause(i)
-            }
-            Operations::sort_frontpage()
-            i = FrontPage::itemsForListingOrdered().first
-            NxBalls::start(i)
             return
         end
 
@@ -170,8 +163,8 @@ class CommandsAndInterpreters
             items = FrontPage::itemsForListingOrdered()
             selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                Blades::setAttribute(item["uuid"], "is-priority-01", true)
-                Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
+                Blades::setAttribute(item["uuid"], "is-priority-02", [CommonUtils::today()])
+                Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             }
             return
         end

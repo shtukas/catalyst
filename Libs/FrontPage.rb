@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix}#{item["is-priority-01"] ? " 🔥 " : " "}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix}#{(item["is-priority-02"] and item["is-priority-02"].include?(CommonUtils::today())) ? " 🔥 " : " "}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -118,7 +118,7 @@ class FrontPage
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         [
-            Blades::items().select{|item| item["is-priority-01"] }.sort_by{|item| item["global-pos-07"] || 0},
+            Blades::items().select{|item| item["is-priority-02"] and item["is-priority-02"].include?(CommonUtils::today()) }.sort_by{|item| item["global-pos-07"] || 0},
             Waves::listingItemsInterruption(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
@@ -145,19 +145,19 @@ class FrontPage
             end
         end
 
-        t1 = Time.new.to_f
-
         # ----------------------------------------------------------------------
         # Main listing
 
+        t1 = Time.new.to_f
+
         if !XCache::getFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}") then
-            puts "- ☀️  run morning"
+            puts "      ☀️  run morning"
         end
         path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
         if File.exist?(path_to_palmer) then
             palmer_missing_pl_for_today = `#{path_to_palmer} performance:missing-pl-for-today`.to_f
             if palmer_missing_pl_for_today > 0 then
-                puts "- 🧧 palmer missing pl for today: #{palmer_missing_pl_for_today.round(2)} USD"
+                puts "      🧧 palmer missing pl for today: #{palmer_missing_pl_for_today.round(2)} USD"
             end
         end
 

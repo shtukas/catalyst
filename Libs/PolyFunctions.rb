@@ -21,8 +21,8 @@ class PolyFunctions
         if item["donation-14"] then
             if XCache::getOrNull("4ae8961b-204c-44ea-8e1e-fd576ffac499:#{item["donation-14"]}") then
                 accounts << {
-                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(donationuuid) || item["donation-14"]}",
-                    "number"      => donationuuid
+                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(item["donation-14"]) || item["donation-14"]}",
+                    "number"      => item["donation-14"]
                 }
             else
 
@@ -33,8 +33,8 @@ class PolyFunctions
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             else
                 accounts << {
-                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(donationuuid) || item["donation-14"]}",
-                    "number"      => donationuuid
+                    "description" => "donation: #{PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(item["donation-14"]) || item["donation-14"]}",
+                    "number"      => item["donation-14"]
                 }
             end
         end

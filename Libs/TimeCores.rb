@@ -15,6 +15,28 @@ class TimeCores
         items.first["timecore-57"]
     end
 
+    # TimeCores::get_timecore_description_or_null_cache_results(uuid)
+    def self.get_timecore_description_or_null_cache_results(uuid)
+
+        description = XCache::getOrNull("0084eebd-b644-4898-b0b6-d92590321092:#{uuid}")
+        if description then
+            if description == "fe38f834" then
+                return nil
+            end
+            return description
+        end
+
+        timecore = TimeCores::get_time_core_or_null(uuid)
+        if timecore then
+            description = timecore["name"]
+            XCache::set("0084eebd-b644-4898-b0b6-d92590321092:#{uuid}",description)
+            return description
+        end
+
+        XCache::set("0084eebd-b644-4898-b0b6-d92590321092:#{uuid}","fe38f834")
+        nil
+    end
+
     # TimeCores::daily_ratio(uuid)
     def self.daily_ratio(uuid)
         # Here we are defaulting to zero if the core doesn't exists

@@ -114,7 +114,7 @@ class Operations
         items = FrontPage::itemsForListingOrdered()
         selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
         selected.reverse.each{|item|
-            Blades::setAttribute(item["uuid"], "is-priority-01", true)
+            Blades::setAttribute(item["uuid"], "is-priority-02", [CommonUtils::today()])
             Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
         }
     end
@@ -139,9 +139,9 @@ class Operations
             else
                 []
             end
-        }.flatten.each{|item|
-            Blades::setAttribute(item["uuid"], "is-priority-01", true)
-            Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
+        }.flatten.shuffle.each{|item|
+            Blades::setAttribute(item["uuid"], "is-priority-02", [CommonUtils::today()])
+            Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
         }
         XCache::setFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}", true)
     end

@@ -12,9 +12,11 @@ Cross types conventions (all optional):
     - donation-14           : null or String # bank account to donate to
     - global-pos-07         : global positioning, Real
     - timecore-57           : TimeCore57
-    - is-priority-01        : boolean, always displayed first
+    - is-priority-02        : null or array of dates $1
 
 TimeCore57 
     - uuid                  : String
     - name                  : String
     - day-expectation-hours : REAL or null defaults to 1
+
+$1 if the current date is listed, then it's a priority item

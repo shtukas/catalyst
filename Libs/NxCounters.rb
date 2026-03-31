@@ -43,6 +43,11 @@ class NxCounters
         item["incrementPerDay"] - NxCounters::getDayData(item)["done"]
     end
 
+    # NxCounters::isCompletedToday(item)
+    def self.isCompletedToday(item)
+        NxCounters::getDayData(item)["done"] >= item["incrementPerDay"]
+    end
+
     # NxCounters::toString(item)
     def self.toString(item)
         "#{NxCounters::icon(item)} #{item["description"]} (missing: #{NxCounters::missingCount(item)})"
@@ -55,7 +60,10 @@ class NxCounters
         dayData["done"] = dayData["done"] + increment
         dayData["lastUpdateUnixtime"] = Time.new.to_i
         Blades::setAttribute(item["uuid"], "dayData", dayData)
-        Blades::setAttribute(item["uuid"], "is-priority-01", false)
+        item = Blades::itemOrNull(item["uuid"])
+        if NxCounters::isCompletedToday(item) then
+            Blades::setAttribute(item["uuid"], "is-priority-02", nil)
+        end
     end
 
     # NxCounters::listingItems()
