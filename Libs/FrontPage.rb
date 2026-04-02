@@ -169,6 +169,10 @@ class FrontPage
                         puts "      🧧 palmer missing pl over 3 days: #{(300 - performance["last_three_days_pl"]).round(2)} USD"
                         return
                     end
+                    if performance["last_seven_days_pl"] < 700 then
+                        puts "      🧧 palmer missing pl over 7 days: #{(700 - performance["last_seven_days_pl"]).round(2)} USD"
+                        return
+                    end
                     puts "      🧧 performance: #{(100 * performance["performance"]).round(2)} %"
                 end
             }).call()
