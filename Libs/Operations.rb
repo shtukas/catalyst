@@ -129,7 +129,6 @@ class Operations
             NxBackups::listingItems(),
             NxCounters::listingItems(),
             BufferIn::listingItems(),
-            [Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")],
             Waves::listingItemsNonInterruption(),
             NxActives::listingItems(),
             NxTasks::listingItems()

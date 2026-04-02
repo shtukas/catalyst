@@ -14,9 +14,4 @@ Cross types conventions (all optional):
     - timecore-57           : TimeCore57
     - is-priority-02        : null or array of dates $1
 
-TimeCore57 
-    - uuid                  : String
-    - name                  : String
-    - day-expectation-hours : REAL or null defaults to 1
-
 $1 if the current date is listed, then it's a priority item

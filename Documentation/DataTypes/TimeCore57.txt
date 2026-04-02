@@ -1,0 +1,4 @@
+TimeCore57 
+    - uuid                  : String
+    - name                  : String
+    - day-expectation-hours : REAL or null defaults to 1

@@ -59,8 +59,8 @@ class FrontPage
         true
     end
 
-    # FrontPage::blockid(item)
-    def self.blockid(item)
+    # FrontPage::itemToBlockId(item)
+    def self.itemToBlockId(item)
         if item["uuid"] == "5b1d0568-28e6-4613-b012-7e4e497baed7" then # trading
             return "68195738-ff92-4579-9af9-28969f858f3a"
         end
@@ -85,6 +85,8 @@ class FrontPage
             BankDerivedData::recoveredAverageHoursPerDay(uuid).to_f/hours_to_1
         }
 
+        palmer_trading = Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")
+
         [
             {
                 "name" => "BufferIn",
@@ -92,9 +94,9 @@ class FrontPage
                 "items" => BufferIn::listingItems()
             },
             {
-                "name" => "The trading NxActive",
-                "ratio" => ratio_given_expectation.call("68195738-ff92-4579-9af9-28969f858f3a", 4), # the trading NxActive
-                "items" => [Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")]
+                "name" => "Palmer Trading",
+                "ratio" => ratio_given_expectation.call("68195738-ff92-4579-9af9-28969f858f3a", palmer_trading["timecore-57"]["day-expectation-hours"]), # Palmer Trading
+                "items" => [palmer_trading]
             },
             {
                 "name" => "Waves (non interruption)",
@@ -153,12 +155,25 @@ class FrontPage
         if !XCache::getFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}") then
             puts "      ☀️  run morning"
         end
-        path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
-        if File.exist?(path_to_palmer) then
-            palmer_missing_pl_for_today = `#{path_to_palmer} performance:missing-pl-for-today`.to_f
-            if palmer_missing_pl_for_today > 0 then
-                puts "      🧧 palmer missing pl for today: #{palmer_missing_pl_for_today.round(2)} USD"
-            end
+        begin
+            (lambda{
+                path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
+                if File.exist?(path_to_palmer) then
+                    # {"today_pl":1.0,"last_three_days_pl":1.0,"performance":1.0}
+                    performance = JSON.parse(`#{path_to_palmer} performance`)
+                    if performance["today_pl"] < 100 then
+                        puts "      🧧 palmer missing pl for today: #{(100 - performance["today_pl"]).round(2)} USD"
+                        return
+                    end
+                    if performance["last_three_days_pl"] < 300 then
+                        puts "      🧧 palmer missing pl over 3 days: #{(300 - performance["last_three_days_pl"]).round(2)} USD"
+                        return
+                    end
+                    puts "      🧧 performance: #{(100 * performance["performance"]).round(2)} %"
+                end
+            }).call()
+        rescue
+            puts "palmer: problem extracting performance"
         end
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")

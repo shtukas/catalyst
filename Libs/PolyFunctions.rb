@@ -15,7 +15,7 @@ class PolyFunctions
 
         accounts << {
             "description" => "listing blockid",
-            "number"      => FrontPage::blockid(item)
+            "number"      => FrontPage::itemToBlockId(item)
         }
 
         if item["donation-14"] then
