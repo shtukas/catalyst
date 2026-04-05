@@ -159,21 +159,8 @@ class FrontPage
             (lambda{
                 path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
                 if File.exist?(path_to_palmer) then
-                    # {"today_pl":1.0,"last_three_days_pl":1.0,"performance":1.0}
                     performance = JSON.parse(`#{path_to_palmer} performance`)
-                    if performance["today_pl"] < 100 then
-                        puts "      🧧 palmer missing pl for today: #{(100 - performance["today_pl"]).round(2)} USD"
-                        return
-                    end
-                    if performance["last_three_days_pl"] < 300 then
-                        puts "      🧧 palmer missing pl over 3 days: #{(300 - performance["last_three_days_pl"]).round(2)} USD"
-                        return
-                    end
-                    if performance["last_seven_days_pl"] < 700 then
-                        puts "      🧧 palmer missing pl over 7 days: #{(700 - performance["last_seven_days_pl"]).round(2)} USD"
-                        return
-                    end
-                    puts "      🧧 performance: #{(100 * performance["performance"]).round(2)} %"
+                    puts "      🧧 #{performance}"
                 end
             }).call()
         rescue
