@@ -56,8 +56,13 @@ class NxEngines
         done.to_f/target
     end
 
+    # NxEngines::engined()
+    def self.engined()
+        Blades::items().select{|item| item["engine-1437"] }
+    end
+
     # NxEngines::listingItems()
     def self.listingItems()
-        Blades::items().select{|item| item["engine-1437"] }.select{|item| NxEngines::ratio(item) < 1 }
+        NxEngines::engined().select{|item| NxEngines::ratio(item) < 1 }
     end
 end
