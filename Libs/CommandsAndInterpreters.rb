@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | timecores",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | numbers | morning",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | morning",
         ].join("\n")
     end
 
@@ -81,14 +81,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmute::transmute(item)
-            return
-        end
-
-        if Interpreting::match("numbers", input) then
-            FrontPage::structure().each{|packet|
-                puts "#{packet["name"].ljust(30)}: #{packet["ratio"]}"
-            }
-            LucilleCore::pressEnterToContinue()
             return
         end
 

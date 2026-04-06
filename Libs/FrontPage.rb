@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -79,44 +79,6 @@ class FrontPage
         "8ee59d48-c0a9-40d8-bdee-d62b20422409" # the complement
     end
 
-    # FrontPage::structure()
-    def self.structure()
-        ratio_given_expectation = lambda {|uuid, hours_to_1|
-            BankDerivedData::recoveredAverageHoursPerDay(uuid).to_f/hours_to_1
-        }
-
-        palmer_trading = Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")
-
-        [
-            {
-                "name" => "BufferIn",
-                "ratio" => ratio_given_expectation.call("d64da179-576a-41ba-a6a4-efa1640bcf51", 1), # BufferIn
-                "items" => BufferIn::listingItems()
-            },
-            {
-                "name" => "Palmer Trading",
-                "ratio" => ratio_given_expectation.call("68195738-ff92-4579-9af9-28969f858f3a", palmer_trading["timecore-57"]["day-expectation-hours"]), # Palmer Trading
-                "items" => [palmer_trading]
-            },
-            {
-                "name" => "Waves (non interruption)",
-                "ratio" => ratio_given_expectation.call("955f4d23-03ac-4da1-8eb3-7413d2f8a6a4", 2), # non interruption waves
-                "items" => Waves::listingItemsNonInterruption()
-            },
-            {
-                "name" => "NxActives",
-                "ratio" => ratio_given_expectation.call("c28bf563-5754-4e02-8fa1-82ee0f5ad584", 3), # NxActives
-                "items" => NxActives::listingItems()
-            },
-            {
-                "name" => "NxTasks",
-                "ratio" => ratio_given_expectation.call("1cfc792f-28e8-46d4-9667-c2f96a928e01", 2), # NxTasks
-                "items" => NxTasks::listingItems()
-            }
-        ]
-        .sort_by{|packet| packet["ratio"] }
-    end
-
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         [
@@ -124,7 +86,12 @@ class FrontPage
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxCounters::listingItems(),
-            FrontPage::structure().map{|packet| packet["items"] }.flatten
+            NxEngines::listingItems(),
+            BufferIn::listingItems(),
+            [Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")], # palmer
+            Waves::listingItemsNonInterruption(),
+            NxActives::listingItems(),
+            NxTasks::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

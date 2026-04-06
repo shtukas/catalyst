@@ -153,6 +153,7 @@ require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxCounters.rb"
 require_relative "NxActives.rb"
+require_relative "NxEngines.rb"
 
 require_relative "Operations.rb"
 
