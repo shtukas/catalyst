@@ -61,9 +61,6 @@ class NxCounters
         dayData["lastUpdateUnixtime"] = Time.new.to_i
         Blades::setAttribute(item["uuid"], "dayData", dayData)
         item = Blades::itemOrNull(item["uuid"])
-        if NxCounters::isCompletedToday(item) then
-            Blades::setAttribute(item["uuid"], "is-priority-02", nil)
-        end
     end
 
     # NxCounters::listingItems()

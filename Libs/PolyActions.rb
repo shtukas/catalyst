@@ -40,7 +40,6 @@ class PolyActions
     def self.done(item)
 
         PolyActions::stop(item)
-        Blades::setAttribute(item["uuid"], "is-priority-02", nil)
 
         if item["mikuType"] == "NxCounter" then
             return

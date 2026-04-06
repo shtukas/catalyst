@@ -154,7 +154,6 @@ class CommandsAndInterpreters
             Blades::setAttribute(uuid, "description", description)
             Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
             Blades::setAttribute(uuid, "timecore-57", TimeCores::interactively_select_core())
-            Blades::setAttribute(uuid, "is-priority-02", [CommonUtils::today()])
             Blades::setAttribute(uuid, "mikuType", "NxTask")
             return
         end
@@ -163,7 +162,6 @@ class CommandsAndInterpreters
             items = FrontPage::itemsForListingOrdered()
             selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                Blades::setAttribute(item["uuid"], "is-priority-02", [CommonUtils::today()])
                 Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             }
             return

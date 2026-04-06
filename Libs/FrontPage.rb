@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix}#{(item["is-priority-02"] and item["is-priority-02"].include?(CommonUtils::today())) ? " 🔥 " : " "}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix}#{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -120,7 +120,6 @@ class FrontPage
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         [
-            Blades::items().select{|item| item["is-priority-02"] and item["is-priority-02"].include?(CommonUtils::today()) }.sort_by{|item| item["global-pos-07"] || 0},
             Waves::listingItemsInterruption(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
@@ -153,18 +152,19 @@ class FrontPage
         t1 = Time.new.to_f
 
         if !XCache::getFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}") then
-            puts "      ☀️  run morning"
+            puts "☀️  run morning"
         end
+
         begin
-            (lambda{
+            performance = (lambda{
                 path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
-                if File.exist?(path_to_palmer) then
-                    performance = JSON.parse(`#{path_to_palmer} performance`)
-                    puts "      🧧 #{performance}"
-                end
+                return if !File.exist?(path_to_palmer)
+                performance = `#{path_to_palmer} performance`.strip
+                return if performance.size == 0
+                puts "palmer: #{performance}"
             }).call()
         rescue
-            puts "palmer: problem extracting performance"
+            puts "problem extracting palmer performance"
         end
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
