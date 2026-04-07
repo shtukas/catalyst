@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TimeCores::suffix(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Hierarchy::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -59,29 +59,10 @@ class FrontPage
         true
     end
 
-    # FrontPage::itemToBlockId(item)
-    def self.itemToBlockId(item)
-        if item["uuid"] == "5b1d0568-28e6-4613-b012-7e4e497baed7" then # trading
-            return "68195738-ff92-4579-9af9-28969f858f3a"
-        end
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            return "955f4d23-03ac-4da1-8eb3-7413d2f8a6a4"
-        end
-        if item["mikuType"] == "NxActive" then
-            return "c28bf563-5754-4e02-8fa1-82ee0f5ad584"
-        end
-        if item["mikuType"] == "NxTask" then
-            return "1cfc792f-28e8-46d4-9667-c2f96a928e01"
-        end
-        if item["mikuType"] == "BufferIn" then
-            return "d64da179-576a-41ba-a6a4-efa1640bcf51"
-        end
-        "8ee59d48-c0a9-40d8-bdee-d62b20422409" # the complement
-    end
-
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         [
+            Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
@@ -90,8 +71,8 @@ class FrontPage
             BufferIn::listingItems(),
             [Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")], # palmer
             Waves::listingItemsNonInterruption(),
-            NxActives::listingItems(),
-            NxTasks::listingItems()
+            Blades::mikuType("NxActive"),
+            Hierarchy::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

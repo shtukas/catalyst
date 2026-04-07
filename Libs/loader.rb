@@ -143,6 +143,8 @@ require_relative "FrontPage.rb"
 require_relative "Galaxy.rb"
 require_relative "GlobalPositioning.rb"
 
+require_relative "Hierarchy.rb"
+
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 
@@ -165,7 +167,6 @@ require_relative "Search.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmute.rb"
-require_relative "TimeCores.rb"
 
 require_relative "UxPayloads.rb"
 

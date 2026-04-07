@@ -11,20 +11,18 @@ class Donations
 
     # Donations::donationId_to_description_or_null(donationid)
     def self.donationId_to_description_or_null(donationid)
-        "description 09"
         target = PolyFunctions::uuid_to_item_or_null_cache_results(donationid)
         if target then
             return target["description"]
         end
-
-        TimeCores::get_timecore_description_or_null_cache_results(donationid)
+        nil
     end
 
     # Donations::interactivelySetDonation(item) # -> item
     def self.interactivelySetDonation(item)
-        core = TimeCores::interactively_select_core_or_null()
-        return item if core.nil?
-        Blades::setAttribute(item["uuid"], "donation-14", core["uuid"])
+        target = NxEngines::interactivelySelectEnginedOrNull()
+        return item if target.nil?
+        Blades::setAttribute(item["uuid"], "donation-14", target["uuid"])
         Blades::itemOrNull(item["uuid"])
     end
 end

@@ -11,5 +11,5 @@ Cross types conventions (all optional):
     - payload-37            : null or UxPayload
     - donation-14           : null or String # bank account to donate to
     - global-pos-07         : global positioning, Real
-    - timecore-57           : TimeCore57
     - engine-1437           : NxEngine or null
+    - px14                  : uuid of the parent of the item

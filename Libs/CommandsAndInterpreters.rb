@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute * | donation * | transmute * | dismiss | engine *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | todo | ondate | on <weekday> | backup | priority | active | counter",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | timecores | engined",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute * | donation * | transmute * | dismiss | engine * | dive *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | priority | active | counter",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | engined",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | morning",
         ].join("\n")
@@ -145,8 +145,7 @@ class CommandsAndInterpreters
             Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
             Blades::setAttribute(uuid, "description", description)
             Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
-            Blades::setAttribute(uuid, "timecore-57", TimeCores::interactively_select_core())
-            Blades::setAttribute(uuid, "mikuType", "NxTask")
+            Blades::setAttribute(uuid, "mikuType", "NxActive")
             return
         end
 
@@ -161,11 +160,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("morning", input) then
             Operations::morning()
-            return
-        end
-
-        if Interpreting::match("timecores", input) then
-            TimeCores::dive()
             return
         end
 
@@ -201,6 +195,14 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Donations::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("dive *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Hierarchy::dive(item)
             return
         end
 
@@ -364,7 +366,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("anniversary", input) then
-            item = Anniversary::interactivelyIssueNewOrNull()
+            item = Anniversaries::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -374,14 +376,6 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Blades::mikuType("Anniversary")
             })
-            return
-        end
-
-        if Interpreting::match("todo", input) then
-            core = TimeCores::architect_or_null()
-            return if core.nil?
-            item = NxTasks::interactivelyIssueNewOrNull(core)
-            puts JSON.pretty_generate(item)
             return
         end
 

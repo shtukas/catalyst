@@ -65,4 +65,9 @@ class NxEngines
     def self.listingItems()
         NxEngines::engined().select{|item| NxEngines::ratio(item) < 1 }
     end
+
+    # NxEngines::interactivelySelectEnginedOrNull()
+    def self.interactivelySelectEnginedOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engined", NxEngines::engined(), lambda{|item| PolyFunctions::toString(item) })
+    end
 end

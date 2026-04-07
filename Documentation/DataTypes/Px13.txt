@@ -1,4 +1,0 @@
-Px13 {
-    "parentuuid" : String
-    "position"   : Float
-}

@@ -68,7 +68,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Anniversary" then
-            next_celebration = Anniversary::computeNextCelebrationDate(item["startdate"], item["repeatType"])
+            next_celebration = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
             Blades::setAttribute(item["uuid"], "next_celebration", next_celebration)
             DoNotShowUntil::doNotShowUntil(item, Date.parse(next_celebration).to_time.to_i)
             return
@@ -161,6 +161,12 @@ class PolyActions
     def self.destroy(item)
 
         NxBalls::stop(item)
+
+        if Hierarchy::getChildren(item).size > 0 then
+            puts "You cannot destroy '#{PolyFunctions::toString(item)}' at the moment, it has #{Hierarchy::getChildren(item).size} children"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then

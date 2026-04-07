@@ -3,12 +3,6 @@ class Transmute
 
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
-        if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            core = TimeCores::architect_or_null()
-            return if core.nil?
-            Blades::setAttribute(item["uuid"], "timecore-57", core)
-            return Blades::itemOrNull(item["uuid"])
-        end
         if item["mikuType"] == "NxTask" and targetType == "NxActive" then
             Blades::setAttribute(item["uuid"], "mikuType", "NxActive")
             return Blades::itemOrNull(item["uuid"])
@@ -19,7 +13,7 @@ class Transmute
     # Transmute::transmute(item)
     def self.transmute(item)
         mapping = {
-            "NxOndate" => ["NxTask"],
+            "NxOndate" => [],
             "NxTask"   => ["NxActive"]
         }
         targetTypes = mapping[item["mikuType"]]
