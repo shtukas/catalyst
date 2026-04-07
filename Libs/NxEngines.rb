@@ -52,7 +52,7 @@ class NxEngines
             raise "error: item '#{item}' has not engine at engine-1437"
         end
         done = BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])
-        target = NxEngines::dailyTargetInHours(engine)
+        target = NxEngines::dailyTargetInHours(item["engine-1437"])
         done.to_f/target
     end
 
@@ -70,4 +70,18 @@ class NxEngines
     def self.interactivelySelectEnginedOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("engined", NxEngines::engined(), lambda{|item| PolyFunctions::toString(item) })
     end
+
+    # NxEngines::engineToString(item)
+    def self.engineToString(item)
+        "(engine ratio: #{100 * NxEngines::ratio(item).round()} %)"
+    end
+
+    # NxEngines::suffix(item)
+    def self.suffix(item)
+        if item["engine-1437"] then
+            return " #{NxEngines::engineToString(item)}".green
+        end
+        ""
+    end
+
 end

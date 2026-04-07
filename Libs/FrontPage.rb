@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Hierarchy::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{Hierarchy::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -61,6 +61,7 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
+        trading = Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")
         [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
@@ -69,12 +70,13 @@ class FrontPage
             NxCounters::listingItems(),
             NxEngines::listingItems(),
             BufferIn::listingItems(),
-            [Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")], # palmer
+            [NxEngines::ratio(trading) < 1 ? trading : nil], # palmer
             Waves::listingItemsNonInterruption(),
             Blades::mikuType("NxActive"),
             Hierarchy::listingItems()
         ]
             .flatten
+            .compact
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
     end

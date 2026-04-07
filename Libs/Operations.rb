@@ -117,29 +117,4 @@ class Operations
             Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
         }
     end
-
-    # Operations::morning()
-    def self.morning()
-        # We are selecting the element we are going to prioritize and that 
-        # should all be done today
-        [
-            Waves::listingItemsInterruption(),
-            NxOndates::listingItems(),
-            NxBackups::listingItems(),
-            NxCounters::listingItems(),
-            BufferIn::listingItems(),
-            Waves::listingItemsNonInterruption(),
-            NxActives::listingItems(),
-            NxTasks::listingItems()
-        ].map{|items|
-            if items.size > 0 then
-                CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
-            else
-                []
-            end
-        }.flatten.shuffle.each{|item|
-            Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
-        }
-        XCache::setFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}", true)
-    end
 end
