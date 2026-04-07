@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | engined",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | morning",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind",
         ].join("\n")
     end
 
@@ -155,11 +155,6 @@ class CommandsAndInterpreters
             selected.reverse.each{|item|
                 Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             }
-            return
-        end
-
-        if Interpreting::match("morning", input) then
-            Operations::morning()
             return
         end
 

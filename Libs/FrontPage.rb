@@ -99,10 +99,6 @@ class FrontPage
 
         t1 = Time.new.to_f
 
-        if !XCache::getFlag("818EA198-B8C0-4C28-96F6-BADCFB330FB6:#{CommonUtils::today()}") then
-            puts "☀️  run morning"
-        end
-
         begin
             performance = (lambda{
                 path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
