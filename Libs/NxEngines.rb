@@ -73,7 +73,7 @@ class NxEngines
 
     # NxEngines::engineToString(item)
     def self.engineToString(item)
-        "(engine ratio: #{100 * NxEngines::ratio(item).round()} %)"
+        "(engine ratio: #{(100 * NxEngines::ratio(item)).round(2)} %)"
     end
 
     # NxEngines::suffix(item)

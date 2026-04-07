@@ -64,7 +64,7 @@ class Hierarchy
 
     # Hierarchy::roots()
     def self.roots()
-        Blades::items().select{|item| item["px14"].nil? }
+        Blades::mikuType("NxTask").select{|item| item["px14"].nil? }
     end
 
     # Hierarchy::listingItems()

@@ -61,7 +61,6 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
-        trading = Blades::itemOrNull("5b1d0568-28e6-4613-b012-7e4e497baed7")
         [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
@@ -70,7 +69,6 @@ class FrontPage
             NxCounters::listingItems(),
             NxEngines::listingItems(),
             BufferIn::listingItems(),
-            [NxEngines::ratio(trading) < 1 ? trading : nil], # palmer
             Waves::listingItemsNonInterruption(),
             Blades::mikuType("NxActive"),
             Hierarchy::listingItems()
