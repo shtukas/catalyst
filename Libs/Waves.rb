@@ -56,12 +56,13 @@ class Waves
         raise "(error: afe44910-57c2-4be5-8e1f-2c2fb80ae61a) nx46: #{JSON.pretty_generate(nx46)}"
     end
 
-    # Waves::nx46ToString(nx46)
-    def self.nx46ToString(nx46)
+    # Waves::nx46ToString(nx46, lastDoneUnixtime)
+    def self.nx46ToString(nx46, lastDoneUnixtime)
+        last_done = "last done #{((Time.new.to_i - lastDoneUnixtime)/86400).round(2)} ago"
         if nx46["type"] == 'sticky' then
-            return "(sticky, from: #{nx46["value"]})"
+            return "(sticky, from: #{nx46["value"]}, #{last_done})"
         end
-        "(#{nx46["type"]}: #{nx46["value"]})"
+        "(#{nx46["type"]}: #{nx46["value"]}, #{last_done})"
     end
 
     # Waves::interruptionToStringSuffix(wave)
@@ -71,7 +72,7 @@ class Waves
 
     # Waves::toString(item)
     def self.toString(item)
-        "🌊 #{item["description"]}#{Waves::interruptionToStringSuffix(item)} #{Waves::nx46ToString(item["nx46"]).yellow}"
+        "🌊 #{item["description"]}#{Waves::interruptionToStringSuffix(item)} #{Waves::nx46ToString(item["nx46"], item["lastDoneUnixtime"]).yellow}"
     end
 
     # Waves::listingItemsInterruption()

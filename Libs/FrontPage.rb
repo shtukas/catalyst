@@ -124,6 +124,16 @@ class FrontPage
 
         t1 = Time.new.to_f
 
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
+
+        items.each{|item|
+            store.register(item, FrontPage::canBeDefault(item))
+            line = FrontPage::toString2(store, item, true)
+            puts line
+            sheight = sheight - (line.size/swidth + 1)
+            break if sheight <= 0
+        }
+
         begin
             performance = (lambda{
                 path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
@@ -136,15 +146,7 @@ class FrontPage
             puts "problem extracting palmer performance"
         end
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
-
-        items.each{|item|
-            store.register(item, FrontPage::canBeDefault(item))
-            line = FrontPage::toString2(store, item, true)
-            puts line
-            sheight = sheight - (line.size/swidth + 1)
-            break if sheight <= 0
-        }
+        PalmerMonitor::printreport()
 
         t2 = Time.new.to_f
         renderingTime = t2-t1
