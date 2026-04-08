@@ -27,6 +27,18 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            accounts << {
+                "description" => "super block 1",
+                "number"      => "super-block1-4211-bd1d-339252ab5dc7"
+            }
+        else
+            accounts << {
+                "description" => "super block 2",
+                "number"      => "super-block2-410c-90d8-3492a311a466"
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

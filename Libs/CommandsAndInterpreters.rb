@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | engined | roots",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | numbers",
         ].join("\n")
     end
 
@@ -562,24 +562,24 @@ class CommandsAndInterpreters
             return
         end
 
-        if input == "wind" then
-            # We use wind 04 to avoid presenting them in the same order all the time
-            # Once it's been presented, whether or notit's been actioned, it goes to the
-            # end of the line
-            Blades::mikuType("Wave")
-                .select{|item| DoNotShowUntil::isVisible(item) }
-                .sort_by{|item| item["wind-04"] || 0 }
-                .reduce(0){|counter, item|
-                    if counter < 10 then
-                        Blades::setAttribute(item["uuid"], "wind-04", Time.new.to_i)
-                        if LucilleCore::askQuestionAnswerAsBoolean("do '#{PolyFunctions::toString(item).green}' ? ") then
-                            PolyActions::tripleDots(item)
-                            counter = counter + 1
-                        end
-                    end
-                    counter
+        if input == "numbers" then
+            [
+                {
+                    "description" => "beach",
+                    "multiplier" => 1,
+                    "number"      => "super-block1-4211-bd1d-339252ab5dc7"
+                },
+                {
+                    "description" => "todos",
+                    "multiplier" => 0.5,
+                    "number"      => "super-block2-410c-90d8-3492a311a466"
                 }
-            return
+            ]
+                .sort_by{|packet| BankDerivedData::recoveredAverageHoursPerDay(packet["number"]) * packet["multiplier"] }
+                .each{|packet|
+                    puts "#{packet["description"]} : actual: #{BankDerivedData::recoveredAverageHoursPerDay(packet["number"]).round(2)}, adapted: #{(BankDerivedData::recoveredAverageHoursPerDay(packet["number"]) * packet["multiplier"]).round(2)}"
+                }
+            LucilleCore::pressEnterToContinue()
         end
 
     end

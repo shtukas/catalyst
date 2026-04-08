@@ -61,20 +61,32 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
+
         [
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxOndates::listingItems(),
-            NxBackups::listingItems(),
-            NxCounters::listingItems(),
-            NxEngines::listingItems(),
-            BufferIn::listingItems(),
-            Waves::listingItemsNonInterruption(),
-            Blades::mikuType("NxActive"),
-            Hierarchy::listingItems()
+            {
+                "account" => "super-block1-4211-bd1d-339252ab5dc7",
+                "multiplier" => 1,
+                "items" => Waves::listingItemsNonInterruption()
+            },
+            {
+                "account" => "super-block2-410c-90d8-3492a311a466",
+                "multiplier" => 0.5, # makes it more important
+                "items" => [
+                    Anniversaries::listingItems(),
+                    Waves::listingItemsInterruption(),
+                    NxOndates::listingItems(),
+                    NxBackups::listingItems(),
+                    NxCounters::listingItems(),
+                    NxEngines::listingItems(),
+                    BufferIn::listingItems(),
+                    Blades::mikuType("NxActive"),
+                    Hierarchy::listingItems()
+                ].flatten
+            },
         ]
+            .sort_by{|packet| BankDerivedData::recoveredAverageHoursPerDay(packet["account"]) * packet["multiplier"] }
+            .map{|packet| packet["items"] }
             .flatten
-            .compact
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
     end
