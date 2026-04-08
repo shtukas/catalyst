@@ -5,9 +5,9 @@
 
 class PalmerMonitor
 
-    # PalmerMonitor::is_working(path_to_ping)
-    def self.is_working(path_to_ping)
-        (Time.new.to_i - DateTime.parse(IO.read(path_to_ping)).to_time.to_i) < 3600
+    # PalmerMonitor::is_working(path_to_ping, period_in_secs)
+    def self.is_working(path_to_ping, period_in_secs)
+        (Time.new.to_i - DateTime.parse(IO.read(path_to_ping)).to_time.to_i) < period_in_secs
     end
 
     # PalmerMonitor::get_package()
@@ -19,7 +19,7 @@ class PalmerMonitor
     def self.printreport()
         PalmerMonitor::get_package().each{|packet|
             # {"ocean-path" => "data-server/triton/ping.txt", "name" => "triton"}
-            if !PalmerMonitor::is_working(packet["path-to-ping"]) then
+            if !PalmerMonitor::is_working(packet["path-to-ping"], packet["period-in-secs"]) then
                 puts "palmer: I am not seeing #{packet["name"]} active at #{packet["path-to-ping"]}. Last ping at #{IO.read(packet["path-to-ping"])}"
             end
         }
