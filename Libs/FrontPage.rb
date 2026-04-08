@@ -134,19 +134,21 @@ class FrontPage
             break if sheight <= 0
         }
 
-        begin
-            performance = (lambda{
-                path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
-                return if !File.exist?(path_to_palmer)
-                performance = `#{path_to_palmer} performance`.strip
-                return if performance.size == 0
-                puts "palmer: #{performance}"
-            }).call()
-        rescue
-            puts "problem extracting palmer performance"
-        end
+        if Config::isPrimaryInstance() then
+            begin
+                performance = (lambda{
+                    path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
+                    return if !File.exist?(path_to_palmer)
+                    performance = `#{path_to_palmer} performance`.strip
+                    return if performance.size == 0
+                    puts "palmer: #{performance}"
+                }).call()
+            rescue
+                puts "problem extracting palmer performance"
+            end
 
-        PalmerMonitor::printreport()
+            PalmerMonitor::printreport()
+        end
 
         t2 = Time.new.to_f
         renderingTime = t2-t1
