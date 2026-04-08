@@ -23,15 +23,17 @@ class Hierarchy
                 Blades::setAttribute(element["uuid"], "global-pos-07", element["global-pos-07"])
                 element
             }
-            elements.sort_by{|item| item["global-pos-07"]}
             store = ItemStore.new()
             puts ""
-            elements
+            store.register(principal, false)
+            puts FrontPage::toString2(store, principal)
+            puts ""
+            elements.sort_by{|item| item["global-pos-07"]}
                 .each{|item|
                     store.register(item, FrontPage::canBeDefault(item))
                     puts FrontPage::toString2(store, item)
                 }
-            puts "new | sort"
+            puts "new | sort | new lines"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "new" then
                 task = NxTasks::interactivelyIssueNewOrNull(principal)
@@ -47,6 +49,14 @@ class Hierarchy
                     GlobalPositioning::insert_first(item)
                 }
                 next
+            end
+            if input == "new lines" then
+                text = CommonUtils::editTextSynchronously("").strip
+                next if text == ""
+                text.lines.map{|line| line.strip }.reverse.each{|line|
+                    task = NxTasks::simpleTaskfromDescription(principal, line)
+                    GlobalPositioning::insert_first(task)
+                }
             end
             return if input == "exit"
             return if input == ""

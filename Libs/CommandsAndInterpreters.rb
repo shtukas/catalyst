@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute * | donation * | transmute * | dismiss | engine * | dive *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute * | donation * | transmute * | dismiss | engine * | dive (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | engined | roots",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -190,6 +190,13 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Donations::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("dive", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Hierarchy::dive(item)
             return
         end
 

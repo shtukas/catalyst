@@ -18,6 +18,20 @@ class NxTasks
         item
     end
 
+    # NxTasks::simpleTaskfromDescription(parent, description)
+    def self.simpleTaskfromDescription(parent, description)
+        uuid = SecureRandom.uuid
+        Blades::init(uuid)
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::last_position() + 1)
+        Blades::setAttribute(uuid, "px14", parent["uuid"])
+        Blades::setAttribute(uuid, "mikuType", "NxTask")
+        item = Blades::itemOrNull(uuid)
+        item
+    end
+
     # ----------------------
     # Data
 

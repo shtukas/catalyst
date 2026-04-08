@@ -18,8 +18,19 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["uuid"] == "6540f1f7-9fcd-4afd-b357-cbfbbd7992fd" then
-            Operations::morning()
+        if item["payload-37"] and Hierarchy::getChildren(item).size > 0 then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["run payload", "dive (default)"])
+            if option.nil? or option == "dive (default)" then
+                Hierarchy::dive(item)
+            end
+            if option == "run payload" then
+                UxPayloads::access(item["uuid"], item["payload-37"])
+            end
+            return
+        end
+
+        if item["payload-37"].nil? and Hierarchy::getChildren(item).size > 0 then
+            Hierarchy::dive(item)
             return
         end
 
