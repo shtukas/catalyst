@@ -566,18 +566,18 @@ class CommandsAndInterpreters
             [
                 {
                     "description" => "beach",
-                    "multiplier" => 1,
+                    "multiplier"  => 1,
                     "number"      => "super-block1-4211-bd1d-339252ab5dc7"
                 },
                 {
                     "description" => "todos",
-                    "multiplier" => 0.5,
+                    "multiplier"  => 0.5,
                     "number"      => "super-block2-410c-90d8-3492a311a466"
                 }
             ]
                 .sort_by{|packet| BankDerivedData::recoveredAverageHoursPerDay(packet["number"]) * packet["multiplier"] }
                 .each{|packet|
-                    puts "#{packet["description"]} : actual: #{BankDerivedData::recoveredAverageHoursPerDay(packet["number"]).round(2)}, adapted: #{(BankDerivedData::recoveredAverageHoursPerDay(packet["number"]) * packet["multiplier"]).round(2)}"
+                    puts "#{packet["description"]} : actual: #{"%.3f" % BankDerivedData::recoveredAverageHoursPerDay(packet["number"])}, adapted: #{"%.3f" % (BankDerivedData::recoveredAverageHoursPerDay(packet["number"]) * packet["multiplier"])}"
                 }
             LucilleCore::pressEnterToContinue()
         end

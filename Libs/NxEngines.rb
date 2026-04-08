@@ -63,7 +63,7 @@ class NxEngines
 
     # NxEngines::listingItems()
     def self.listingItems()
-        NxEngines::engined().select{|item| NxEngines::ratio(item) < 1 }
+        NxEngines::engined().select{|item| NxEngines::ratio(item) < 1 }.sort_by{|item| NxEngines::ratio(item) }
     end
 
     # NxEngines::interactivelySelectEnginedOrNull()

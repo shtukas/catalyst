@@ -59,6 +59,18 @@ class FrontPage
         true
     end
 
+    # FrontPage::ensure_and_apply_global_posionning_order(items)
+    def self.ensure_and_apply_global_posionning_order(items)
+        items = items.map{|item|
+            if item["global-pos-07"].nil? then
+                item["global-pos-07"] = GlobalPositioning::first_position() - 1
+                Blades::setAttribute(item["uuid"], "global-pos-07", item["global-pos-07"])
+            end
+            item
+        }
+        items.sort_by{|item| item["global-pos-07"] }
+    end
+
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
 
@@ -79,6 +91,7 @@ class FrontPage
                     NxCounters::listingItems(),
                     NxEngines::listingItems(),
                     BufferIn::listingItems(),
+                    FrontPage::ensure_and_apply_global_posionning_order(NxActives::listingItems()),
                     Blades::mikuType("NxActive"),
                     Hierarchy::listingItems()
                 ].flatten
