@@ -79,6 +79,7 @@ class Hierarchy
 
     # Hierarchy::listingItems()
     def self.listingItems()
-        Blades::mikuType("NxTask").select{|item| item["px14"].nil? }
+        items = Blades::mikuType("NxTask").select{|item| item["px14"].nil? }
+        FrontPage::ensure_and_apply_global_posionning_order(items)
     end
 end

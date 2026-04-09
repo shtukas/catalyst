@@ -28,6 +28,7 @@ class NxActives
 
     # NxActives::listingItems()
     def self.listingItems()
-        Blades::mikuType("NxActive")
+        items = Blades::mikuType("NxActive")
+        FrontPage::ensure_and_apply_global_posionning_order(items)
     end
 end

@@ -91,7 +91,7 @@ class FrontPage
                     NxCounters::listingItems(),
                     NxEngines::listingItems(),
                     BufferIn::listingItems(),
-                    FrontPage::ensure_and_apply_global_posionning_order(NxActives::listingItems()),
+                    NxActives::listingItems(),
                     Blades::mikuType("NxActive"),
                     Hierarchy::listingItems()
                 ].flatten

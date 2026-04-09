@@ -84,9 +84,10 @@ class Waves
 
     # Waves::listingItemsNonInterruption()
     def self.listingItemsNonInterruption()
-        Blades::mikuType("Wave")
+        items = Blades::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| !item["interruption"] }
+        FrontPage::ensure_and_apply_global_posionning_order(items)
     end
 
     # Waves::performDone(wave)
