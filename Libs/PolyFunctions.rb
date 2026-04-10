@@ -27,6 +27,11 @@ class PolyFunctions
             end
         end
 
+        accounts << {
+            "description" => item["mikuType"],
+            "number"      => "c7389698-2a05-405b-aa5a-7a15b27cb8cc:#{item["mikuType"]}"
+        }
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
