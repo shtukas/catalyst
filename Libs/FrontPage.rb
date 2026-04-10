@@ -73,35 +73,18 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
-
         [
-            {
-                "account" => "super-block1-4211-bd1d-339252ab5dc7",
-                "multiplier" => 1,
-                "items" => Waves::listingItemsNonInterruption()
-            },
-            {
-                "account" => "super-block3-b2078214-4689-4dd1-bcc",
-                "multiplier" => 1,
-                "items" => NxActives::listingItems()
-            },
-            {
-                "account" => "super-block2-410c-90d8-3492a311a466",
-                "multiplier" => 0.5, # makes it more important
-                "items" => [
-                    Anniversaries::listingItems(),
-                    Waves::listingItemsInterruption(),
-                    NxOndates::listingItems(),
-                    NxBackups::listingItems(),
-                    NxCounters::listingItems(),
-                    NxEngines::listingItems(),
-                    BufferIn::listingItems(),
-                    Hierarchy::listingItems()
-                ].flatten
-            },
+            Anniversaries::listingItems(),
+            Waves::listingItemsInterruption(),
+            NxOndates::listingItems(),
+            NxBackups::listingItems(),
+            NxCounters::listingItems(),
+            NxEngines::listingItems(),
+            BufferIn::listingItems(),
+            NxActives::listingItems(),
+            Waves::listingItemsNonInterruption(),
+            Hierarchy::listingItems()
         ]
-            .sort_by{|packet| BankDerivedData::recoveredAverageHoursPerDay(packet["account"]) * packet["multiplier"] }
-            .map{|packet| packet["items"] }
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }

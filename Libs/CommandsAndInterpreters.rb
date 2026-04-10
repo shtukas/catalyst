@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | engined | roots",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | wind | numbers",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance",
         ].join("\n")
     end
 
@@ -567,31 +567,5 @@ class CommandsAndInterpreters
             })
             return
         end
-
-        if input == "numbers" then
-            [
-                {
-                    "description" => "beach",
-                    "multiplier"  => 1,
-                    "number"      => "super-block1-4211-bd1d-339252ab5dc7"
-                },
-                {
-                    "description" => "todos",
-                    "multiplier"  => 0.5,
-                    "number"      => "super-block2-410c-90d8-3492a311a466"
-                },
-                {
-                    "description" => "actives",
-                    "multiplier"  => 1,
-                    "number"      => "super-block3-b2078214-4689-4dd1-bcc"
-                }
-            ]
-                .sort_by{|packet| BankDerivedData::recoveredAverageHoursPerDay(packet["number"]) * packet["multiplier"] }
-                .each{|packet|
-                    puts "#{packet["description"].ljust(10)}: actual: #{"%.3f" % BankDerivedData::recoveredAverageHoursPerDay(packet["number"])}, adapted: #{"%.3f" % (BankDerivedData::recoveredAverageHoursPerDay(packet["number"]) * packet["multiplier"])}"
-                }
-            LucilleCore::pressEnterToContinue()
-        end
-
     end
 end
