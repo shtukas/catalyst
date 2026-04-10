@@ -27,12 +27,23 @@ class PolyFunctions
             end
         end
 
+        superblocked = false
+
         if item["mikuType"] == "Wave" and !item["interruption"] then
             accounts << {
                 "description" => "super block 1",
                 "number"      => "super-block1-4211-bd1d-339252ab5dc7"
             }
-        else
+            superblocked = true
+        end
+        if item["mikuType"] == "NxActive" then
+            accounts << {
+                "description" => "super block 3",
+                "number"      => "super-block3-b2078214-4689-4dd1-bcc"
+            }
+            superblocked = true
+        end
+        if !superblocked then
             accounts << {
                 "description" => "super block 2",
                 "number"      => "super-block2-410c-90d8-3492a311a466"

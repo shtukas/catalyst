@@ -81,6 +81,11 @@ class FrontPage
                 "items" => Waves::listingItemsNonInterruption()
             },
             {
+                "account" => "super-block3-b2078214-4689-4dd1-bcc",
+                "multiplier" => 1,
+                "items" => NxActives::listingItems()
+            },
+            {
                 "account" => "super-block2-410c-90d8-3492a311a466",
                 "multiplier" => 0.5, # makes it more important
                 "items" => [
@@ -91,8 +96,6 @@ class FrontPage
                     NxCounters::listingItems(),
                     NxEngines::listingItems(),
                     BufferIn::listingItems(),
-                    NxActives::listingItems(),
-                    Blades::mikuType("NxActive"),
                     Hierarchy::listingItems()
                 ].flatten
             },
