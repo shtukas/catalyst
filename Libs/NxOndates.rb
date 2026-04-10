@@ -44,14 +44,7 @@ class NxOndates
 
     # NxOndates::listingItems()
     def self.listingItems()
-        Blades::mikuType("NxOndate")
-                .select{|item| item["date"] <= CommonUtils::today() }
-                .map{|item|
-                    puts "I am moving '#{PolyFunctions::toString(item).green}' to NxActive"
-                    LucilleCore::pressEnterToContinue()
-                    Blades::setAttribute(item["uuid"], "mikuType", "NxActive")
-                    Blades::itemOrNull(item["uuid"])
-                }
+        Blades::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
 
     end
 end
