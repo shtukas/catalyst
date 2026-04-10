@@ -82,4 +82,30 @@ class Hierarchy
         items = Blades::mikuType("NxTask").select{|item| item["px14"].nil? }
         FrontPage::ensure_and_apply_global_posionning_order(items)
     end
+
+    # Hierarchy::interactivelySelectNewHierarchyParentOrNull(context | nil)
+    def self.interactivelySelectNewHierarchyParentOrNull(context)
+        if context.nil? then
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", Hierarchy::roots(), lambda {|item| PolyFunctions::toString(item) })
+            return nil if item.nil?
+            return Hierarchy::interactivelySelectNewHierarchyParentOrNull(item)
+        end
+        if Hierarchy::getChildren(context).size == 0 then
+            return context
+        end
+        option1 = "return context: #{PolyFunctions::toString(content)}"
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", [option1, "dive"])
+        return nil if option.nil?
+        if option == option1 then
+            return context
+        end
+        if option == "dive" then
+            children = Hierarchy::getChildren(context)
+            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", children, lambda {|item| PolyFunctions::toString(item) })
+            if child.nil? then
+                return Hierarchy::interactivelySelectNewHierarchyParentOrNull(context)
+            end
+            Hierarchy::interactivelySelectNewHierarchyParentOrNull(child)
+        end
+    end
 end

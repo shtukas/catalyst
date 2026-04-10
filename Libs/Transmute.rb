@@ -3,18 +3,44 @@ class Transmute
 
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
+        if item["mikuType"] == "NxActive" and targetType == "NxOndate" then
+            date = CommonUtils::interactivelyMakeADate()
+            Blades::setAttribute(item["uuid"], "date", date)
+            Blades::setAttribute(item["uuid"], "mikuType", "NxOndate")
+            return Blades::itemOrNull(item["uuid"])
+        end
+        if item["mikuType"] == "NxActive" and targetType == "NxTask" then
+            parent = Hierarchy::interactivelySelectNewHierarchyParentOrNull(nil)
+            return if parent.nil?
+            Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::last_position() + 1)
+            Blades::setAttribute(item["uuid"], "px14", parent["uuid"])
+            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
+            return Blades::itemOrNull(item["uuid"])
+        end
+        if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
+            parent = Hierarchy::interactivelySelectNewHierarchyParentOrNull(nil)
+            return if parent.nil?
+            Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::last_position() + 1)
+            Blades::setAttribute(item["uuid"], "px14", parent["uuid"])
+            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
+            return Blades::itemOrNull(item["uuid"])
+        end
         if item["mikuType"] == "NxTask" and targetType == "NxActive" then
             Blades::setAttribute(item["uuid"], "mikuType", "NxActive")
             return Blades::itemOrNull(item["uuid"])
         end
+
+
+
         raise "(error a7093fd4-0236) I do not know how to transmute #{item["mikuType"]} to #{targetType}"
     end
 
     # Transmute::transmute(item)
     def self.transmute(item)
         mapping = {
-            "NxOndate" => [],
-            "NxTask"   => ["NxActive"]
+            "NxOndate" => ["NxTask"],
+            "NxTask"   => ["NxActive"],
+            "NxActive" => ["NxOndate", "NxTask"],
         }
         targetTypes = mapping[item["mikuType"]]
         if targetTypes.nil? or targetTypes.empty? then
