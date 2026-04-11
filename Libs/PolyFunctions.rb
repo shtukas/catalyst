@@ -27,6 +27,13 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "NxActive" then
+            accounts << {
+                "description" => "NxActives",
+                "number"      => "1cf7cf43-7a38-4baf-aaaf-4ea4be67ae15"
+            }
+        end
+
         accounts << {
             "description" => item["mikuType"],
             "number"      => "c7389698-2a05-405b-aa5a-7a15b27cb8cc:#{item["mikuType"]}"

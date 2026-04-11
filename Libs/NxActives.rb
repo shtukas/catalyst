@@ -28,6 +28,9 @@ class NxActives
 
     # NxActives::listingItems()
     def self.listingItems()
+        if BankDerivedData::recoveredAverageHoursPerDay("1cf7cf43-7a38-4baf-aaaf-4ea4be67ae15") > 3 then
+            return []
+        end
         items = Blades::mikuType("NxActive").select{|item| BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
         FrontPage::ensure_and_apply_global_posionning_order(items)
     end
