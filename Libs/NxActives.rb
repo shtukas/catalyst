@@ -28,7 +28,7 @@ class NxActives
 
     # NxActives::listingItems()
     def self.listingItems()
-        items = Blades::mikuType("NxActive")
+        items = Blades::mikuType("NxActive").select{|item| BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
         FrontPage::ensure_and_apply_global_posionning_order(items)
     end
 end
