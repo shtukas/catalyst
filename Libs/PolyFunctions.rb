@@ -34,6 +34,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "BufferIn" then
+            accounts << {
+                "description" => "BufferIns",
+                "number"      => "95580b8d-b62f-4fa2-88ad-aefdc3ca450c"
+            }
+        end
+
         accounts << {
             "description" => item["mikuType"],
             "number"      => "c7389698-2a05-405b-aa5a-7a15b27cb8cc:#{item["mikuType"]}"

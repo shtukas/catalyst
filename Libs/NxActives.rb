@@ -31,7 +31,18 @@ class NxActives
         if BankDerivedData::recoveredAverageHoursPerDay("1cf7cf43-7a38-4baf-aaaf-4ea4be67ae15") > 3 then
             return []
         end
-        items = Blades::mikuType("NxActive").select{|item| BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
-        FrontPage::ensure_and_apply_global_posionning_order(items)
+        items = Blades::mikuType("NxActive")
+        items = FrontPage::ensure_and_apply_global_posionning_order(items)
+        items.reduce([]){|selected, item|
+            if selected.size >= 5 then
+                selected
+            else
+                if DoNotShowUntil::isVisible(item) and BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
+                    selected + [item]
+                else
+                    selected
+                end
+            end
+        }
     end
 end

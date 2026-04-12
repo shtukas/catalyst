@@ -92,8 +92,8 @@ class FrontPage
 
     # FrontPage::displayListing(initialCodeTrace)
     def self.displayListing(initialCodeTrace)
-        store = ItemStore.new()
-        puts ""
+
+        BufferIn::import()
 
         sheight = CommonUtils::screenHeight() - 5
         swidth = CommonUtils::screenWidth()
@@ -105,10 +105,10 @@ class FrontPage
             end
         end
 
-        # ----------------------------------------------------------------------
-        # Main listing
-
         t1 = Time.new.to_f
+
+        store = ItemStore.new()
+        puts ""
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
 
