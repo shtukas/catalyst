@@ -17,6 +17,8 @@ class PalmerMonitor
 
     # PalmerMonitor::printreport()
     def self.printreport()
+        puts "palmer: no minitoring at his moment".yellow
+        return
         PalmerMonitor::get_package().each{|packet|
             # {"ocean-path" => "data-server/triton/ping.txt", "name" => "triton"}
             if !PalmerMonitor::is_working(packet["path-to-ping"], packet["period-in-secs"]) then
