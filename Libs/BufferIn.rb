@@ -40,7 +40,7 @@ class BufferIn
         items = Blades::mikuType("BufferIn")
         items = FrontPage::ensure_and_apply_global_posionning_order(items)
         items.reduce([]){|selected, item|
-            if selected.size >= 5 then
+            if selected.size >= 15 then
                 selected
             else
                 if DoNotShowUntil::isVisible(item) and BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
