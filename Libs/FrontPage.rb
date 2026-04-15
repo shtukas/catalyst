@@ -110,6 +110,11 @@ class FrontPage
         store = ItemStore.new()
         puts ""
 
+        palmer_headlines = PalmerDashboard::headlines()
+        puts palmer_headlines.yellow
+        sheight = sheight - palmer_headlines.lines.size
+        puts ""
+
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
 
         items.each{|item|
@@ -119,22 +124,6 @@ class FrontPage
             sheight = sheight - (line.size/swidth + 1)
             break if sheight <= 0
         }
-
-        if Config::isPrimaryInstance() then
-            begin
-                performance = (lambda{
-                    path_to_palmer = "/Users/pascal_honore/Galaxy/Palmer/binaries/palmer"
-                    return if !File.exist?(path_to_palmer)
-                    performance = `#{path_to_palmer} performance`.strip
-                    return if performance.size == 0
-                    puts "palmer: #{performance}"
-                }).call()
-            rescue
-                puts "problem extracting palmer performance"
-            end
-
-            PalmerMonitor::printreport()
-        end
 
         t2 = Time.new.to_f
         renderingTime = t2-t1
