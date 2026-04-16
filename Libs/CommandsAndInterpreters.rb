@@ -272,9 +272,16 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            item = NxActives::interactivelyIssueNewOrNull()
-            return if item.nil?
-            item = Blades::itemOrNull(item["uuid"])
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Blades::init(uuid)
+            Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+            Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+            Blades::setAttribute(uuid, "description", description)
+            Blades::setAttribute(uuid, "date", CommonUtils::today())
+            Blades::setAttribute(uuid, "mikuType", "NxOndate")
+            item = Blades::itemOrNull(uuid)
             puts JSON.pretty_generate(item)
             return
         end
