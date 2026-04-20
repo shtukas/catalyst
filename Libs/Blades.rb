@@ -119,7 +119,7 @@ class Blades
             # but only once per location
             if !XCache::getFlag("filepath-has-been-picked-up-a9c8-98f5e8344a82:#{filepath}") then
                 uuidx = Blades::read_uuid_from_file_or_null(filepath)
-                XCache::set("uuid-to-filepath-87b0-eb3fccb2b881:#{uuidx}", filepath)
+                XCache::set("uuid-to-filepath-87b0-eb3fccb2b882:#{uuidx}", filepath)
                 XCache::setFlag("filepath-has-been-picked-up-a9c8-98f5e8344a82:#{filepath}", true)
             end
             if Blades::read_uuid_from_file_or_null(filepath) == uuid then
@@ -131,7 +131,7 @@ class Blades
 
     # Blades::uuidToFilepathOrNull(uuid)
     def self.uuidToFilepathOrNull(uuid)
-        filepath = XCache::getOrNull("uuid-to-filepath-87b0-eb3fccb2b881:#{uuid}")
+        filepath = XCache::getOrNull("uuid-to-filepath-87b0-eb3fccb2b882:#{uuid}")
         if filepath and File.exist?(filepath) then
             if Blades::read_uuid_from_file_or_null(filepath) == uuid then
                 return filepath
@@ -141,7 +141,7 @@ class Blades
         filepath = Blades::uuidToFilepathOrNullUseTheForce(uuid)
         return nil if filepath.nil?
 
-        XCache::set("uuid-to-filepath-87b0-eb3fccb2b881:#{uuid}", filepath)
+        XCache::set("uuid-to-filepath-87b0-eb3fccb2b882:#{uuid}", filepath)
         filepath
     end
 
@@ -210,7 +210,7 @@ class Blades
         filepath = Blades::ensure_content_addressing(filepath)
 
         # updating the cache for reading later
-        XCache::set("uuid-to-filepath-87b0-eb3fccb2b881:#{uuid}", filepath)
+        XCache::set("uuid-to-filepath-87b0-eb3fccb2b882:#{uuid}", filepath)
         nil
     end
 
@@ -243,7 +243,7 @@ class Blades
         filepath = Blades::ensure_content_addressing(filepath)
 
         # updating the cache for reading later
-        XCache::set("uuid-to-filepath-87b0-eb3fccb2b881:#{uuid}", filepath)
+        XCache::set("uuid-to-filepath-87b0-eb3fccb2b882:#{uuid}", filepath)
         XCache::setFlag("filepath-has-been-picked-up-a9c8-98f5e8344a82:#{filepath}", true)
 
         if @memory1 then
@@ -278,6 +278,19 @@ class Blades
         end
     end
 
+    # Blades::itemsAndFilesEnumeratorUseTheForce()
+    def self.itemsAndFilesEnumeratorUseTheForce()
+        Enumerator.new do |data|
+            Blades::filepaths_enumerator().each{|filepath|
+                item = Blades::filepathToItem(filepath)
+                data << {
+                    "filepath" => filepath,
+                    "item" => item,
+                }
+            }
+        end
+    end
+
     # Blades::items()
     def self.items()
 
@@ -296,20 +309,36 @@ class Blades
         end
 
         data = {}
-        Blades::itemsEnumeratorUseTheForce().each{|item|
-            if data[item["uuid"]] then
+        Blades::itemsAndFilesEnumeratorUseTheForce().each{|datum|
+            uuid = datum["item"]["uuid"]
+            if data[uuid] then
+                item1 = data[uuid]["item"]
+                item2 = datum["item"]
+                if JSON.generate(item1) == JSON.generate(item2) then
+                    puts "duplicate detected: removing: #{datum["filepath"]}".yellow
+                    FileUtils.rm(datum["filepath"])
+                    next
+                end
                 puts "(error: 27aaf626) Looks like we have a duplicate uuid 🤔, this is not supposed to happen."
-                puts "already known: #{JSON.pretty_generate(data[item["uuid"]])}"
-                puts "just found   : #{JSON.pretty_generate(data[item])}"
+                puts "already known: #{JSON.pretty_generate(data[uuid])}"
+                puts "just found   : #{JSON.pretty_generate(datum)}"
+                filepath = LucilleCore::askQuestionAnswerAsString("enter the filepath to delete: ").strip
+                FileUtils.rm(filepath)
                 exit
             end
-            data[item["uuid"]] = item
+            data[uuid] = datum
         }
 
-        BladesConfig::commitDataToFSCache(data)
-        @memory1 = data
+        data2 = {}
 
-        data.values
+        data.values.each{|datum|
+            data2[datum["item"]["uuid"]] = datum["item"]
+        }
+
+        BladesConfig::commitDataToFSCache(data2)
+        @memory1 = data2
+
+        data2.values
     end
 
     # Blades::mikuTypes()
@@ -374,7 +403,7 @@ class Blades
         filepath = Blades::ensure_content_addressing(filepath)
 
         # updating the cache for reading later
-        XCache::set("uuid-to-filepath-87b0-eb3fccb2b881:#{uuid}", filepath)
+        XCache::set("uuid-to-filepath-87b0-eb3fccb2b882:#{uuid}", filepath)
         XCache::setFlag("filepath-has-been-picked-up-a9c8-98f5e8344a82:#{filepath}", true)
 
         nhash
