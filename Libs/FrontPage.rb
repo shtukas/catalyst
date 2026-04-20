@@ -110,13 +110,6 @@ class FrontPage
         store = ItemStore.new()
         puts ""
 
-        palmer_headlines = PalmerDashboard::headlines()
-        if palmer_headlines.size > 0 then
-            puts palmer_headlines.yellow
-            sheight = sheight - palmer_headlines.lines.size
-            puts ""
-        end
-
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
 
         items.each{|item|

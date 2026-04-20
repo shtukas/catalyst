@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | priority | active | counter",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | engined | roots",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | palmer dashboard",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance",
         ].join("\n")
     end
 
@@ -81,11 +81,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmute::transmute(item)
-            return
-        end
-
-        if Interpreting::match("palmer dashboard", input) then
-            PalmerDashboard::print_palmer_dashboard()
             return
         end
 
