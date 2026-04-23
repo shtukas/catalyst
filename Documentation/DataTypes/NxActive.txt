@@ -1,7 +1,0 @@
-
-NxActive:
-    - uuid         : String
-    - mikuType     : "NxActive"
-    - unixtime     :
-    - datetime     :
-    - description  : String

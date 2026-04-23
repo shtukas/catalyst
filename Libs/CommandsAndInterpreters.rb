@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | engine * | dive (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | priority | active | counter",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | actives | counters | engined | roots",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | engine *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance",
         ].join("\n")
@@ -135,25 +135,18 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("priority", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            return nil if description == ""
-            uuid = SecureRandom.uuid
-            Blades::init(uuid)
-            Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-            Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-            Blades::setAttribute(uuid, "description", description)
-            Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position() - 1)
-            Blades::setAttribute(uuid, "mikuType", "NxActive")
-            return
-        end
-
         if Interpreting::match("sort", input) then
-            items = FrontPage::itemsForListingOrdered()
-            selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
+            items = Blades::mikuType("NxTask").sort_by{|item| item["global-pos-07"] }.take(30)
+            selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             }
+            return
+        end
+
+        if Interpreting::match("todo", input) then
+            item = NxTasks::interactivelyIssueNewOrNull()
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -192,21 +185,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("dive", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Hierarchy::dive(item)
-            return
-        end
-
-        if Interpreting::match("dive *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Hierarchy::dive(item)
-            return
-        end
-
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -221,16 +199,6 @@ class CommandsAndInterpreters
             return if item.nil?
             Operations::program3(lambda { 
                 NxEngines::engined()
-            })
-            return
-        end
-
-        if Interpreting::match("roots", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Operations::program3(lambda { 
-                Hierarchy::roots()
             })
             return
         end
@@ -283,14 +251,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxActive")
-            })
-            return
-        end
-
-        if Interpreting::match("actives", input) then
-            Operations::program3(lambda { 
-                Blades::mikuType("NxActive")
+                Blades::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
             })
             return
         end
@@ -304,19 +265,6 @@ class CommandsAndInterpreters
         if Interpreting::match("counters", input) then
             Operations::program3(lambda { 
                 Blades::mikuType("NxCounter")
-            })
-            return
-        end
-
-        if Interpreting::match("active", input) then
-            item = NxActives::interactivelyIssueNewOrNull()
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("actives", input) then
-            Operations::program3(lambda { 
-                Blades::mikuType("NxActive")
             })
             return
         end

@@ -45,6 +45,5 @@ class NxOndates
     # NxOndates::listingItems()
     def self.listingItems()
         Blades::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
-
     end
 end

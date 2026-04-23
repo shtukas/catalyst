@@ -20,26 +20,10 @@ class PolyFunctions
             end
         end
 
-        if item["px14"] then
-            target = PolyFunctions::uuid_to_item_or_null_cache_results(item["px14"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
-        if item["mikuType"] == "NxActive" then
-            accounts << {
-                "description" => "NxActive",
-                "number"      => "1cf7cf43-7a38-4baf-aaaf-4ea4be67ae15"
-            }
-        end
-
-        if item["mikuType"] == "BufferIn" then
-            accounts << {
-                "description" => "BufferIn",
-                "number"      => "95580b8d-b62f-4fa2-88ad-aefdc3ca450c"
-            }
-        end
+        accounts << {
+            "description" => item["mikuType"],
+            "number"      => "28c68c60-64f4-4915-a1af-#{item["mikuType"]}"
+        }
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
@@ -75,9 +59,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxCounter" then
             return NxCounters::toString(item)
-        end
-        if item["mikuType"] == "NxActive" then
-            return NxActives::toString(item)
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)

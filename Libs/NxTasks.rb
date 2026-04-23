@@ -1,7 +1,7 @@
 class NxTasks
 
-    # NxTasks::interactivelyIssueNewOrNull(parent)
-    def self.interactivelyIssueNewOrNull(parent)
+    # NxTasks::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
         uuid = SecureRandom.uuid
@@ -11,22 +11,20 @@ class NxTasks
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
         Blades::setAttribute(uuid, "payload-37", payload)
-        Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::last_position() + 1)
-        Blades::setAttribute(uuid, "px14", parent["uuid"])
+        Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position - 1)
         Blades::setAttribute(uuid, "mikuType", "NxTask")
         item = Blades::itemOrNull(uuid)
         item
     end
 
-    # NxTasks::simpleTaskfromDescription(parent, description)
-    def self.simpleTaskfromDescription(parent, description)
+    # NxTasks::simpleTaskfromDescription(description)
+    def self.simpleTaskfromDescription(description)
         uuid = SecureRandom.uuid
         Blades::init(uuid)
         Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::last_position() + 1)
-        Blades::setAttribute(uuid, "px14", parent["uuid"])
+        Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position - 1)
         Blades::setAttribute(uuid, "mikuType", "NxTask")
         item = Blades::itemOrNull(uuid)
         item

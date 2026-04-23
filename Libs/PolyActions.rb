@@ -17,28 +17,10 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-
-        if item["payload-37"] and Hierarchy::getChildren(item).size > 0 then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["run payload", "dive (default)"])
-            if option.nil? or option == "dive (default)" then
-                Hierarchy::dive(item)
-            end
-            if option == "run payload" then
-                UxPayloads::access(item["uuid"], item["payload-37"])
-            end
-            return
-        end
-
-        if item["payload-37"].nil? and Hierarchy::getChildren(item).size > 0 then
-            Hierarchy::dive(item)
-            return
-        end
-
         if item["mikuType"] == "NxCounter" then
             NxCounters::interactivelyIncrement(item)
             return
         end
-
         UxPayloads::access(item["uuid"], item["payload-37"])
     end
 
@@ -86,20 +68,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            puts "#{PolyFunctions::toString(item).green}"
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
-            if option == "dismiss" then
-                NxBalls::stop(item)
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                NxBalls::stop(item)
-                PolyActions::destroy(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxActive" then
             puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
@@ -173,21 +141,8 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if Hierarchy::getChildren(item).size > 0 then
-            puts "You cannot destroy '#{PolyFunctions::toString(item)}' at the moment, it has #{Hierarchy::getChildren(item).size} children"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Blades::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxActive" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::deleteItem(item["uuid"])
             end
             return

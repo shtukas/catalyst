@@ -20,7 +20,7 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{Hierarchy::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -77,13 +77,28 @@ class FrontPage
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxOndates::listingItems(),
+            NxEngines::listingItems(),
             NxBackups::listingItems(),
             NxCounters::listingItems(),
-            NxEngines::listingItems(),
             BufferIn::listingItems(),
-            NxActives::listingItems(),
             Waves::listingItemsNonInterruption(),
-            Hierarchy::listingItems()
+            NxTasks::listingItems(),
+            [
+                {
+                    "items" => BufferIn::listingItems(),
+                    "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60-64f4-4915-a1af-BufferIn")
+                },
+                {
+                    "items" => Waves::listingItemsNonInterruption(),
+                    "rt" => BankDerivedData::recoveredAverageHoursPerDay("waves-39398759-3ebd-4dbf-8a78888888")
+                },
+                {
+                    "items" => NxTasks::listingItems(),
+                    "rt" => BankDerivedData::recoveredAverageHoursPerDay("tasks-a1b11d6f-82d4-4c2b-8ab0-0eae0")
+                },
+            ]
+                .sort_by{|packet| packet["rt"] }
+                .first["items"]
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -104,6 +119,8 @@ class FrontPage
                 XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d6", Time.new.to_i)
             end
         end
+
+        system('clear')
 
         t1 = Time.new.to_f
 
