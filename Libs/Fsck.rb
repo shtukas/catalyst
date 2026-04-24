@@ -11,7 +11,12 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxCounter" then
+            return
+        end
+
         if item["payload-37"] then
+            puts "payload: #{JSON.pretty_generate(item["payload-37"])}"
             UxPayloads::fsck(item["uuid"], item["payload-37"])
             return
         end

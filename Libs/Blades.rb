@@ -386,31 +386,11 @@ class Blades
 
     # Blades::putBlob(uuid, datablob)
     def self.putBlob(uuid, datablob) # nhash
-        nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
-        filepath = Blades::uuidToFilepathOrNull(uuid)
-        return if filepath.nil?
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from datablobs where nhash=?", [nhash])
-        db.execute("insert into datablobs (nhash, data) values (?, ?)", [nhash, datablob])
-        db.commit
-        db.close
-
-        # maintaining content addressing
-        filepath = Blades::ensure_content_addressing(filepath)
-
-        # updating the cache for reading later
-        XCache::set("uuid-to-filepath-87b0-eb3fccb2b882:#{uuid}", filepath)
-        XCache::setFlag("filepath-has-been-picked-up-a9c8-98f5e8344a82:#{filepath}", true)
-
-        nhash
+        TheTree::putBlob(datablob)
     end
 
-    # Blades::getBlobOrNull(uuid, nhash)
-    def self.getBlobOrNull(uuid, nhash)
+    # Blades::getBlobOrNull_old(uuid, nhash)
+    def self.getBlobOrNull_old(uuid, nhash)
         filepath = Blades::uuidToFilepathOrNull(uuid)
         return nil if filepath.nil?
         blob = nil
@@ -422,6 +402,18 @@ class Blades
             blob = row["data"]
         end
         db.close
+        blob
+    end
+
+    # Blades::getBlobOrNull(uuid, nhash)
+    def self.getBlobOrNull(uuid, nhash)
+        blob = TheTree::getBlobOrNull(nhash)
+        return blob if blob
+        puts "looking for #{nhash}".yellow
+        blob = Blades::getBlobOrNull_old(uuid, nhash)
+        if blob then
+            TheTree::putBlob(blob)
+        end
         blob
     end
 end

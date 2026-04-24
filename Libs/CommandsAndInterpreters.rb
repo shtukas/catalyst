@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | tree dive",
         ].join("\n")
     end
 
@@ -305,6 +305,10 @@ class CommandsAndInterpreters
             return if item.nil?
             Blades::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
             return
+        end
+
+        if Interpreting::match("tree dive", input) then
+            TheTree::dive(nil)
         end
 
         if Interpreting::match("add time *", input) then

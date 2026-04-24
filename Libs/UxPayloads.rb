@@ -309,6 +309,11 @@ class UxPayloads
         end
 
         if payload["mikuType"] == "AionPoint" then
+            if payload["nhash"].nil? then
+                puts "un-usual situation 🤔, they aion point is defined but the nhash is null".yellow
+                sleep 1
+                return
+            end
             AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(uuid), payload["nhash"])
             return
         end
