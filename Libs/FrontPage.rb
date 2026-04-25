@@ -111,6 +111,8 @@ class FrontPage
 
         BufferIn::import()
 
+        Broadcasts::processIncoming()
+
         sheight = CommonUtils::screenHeight() - 5
         swidth = CommonUtils::screenWidth()
 

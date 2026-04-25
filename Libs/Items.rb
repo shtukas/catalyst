@@ -52,8 +52,8 @@ class Items
         item
     end
 
-    # Items::commitItem(item)
-    def self.commitItem(item)
+    # Items::commitItemNoBroadcast(item)
+    def self.commitItemNoBroadcast(item)
         db = SQLite3::Database.new(Items::database_filepath())
         db.busy_timeout = 117 # overriden by the next instruction
         db.busy_handler { |count| true }
@@ -65,6 +65,15 @@ class Items
             mikuType = excluded.mikuType, 
             item = excluded.item", [item["uuid"], item["mikuType"], JSON.generate(item)])
         db.close
+    end
+
+    # Items::commitItem(item)
+    def self.commitItem(item)
+        Items::commitItemNoBroadcast(item)
+        Broadcasts::send({
+            "type"  => "item",
+            "item"  => item
+        })
     end
 
     # Items::init(uuid)
@@ -84,13 +93,22 @@ class Items
         item
     end
 
-    # Items::deleteItem(uuid)
-    def self.deleteItem(uuid)
+    # Items::deleteItemNoBroadcast(uuid)
+    def self.deleteItemNoBroadcast(uuid)
         db = SQLite3::Database.new(Items::database_filepath())
         db.busy_timeout = 117 # overriden by the next instruction
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("delete from items where uuid = ?", [uuid])
         db.close
+    end
+
+    # Items::deleteItem(uuid)
+    def self.deleteItem(uuid)
+        Items::deleteItemNoBroadcast(uuid)
+        Broadcasts::send({
+            "type" => "delete",
+            "uuid" => uuid
+        })
     end
 end
