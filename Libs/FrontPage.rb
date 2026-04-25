@@ -64,7 +64,7 @@ class FrontPage
         items = items.map{|item|
             if item["global-pos-07"].nil? then
                 item["global-pos-07"] = GlobalPositioning::first_position() - 1
-                Blades::setAttribute(item["uuid"], "global-pos-07", item["global-pos-07"])
+                Items::setAttribute(item["uuid"], "global-pos-07", item["global-pos-07"])
             end
             item
         }
@@ -74,6 +74,7 @@ class FrontPage
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         [
+            Desktop::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxOndates::listingItems(),

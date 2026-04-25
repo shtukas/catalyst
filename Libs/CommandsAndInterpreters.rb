@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | tree dive",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance",
         ].join("\n")
     end
 
@@ -136,10 +136,10 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items = Blades::mikuType("NxTask").sort_by{|item| item["global-pos-07"] }.take(30)
+            items = Items::mikuType("NxTask").sort_by{|item| item["global-pos-07"] }.take(30)
             selected = CommonUtils::selectZeroOrMore(items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
+                Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             }
             return
         end
@@ -158,7 +158,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("backups", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxBackup")
+                Items::mikuType("NxBackup")
             })
             return
         end
@@ -238,20 +238,22 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             uuid = SecureRandom.uuid
-            Blades::init(uuid)
-            Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-            Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-            Blades::setAttribute(uuid, "description", description)
-            Blades::setAttribute(uuid, "date", CommonUtils::today())
-            Blades::setAttribute(uuid, "mikuType", "NxOndate")
-            item = Blades::itemOrNull(uuid)
+            payload = UxPayloads::makeNewPayloadOrNull()
+            Items::init(uuid)
+            Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+            Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+            Items::setAttribute(uuid, "description", description)
+            Items::setAttribute(uuid, "date", CommonUtils::today())
+            Items::setAttribute(uuid, "payload-37", payload)
+            Items::setAttribute(uuid, "mikuType", "NxOndate")
+            item = Items::itemOrNull(uuid)
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
+                Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
             })
             return
         end
@@ -264,7 +266,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("counters", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxCounter")
+                Items::mikuType("NxCounter")
             })
             return
         end
@@ -279,7 +281,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("tomorrows", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxOndate")
+                Items::mikuType("NxOndate")
                     .select{|item| item["date"] == CommonUtils::tomorrow() }
             })
             return
@@ -293,7 +295,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("ondates", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("NxOndate")
+                Items::mikuType("NxOndate")
                     .sort_by{|item| item["date"] }
             })
             return
@@ -303,12 +305,8 @@ class CommandsAndInterpreters
             _, d, _ = Interpreting::tokenizer(input)
             item = store.getDefault()
             return if item.nil?
-            Blades::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
+            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
             return
-        end
-
-        if Interpreting::match("tree dive", input) then
-            TheTree::dive(nil)
         end
 
         if Interpreting::match("add time *", input) then
@@ -344,7 +342,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("anniversaries", input) then
             Operations::program3(lambda { 
-                Blades::mikuType("Anniversary")
+                Items::mikuType("Anniversary")
             })
             return
         end
@@ -474,7 +472,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            Blades::setAttribute(item["uuid"], "date", datetime)
+            Items::setAttribute(item["uuid"], "date", datetime)
             return
         end
 
@@ -521,7 +519,7 @@ class CommandsAndInterpreters
 
         if input == "waves" then
             Operations::program3(lambda { 
-                w1, w2 = Blades::mikuType("Wave").partition{|item| DoNotShowUntil::isVisible(item) }
+                w1, w2 = Items::mikuType("Wave").partition{|item| DoNotShowUntil::isVisible(item) }
                 w2 + w1 # we put the done ones first
             })
             return

@@ -5,13 +5,13 @@ class BufferIn
     def self.issueNew(filepath)
         description = File.basename(filepath)
         uuid = SecureRandom.uuid
-        Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "payload-37", UxPayloads::locationToPayload(uuid, filepath))
-        Blades::setAttribute(uuid, "mikuType", "BufferIn")
-        item = Blades::itemOrNull(uuid)
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "payload-37", UxPayloads::locationToPayload(filepath))
+        Items::setAttribute(uuid, "mikuType", "BufferIn")
+        item = Items::itemOrNull(uuid)
         item
     end
 
@@ -37,7 +37,7 @@ class BufferIn
         if BankDerivedData::recoveredAverageHoursPerDay("95580b8d-b62f-4fa2-88ad-aefdc3ca450c") > 1 then
             return []
         end
-        items = Blades::mikuType("BufferIn")
+        items = Items::mikuType("BufferIn")
         items = FrontPage::ensure_and_apply_global_posionning_order(items)
         items.reduce([]){|selected, item|
             if selected.size >= 15 then

@@ -21,7 +21,7 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
-        UxPayloads::access(item["uuid"], item["payload-37"])
+        UxPayloads::access(item["payload-37"])
     end
 
     # PolyActions::stop(item)
@@ -51,7 +51,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDeleted" then
-            Blades::deleteItem(item["uuid"])
+            Items::deleteItem(item["uuid"])
             return
         end
 
@@ -62,7 +62,7 @@ class PolyActions
 
         if item["mikuType"] == "Anniversary" then
             next_celebration = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
-            Blades::setAttribute(item["uuid"], "next_celebration", next_celebration)
+            Items::setAttribute(item["uuid"], "next_celebration", next_celebration)
             DoNotShowUntil::doNotShowUntil(item, Date.parse(next_celebration).to_time.to_i)
             return
         end
@@ -143,35 +143,35 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Blades::deleteItem(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Anniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::deleteItem(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::deleteItem(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::deleteItem(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::deleteItem(item["uuid"])
+                Items::deleteItem(item["uuid"])
             end
             return
         end
@@ -198,7 +198,7 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return item if description == ""
-        Blades::setAttribute(item["uuid"], "description", description)
-        Blades::itemOrNull(item["uuid"])
+        Items::setAttribute(item["uuid"], "description", description)
+        Items::itemOrNull(item["uuid"])
     end
 end

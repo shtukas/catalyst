@@ -7,14 +7,14 @@ class NxBackups
         return nil if description == ""
         period = LucilleCore::askQuestionAnswerAsString("period in days: ").to_f
         uuid = SecureRandom.uuid
-        Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "period", period)
-        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        Blades::setAttribute(uuid, "mikuType", "NxBackup")
-        item = Blades::itemOrNull(uuid)
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "period", period)
+        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
+        Items::setAttribute(uuid, "mikuType", "NxBackup")
+        item = Items::itemOrNull(uuid)
         item
     end
 
@@ -30,6 +30,6 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        Blades::mikuType("NxBackup")
+        Items::mikuType("NxBackup")
     end
 end

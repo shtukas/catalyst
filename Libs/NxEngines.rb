@@ -43,7 +43,7 @@ class NxEngines
     def self.setEngineAttempt(item)
         engine = NxEngines::makeEngineOrNull()
         return if engine.nil?
-        Blades::setAttribute(item["uuid"], "engine-1437", engine)
+        Items::setAttribute(item["uuid"], "engine-1437", engine)
     end
 
     # NxEngines::ratio(item)
@@ -58,7 +58,7 @@ class NxEngines
 
     # NxEngines::engined()
     def self.engined()
-        Blades::items().select{|item| item["engine-1437"] }
+        Items::items().select{|item| item["engine-1437"] }
     end
 
     # NxEngines::listingItems()

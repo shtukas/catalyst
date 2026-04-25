@@ -17,7 +17,7 @@ class Fsck
 
         if item["payload-37"] then
             puts "payload: #{JSON.pretty_generate(item["payload-37"])}"
-            UxPayloads::fsck(item["uuid"], item["payload-37"])
+            UxPayloads::fsck(item["payload-37"])
             return
         end
 
@@ -70,7 +70,7 @@ class Fsck
             }
             XCache::set("82e98b31-2d0a-4a9d-9030-28fd195a97c0", JSON.generate(config))
         end
-        Blades::items()
+        Items::items()
             .each{|item|
                 key = "#{config["mark"]}:#{item["uuid"]}"
                 next if XCache::getOrNull(key) == "done"
@@ -81,7 +81,7 @@ class Fsck
 
     # Fsck::fsckAllForce()
     def self.fsckAllForce()
-        Blades::items()
+        Items::items()
             .each{|item|
                 Fsck::fsckItemOrError(item, true)
             }

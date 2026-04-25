@@ -25,9 +25,9 @@ class UxPayloads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayloads::types())
     end
 
-    # UxPayloads::locationToPayload(uuid, location)
-    def self.locationToPayload(uuid, location)
-        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
+    # UxPayloads::locationToPayload(location)
+    def self.locationToPayload(location)
+        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
         {
             "uuid"     => SecureRandom.uuid,
             "mikuType" => "AionPoint",
@@ -35,8 +35,8 @@ class UxPayloads
         }
     end
 
-    # UxPayloads::makeNewPayloadOrNull(uuid)
-    def self.makeNewPayloadOrNull(uuid)
+    # UxPayloads::makeNewPayloadOrNull()
+    def self.makeNewPayloadOrNull()
         type = UxPayloads::interactivelySelectTypeOrNull()
         return nil if type.nil?
         if type == "text" then
@@ -58,7 +58,7 @@ class UxPayloads
         if type == "aion-point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            return UxPayloads::locationToPayload(uuid, location)
+            return UxPayloads::locationToPayload(location)
         end
         if type == "Dx8Unit" then
             identifier = LucilleCore::askQuestionAnswerAsString("Dx8Unit identifier (empty to abort): ")
@@ -137,8 +137,8 @@ class UxPayloads
     # ---------------------------------------
     # Operation
 
-    # UxPayloads::access(uuid, payload)
-    def self.access(uuid, payload)
+    # UxPayloads::access(payload)
+    def self.access(payload)
         return if payload.nil?
         if payload["mikuType"] == "Text" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file"])
@@ -175,7 +175,7 @@ class UxPayloads
             exportFoldername = "#{exportId}-aion-point"
             exportFolderpath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
             FileUtils.mkpath(exportFolderpath)
-            AionCore::exportHashAtFolder(Elizabeth.new(uuid), nhash, exportFolderpath)
+            AionCore::exportHashAtFolder(Elizabeth.new(), nhash, exportFolderpath)
             system("open '#{exportFolderpath}'")
             LucilleCore::pressEnterToContinue()
             return
@@ -229,8 +229,8 @@ class UxPayloads
         raise "(error: e0040ec0-1c8f) type: #{payload["mikuType"]}"
     end
 
-    # UxPayloads::edit(uuid, payload) # updated payload or nil if no modifications
-    def self.edit(uuid, payload)
+    # UxPayloads::edit(payload) # updated payload or nil if no modifications
+    def self.edit(payload)
         return if payload.nil?
         if payload["type"] == "text" then
             payload["text"] = CommonUtils::editTextSynchronously(payload["text"])
@@ -261,11 +261,11 @@ class UxPayloads
             raise "(error: f1ee6b3d)"
         end
         if payload["type"] == "aion-point" then
-            UxPayloads::access(uuid, payload)
+            UxPayloads::access(payload)
             LucilleCore::pressEnterToContinue()
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            return UxPayloads::locationToPayload(uuid, location)
+            return UxPayloads::locationToPayload(location)
         end
         if payload["type"] == "Dx8Unit" then
             puts "You can't edit a Dx8Unit"
@@ -296,13 +296,13 @@ class UxPayloads
     # UxPayloads::editItemPayload(item)
     def self.editItemPayload(item)
         return if item["payload-37"].nil?
-        payload = UxPayloads::edit(item["uuid"], item["payload-37"])
+        payload = UxPayloads::edit(item["payload-37"])
         return if payload.nil?
-        Blades::setAttribute(item["uuid"], "payload-37", payload)
+        Items::setAttribute(item["uuid"], "payload-37", payload)
     end
 
-    # UxPayloads::fsck(uuid, payload)
-    def self.fsck(uuid, payload)
+    # UxPayloads::fsck(payload)
+    def self.fsck(payload)
         return if payload.nil?
         if payload["mikuType"] == "NxTask" then
             return
@@ -314,7 +314,7 @@ class UxPayloads
                 sleep 1
                 return
             end
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(uuid), payload["nhash"])
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), payload["nhash"])
             return
         end
 
@@ -355,16 +355,16 @@ class UxPayloads
         options = ["access", "edit", "make new (default)", "delete existing payload"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         if option == "access" then
-            UxPayloads::access(item["uuid"], payload)
+            UxPayloads::access(payload)
         end
         if option == "edit" then
             UxPayloads::editItemPayload(item)
         end
         if option.nil? or option == "make new (default)" then
-            Blades::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull(item["uuid"]))
+            Items::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull(item["uuid"]))
         end
         if option == "delete existing payload" then
-            Blades::setAttribute(item["uuid"], "payload-37", nil)
+            Items::setAttribute(item["uuid"], "payload-37", nil)
         end
     end
 end

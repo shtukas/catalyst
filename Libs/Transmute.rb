@@ -4,9 +4,9 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
-            Blades::setAttribute(item["uuid"], "mikuType", "NxTask")
-            return Blades::itemOrNull(item["uuid"])
+            Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
+            Items::setAttribute(item["uuid"], "mikuType", "NxTask")
+            return Items::itemOrNull(item["uuid"])
         end
         raise "(error a7093fd4-0236) I do not know how to transmute #{item["mikuType"]} to #{targetType}"
     end

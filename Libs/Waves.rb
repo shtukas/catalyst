@@ -10,16 +10,16 @@ class Waves
         nx46 = Nx46::interactivelyMakeNewOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull(uuid))
-        Blades::setAttribute(uuid, "nx46", nx46)
-        Blades::setAttribute(uuid, "lastDoneUnixtime", 0)
-        Blades::setAttribute(uuid, "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))
-        Blades::setAttribute(uuid, "mikuType", "Wave")
-        item = Blades::itemOrNull(uuid)
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
+        Items::setAttribute(uuid, "nx46", nx46)
+        Items::setAttribute(uuid, "lastDoneUnixtime", 0)
+        Items::setAttribute(uuid, "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))
+        Items::setAttribute(uuid, "mikuType", "Wave")
+        item = Items::itemOrNull(uuid)
         item
     end
 
@@ -77,14 +77,14 @@ class Waves
 
     # Waves::listingItemsInterruption()
     def self.listingItemsInterruption()
-        Blades::mikuType("Wave")
+        Items::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| item["interruption"] }
     end
 
     # Waves::listingItemsNonInterruption()
     def self.listingItemsNonInterruption()
-        items = Blades::mikuType("Wave")
+        items = Items::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| !item["interruption"] }
         FrontPage::ensure_and_apply_global_posionning_order(items)
@@ -92,8 +92,8 @@ class Waves
 
     # Waves::performDone(wave)
     def self.performDone(wave)
-        Blades::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        Blades::setAttribute(wave["uuid"], "listing-marker-57", nil)
+        Items::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Items::setAttribute(wave["uuid"], "listing-marker-57", nil)
         unixtime = Waves::nx46ToNextDisplayUnixtime(wave["nx46"], Time.new.to_i)
         puts "do not show until #{Time.at(unixtime)}".yellow
         DoNotShowUntil::doNotShowUntil(wave, unixtime)

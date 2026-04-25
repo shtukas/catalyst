@@ -7,7 +7,7 @@ class BankDataRTCache
 
     # BankDataRTCache::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/databases/index5-banking-rt-cache"
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/index5-banking-rt-cache"
     end
 
     # BankDataRTCache::filepaths()
@@ -114,7 +114,6 @@ class BankDataRTCache
         # This case should not really happen (anymore), so if the condition 
         # is true, let's error noisily.
         if filepaths.size == 0 then
-            # return Blades::initiateDatabaseFile()
             raise "(error: 73dd7dae)"
         end
 
@@ -188,7 +187,7 @@ class Bank
 
     # Bank::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/databases/index4-banking"
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/index4-banking"
     end
 
     # Bank::filepaths()

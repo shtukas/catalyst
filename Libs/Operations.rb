@@ -6,7 +6,7 @@ class Operations
         # This function edit the payload, if there is now
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.each{|k, v|
-            Blades::setAttribute(item["uuid"], k, v)
+            Items::setAttribute(item["uuid"], k, v)
         }
     end
 
@@ -105,7 +105,7 @@ class Operations
             DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
         end
         if option == "destroy" then
-            Blades::deleteItem(item["uuid"])
+            Items::deleteItem(item["uuid"])
         end
     end
 
@@ -114,7 +114,7 @@ class Operations
         items = FrontPage::itemsForListingOrdered()
         selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
         selected.reverse.each{|item|
-            Blades::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
+            Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
         }
     end
 end

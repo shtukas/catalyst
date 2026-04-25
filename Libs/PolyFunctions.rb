@@ -73,7 +73,7 @@ class PolyFunctions
     def self.uuid_to_item_or_null_cache_results(uuid)
         packet = XCache::getOrNull("00cc1ac4-1a63-437a-802b-8bcadbdb0fb4:#{uuid}")
         return JSON.parse(packet)[0] if packet
-        item = Blades::itemOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         XCache::set("00cc1ac4-1a63-437a-802b-8bcadbdb0fb4:#{uuid}", JSON.generate([item]))
         item
     end

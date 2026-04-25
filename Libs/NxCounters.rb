@@ -11,13 +11,13 @@ class NxCounters
         lastUpdateUnixtime = Time.new.to_i
         doneCounter = 0
         uuid = SecureRandom.uuid
-        Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "incrementPerDay", incrementPerDay)
-        Blades::setAttribute(uuid, "mikuType", "NxCounter")
-        item = Blades::itemOrNull(uuid)
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "incrementPerDay", incrementPerDay)
+        Items::setAttribute(uuid, "mikuType", "NxCounter")
+        item = Items::itemOrNull(uuid)
         item
     end
 
@@ -59,13 +59,13 @@ class NxCounters
         increment = LucilleCore::askQuestionAnswerAsString("increment: ").to_i
         dayData["done"] = dayData["done"] + increment
         dayData["lastUpdateUnixtime"] = Time.new.to_i
-        Blades::setAttribute(item["uuid"], "dayData", dayData)
-        item = Blades::itemOrNull(item["uuid"])
+        Items::setAttribute(item["uuid"], "dayData", dayData)
+        item = Items::itemOrNull(item["uuid"])
     end
 
     # NxCounters::listingItems()
     def self.listingItems()
-        Blades::mikuType("NxCounter").select{|item|
+        Items::mikuType("NxCounter").select{|item|
             dayData = NxCounters::getDayData(item)
             NxCounters::missingCount(item) > 0 and (Time.new.to_f - dayData["lastUpdateUnixtime"]) >= 3600
         }

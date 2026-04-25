@@ -22,7 +22,7 @@ class Donations
     def self.interactivelySetDonation(item)
         target = NxEngines::interactivelySelectEnginedOrNull()
         return item if target.nil?
-        Blades::setAttribute(item["uuid"], "donation-14", target["uuid"])
-        Blades::itemOrNull(item["uuid"])
+        Items::setAttribute(item["uuid"], "donation-14", target["uuid"])
+        Items::itemOrNull(item["uuid"])
     end
 end

@@ -5,28 +5,28 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        payload = UxPayloads::makeNewPayloadOrNull(uuid)
-        Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "payload-37", payload)
-        Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position - 1)
-        Blades::setAttribute(uuid, "mikuType", "NxTask")
-        item = Blades::itemOrNull(uuid)
+        payload = UxPayloads::makeNewPayloadOrNull()
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "payload-37", payload)
+        Items::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position - 1)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
+        item = Items::itemOrNull(uuid)
         item
     end
 
     # NxTasks::simpleTaskfromDescription(description)
     def self.simpleTaskfromDescription(description)
         uuid = SecureRandom.uuid
-        Blades::init(uuid)
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position - 1)
-        Blades::setAttribute(uuid, "mikuType", "NxTask")
-        item = Blades::itemOrNull(uuid)
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "global-pos-07", GlobalPositioning::first_position - 1)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
+        item = Items::itemOrNull(uuid)
         item
     end
 
@@ -45,6 +45,12 @@ class NxTasks
 
     # NxTasks::listingItems()
     def self.listingItems()
-        Blades::mikuType("NxTask").sort_by{|item| item["global-pos-07"] }.take(30)
+        cursor = Time.new.to_i/3600
+        if items = XCache::getOrNull("1c4e4f1a-b032-48d5-9e3c-b14c56bfc208:#{cursor}") then
+            return JSON.parse(items)
+        end
+        items = Items::mikuType("NxTask").sort_by{|item| item["global-pos-07"] }.take(30)
+        XCache::set("1c4e4f1a-b032-48d5-9e3c-b14c56bfc208:#{cursor}", JSON.generate(items))
+        items
     end
 end
