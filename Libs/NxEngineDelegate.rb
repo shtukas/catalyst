@@ -23,8 +23,12 @@ class NxEngineDelegate
 
     # NxEngineDelegate::toString(item)
     def self.toString(item)
+        formatx = lambda {|number|
+            (number.to_f/3600).round(2)
+        }
+
         target = Items::itemOrNull(item["targetuuid"])
-        "#{NxEngineDelegate::icon()} deleguate for #{target["description"]}"
+        "#{NxEngineDelegate::icon()} deleguate for #{target["description"]} (capacity: #{formatx.call(item["capacity"])} hs, done: #{formatx.call(Bank::getValue(item["uuid"]))} hs)"
     end
 
     # NxEngineDelegate::listingItems()

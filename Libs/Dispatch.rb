@@ -70,6 +70,12 @@ class Dispatch
 
     # Dispatch::dispatch(items)
     def self.dispatch(items) # items -> items
+        items = items.map.with_index{|item, index|
+            if item["dispatch50"].nil? then
+                item = Items::setAttribute(item["uuid"], "dispatch50", rand)
+            end
+            item
+        }
         items = items.sort_by{|item| item["dispatch50"] }
         Dispatch::optimize(items)
     end
