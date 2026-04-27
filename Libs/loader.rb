@@ -137,6 +137,7 @@ require_relative "DropBox.rb"
 require_relative "DoNotShowUntil.rb"
 require_relative "Donations.rb"
 require_relative "Datablobs.rb"
+require_relative "Dispatch.rb"
 
 require_relative "Elizabeth.rb"
 
@@ -157,6 +158,7 @@ require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxCounters.rb"
 require_relative "NxEngines.rb"
+require_relative "NxEngineDelegate.rb"
 
 require_relative "Operations.rb"
 

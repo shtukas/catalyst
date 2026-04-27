@@ -50,6 +50,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxEngineDelegate" then
+            # those items are auto done, nothing to do here
+            return
+        end
+
         if item["mikuType"] == "NxDeleted" then
             Items::deleteItem(item["uuid"])
             return
@@ -155,6 +160,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxEngineDelegate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
@@ -195,6 +207,9 @@ class PolyActions
 
     # PolyActions::editDescription(item) # item
     def self.editDescription(item)
+        if item["mikuType"] == "NxEngineDelegate" then
+            return
+        end
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return item if description == ""

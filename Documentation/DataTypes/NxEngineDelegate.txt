@@ -1,0 +1,8 @@
+
+NxEngineDelegate:
+    - uuid         : String
+    - mikuType     : "NxEngineDelegate"
+    - unixtime     :
+    - datetime     :
+    - targetuuid   : String
+    - capacity     : integer # time in seconds

@@ -25,6 +25,13 @@ class PolyFunctions
             "number"      => "28c68c60-64f4-4915-a1af-#{item["mikuType"]}"
         }
 
+        if item["mikuType"] == "NxEngineDelegate" then
+            target = PolyFunctions::uuid_to_item_or_null_cache_results(item["targetuuid"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -65,6 +72,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
+        end
+        if item["mikuType"] == "NxEngineDelegate" then
+            return NxEngineDelegate::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

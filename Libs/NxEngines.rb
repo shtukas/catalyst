@@ -46,14 +46,26 @@ class NxEngines
         Items::setAttribute(item["uuid"], "engine-1437", engine)
     end
 
-    # NxEngines::ratio(item)
-    def self.ratio(item)
+    # NxEngines::ratio(item, simulation_timespan = 0)
+    def self.ratio(item, simulation_timespan = 0)
         if item["engine-1437"].nil? then
             raise "error: item '#{item}' has not engine at engine-1437"
         end
-        done = BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])
+        done = BankDerivedData::recoveredAverageHoursPerDay(item["uuid"], simulation_timespan)
         target = NxEngines::dailyTargetInHours(item["engine-1437"])
         done.to_f/target
+    end
+
+    # NxEngines::missing_timespan_for_today(item)
+    def self.missing_timespan_for_today(item)
+        raise "[error 9944B5C8]" if item["engine-1437"].nil?
+        return 0 if NxEngines::ratio(item) >= 1
+        timespan = 0 
+        loop {
+            timespan += 600
+            break if NxEngines::ratio(item, timespan) >= 1
+        }
+        timespan
     end
 
     # NxEngines::engined()
@@ -63,7 +75,20 @@ class NxEngines
 
     # NxEngines::listingItems()
     def self.listingItems()
-        NxEngines::engined().select{|item| NxEngines::ratio(item) < 1 }.sort_by{|item| NxEngines::ratio(item) }
+        # Version 1
+        # NxEngines::engined().select{|item| NxEngines::ratio(item) < 1 }.sort_by{|item| NxEngines::ratio(item) }
+
+        # Version 2
+        NxEngines::engined().each{|item|
+            needed = NxEngines::missing_timespan_for_today(item) -  NxEngineDelegate::total_capacity_for_targetuuid(item["uuid"])
+            next if needed <= 0
+            5.times {
+                capacity = needed.to_f/5
+                puts "issuing delegate for #{PolyFunctions::toString(item)}, capacity: #{capacity}"
+                LucilleCore::pressEnterToContinue()
+                NxEngineDelegate::issue(item["uuid"], capacity)
+            }
+        }
     end
 
     # NxEngines::interactivelySelectEnginedOrNull()
@@ -83,5 +108,4 @@ class NxEngines
         end
         ""
     end
-
 end

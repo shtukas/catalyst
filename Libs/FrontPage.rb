@@ -73,33 +73,28 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
+        managed = [
+            NxEngineDelegate::listingItems(),
+            NxOndates::listingItems(),
+            NxBackups::listingItems(),
+            NxCounters::listingItems(),
+            NxTasks::listingItems(),
+            NxEngines::listingItems(),
+            Waves::listingItemsNonInterruption(),
+            BufferIn::listingItems()
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| FrontPage::isAccessible(item) }
+
+        managed = Dispatch::dispatch(managed)
+
         [
             Desktop::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-            NxOndates::listingItems(),
-            NxEngines::listingItems(),
-            NxBackups::listingItems(),
-            NxCounters::listingItems(),
-            BufferIn::listingItems(),
-            Waves::listingItemsNonInterruption(),
-            NxTasks::listingItems(),
-            [
-                {
-                    "items" => BufferIn::listingItems(),
-                    "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60-64f4-4915-a1af-BufferIn")
-                },
-                {
-                    "items" => Waves::listingItemsNonInterruption(),
-                    "rt" => BankDerivedData::recoveredAverageHoursPerDay("waves-39398759-3ebd-4dbf-8a78888888")
-                },
-                {
-                    "items" => NxTasks::listingItems(),
-                    "rt" => BankDerivedData::recoveredAverageHoursPerDay("tasks-a1b11d6f-82d4-4c2b-8ab0-0eae0")
-                },
-            ]
-                .sort_by{|packet| packet["rt"] }
-                .first["items"]
+            NxOndates::listingItemsTodayAbsolute(),
+            managed
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -134,10 +129,12 @@ class FrontPage
 
         items.each{|item|
             store.register(item, FrontPage::canBeDefault(item))
-            line = FrontPage::toString2(store, item, true)
-            puts line
-            sheight = sheight - (line.size/swidth + 1)
-            break if sheight <= 0
+            text = FrontPage::toString2(store, item, true)
+            text.lines.each {|line|
+                break if sheight <= 0
+                puts line
+                sheight = sheight - (line.size/swidth + 1)  
+            }
         }
 
         t2 = Time.new.to_f

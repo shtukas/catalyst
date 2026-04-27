@@ -401,18 +401,26 @@ $BankDerivedDataMemory = {}
 
 class BankDerivedData
 
-    # BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n)
+    # BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, simulation_timespan = 0)
     # n = 0 corresponds to today
-    def self.averageHoursPerDayOverThePastNDays(uuid, n)
+    def self.averageHoursPerDayOverThePastNDays(uuid, n, simulation_timespan = 0)
         range = (0..n)
-        totalInSeconds = range.map{|indx| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) }.inject(0, :+)
+        totalInSeconds = range
+            .map{|indx| 
+                value = Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx))
+                if indx == 0 then
+                    value = value + simulation_timespan
+                end
+                value
+            }
+            .inject(0, :+)
         totalInHours = totalInSeconds.to_f/3600
         average = totalInHours.to_f/(n+1)
         average
     end
 
-    # BankDerivedData::recoveredAverageHoursPerDay(uuid)
-    def self.recoveredAverageHoursPerDay(uuid)
-        (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n) }.max
+    # BankDerivedData::recoveredAverageHoursPerDay(uuid, simulation_timespan = 0)
+    def self.recoveredAverageHoursPerDay(uuid, simulation_timespan = 0)
+        (0..6).map{|n| BankDerivedData::averageHoursPerDayOverThePastNDays(uuid, n, simulation_timespan) }.max
     end
 end

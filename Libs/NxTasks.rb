@@ -46,11 +46,11 @@ class NxTasks
     # NxTasks::listingItems()
     def self.listingItems()
         cursor = Time.new.to_i/3600
-        if items = XCache::getOrNull("1c4e4f1a-b032-48d5-9e3c-b14c56bfc208:#{cursor}") then
-            return JSON.parse(items)
+        if uuids = XCache::getOrNull("1c4e4f1a-b032-48d5-9e3c-b14c56bfc209:#{cursor}") then
+            return JSON.parse(uuids).map{|uuid| Items::itemOrNull(uuid) }.compact
         end
         items = Items::mikuType("NxTask").sort_by{|item| item["global-pos-07"] }.take(30)
-        XCache::set("1c4e4f1a-b032-48d5-9e3c-b14c56bfc208:#{cursor}", JSON.generate(items))
+        XCache::set("1c4e4f1a-b032-48d5-9e3c-b14c56bfc209:#{cursor}", JSON.generate(items.map{|item| item["uuid"] }))
         items
     end
 end

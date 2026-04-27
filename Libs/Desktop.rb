@@ -10,7 +10,7 @@ class Desktop
 
     # Desktop::contents()
     def self.contents()
-        IO.read(Desktop::filepath()).lines.first(10).join().strip
+        IO.read(Desktop::filepath()).strip
     end
 
     # Desktop::announce()
