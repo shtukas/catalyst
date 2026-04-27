@@ -88,6 +88,7 @@ class NxEngines
                 NxEngineDelegate::issue(item["uuid"], capacity)
             }
         }
+        []
     end
 
     # NxEngines::interactivelySelectEnginedOrNull()
