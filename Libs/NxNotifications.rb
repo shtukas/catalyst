@@ -15,7 +15,7 @@ class NxNotifications
 
     # NxNotifications::pickup()
     def self.pickup()
-        directory = "/Users/pascal_honore/Galaxy/DataHub/Dispatch/letterbox"
+        directory = "#{Config::pathToGalaxy()}/DataHub/Dispatch/letterbox"
         LucilleCore::locationsAtFolder(directory)
             .select{|location| location[-11, 11] == ".letter.txt" }
             .each{|filepath| 
