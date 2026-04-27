@@ -84,8 +84,7 @@ class NxEngines
             next if needed <= 0
             5.times {
                 capacity = needed.to_f/5
-                puts "issuing delegate for #{PolyFunctions::toString(item)}, capacity: #{capacity}"
-                LucilleCore::pressEnterToContinue()
+                puts "issuing delegate for #{PolyFunctions::toString(item)}, capacity: #{capacity}".yellow
                 NxEngineDelegate::issue(item["uuid"], capacity)
             }
         }
