@@ -90,7 +90,6 @@ class Items
         return if item.nil?
         item[attribute_name] = attribute_value
         Items::commitItem(item)
-        item
     end
 
     # Items::deleteItemNoBroadcast(uuid)

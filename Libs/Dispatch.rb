@@ -35,7 +35,9 @@ class Dispatch
 
         struct1 = extractRelevantSection.call(struct1)
 
-        return 0 if Time.at(struct1.last["time"]) != CommonUtils::today() # We are overflowing past midnight
+        return 0 if struct1.empty?
+
+        return 0 if Time.at(struct1.last["time"]).to_s[0, 10] != CommonUtils::today() # We are overflowing past midnight
 
         struct1.map{|packet| packet["item"] }.select{|item| item["mikuType"] == "Wave" }.size
     end
@@ -43,7 +45,7 @@ class Dispatch
     # Dispatch::optimize(items)
     def self.optimize(items)
         return [] if items.empty?
-        best_score = Dispatch::score(items)
+        best_score = Dispatch::score(items.clone())
         updated = false
         10.times {
             xitems = items.clone().shuffle
@@ -52,7 +54,7 @@ class Dispatch
                 puts "improving the score from #{best_score} to #{score}"
                 LucilleCore::pressEnterToContinue()
                 best_score = score
-                items = xitems
+                items = xitems.clone()
                 updated = true
             end
         }
@@ -72,7 +74,8 @@ class Dispatch
     def self.dispatch(items) # items -> items
         items = items.map.with_index{|item, index|
             if item["dispatch50"].nil? then
-                item = Items::setAttribute(item["uuid"], "dispatch50", rand)
+                item["dispatch50"] = rand
+                Items::setAttribute(item["uuid"], "dispatch50", item["dispatch50"])
             end
             item
         }
