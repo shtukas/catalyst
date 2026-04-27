@@ -67,6 +67,9 @@ class PolyFunctions
         if item["mikuType"] == "NxCounter" then
             return NxCounters::toString(item)
         end
+        if item["mikuType"] == "NxNotification" then
+            return NxNotifications::toString(item)
+        end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end

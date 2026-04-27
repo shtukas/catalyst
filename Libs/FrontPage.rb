@@ -93,6 +93,7 @@ class FrontPage
             Desktop::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
+            NxNotifications::listingItems(),
             NxOndates::listingItemsTodayAbsolute(),
             managed
         ]
@@ -107,6 +108,7 @@ class FrontPage
         BufferIn::import()
 
         Broadcasts::processIncoming()
+        NxNotifications::pickup()
 
         sheight = CommonUtils::screenHeight() - 5
         swidth = CommonUtils::screenWidth()

@@ -44,14 +44,16 @@ class NxOndates
 
     # NxOndates::listingItemsTodayAbsolute()
     def self.listingItemsTodayAbsolute()
-        if CommonUtils::today() != XCache::getOrNull("e61c25ae-3139-4ad7-8cc4-0b1142d4a6c8") then
-            items = Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
-            # We have not yet selected absolutes for today
-            selected, _ = LucilleCore::selectZeroOrMore("today absolute", [], items, lambda {|item| PolyFunctions::toString(item) })
-            selected.each{|item|
-                Items::setAttribute(item["uuid"], "today-absolute", CommonUtils::today())
-            }
-            XCache::set("e61c25ae-3139-4ad7-8cc4-0b1142d4a6c8", CommonUtils::today())
+        if Config::isPrimaryInstance() then
+            if CommonUtils::today() != XCache::getOrNull("e61c25ae-3139-4ad7-8cc4-0b1142d4a6c8") then
+                items = Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
+                # We have not yet selected absolutes for today
+                selected, _ = LucilleCore::selectZeroOrMore("today absolute", [], items, lambda {|item| PolyFunctions::toString(item) })
+                selected.each{|item|
+                    Items::setAttribute(item["uuid"], "today-absolute", CommonUtils::today())
+                }
+                XCache::set("e61c25ae-3139-4ad7-8cc4-0b1142d4a6c8", CommonUtils::today())
+            end
         end
         Items::mikuType("NxOndate")
             .select{|item| item["date"] <= CommonUtils::today() }

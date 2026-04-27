@@ -151,6 +151,7 @@ require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
 
+require_relative "NxNotifications.rb"
 require_relative "NxBalls.rb"
 require_relative "Nx46.rb"
 require_relative "NxTasks.rb"

@@ -50,6 +50,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxNotification" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxEngineDelegate" then
             # those items are auto done, nothing to do here
             return
@@ -176,6 +183,13 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxNotification" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::deleteItem(item["uuid"])
             end
             return
