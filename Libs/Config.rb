@@ -13,9 +13,9 @@ class Config
         "#{Config::userHomeDirectory()}/Galaxy"
     end
 
-    # Config::pathToCatalystDataRepository()
-    def self.pathToCatalystDataRepository()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data"
+    # Config::pathToDataRepository()
+    def self.pathToDataRepository()
+        "#{Config::pathToGalaxy()}/DataHub/Dispatch/data"
     end
 
     # Config::instanceId()

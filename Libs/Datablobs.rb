@@ -6,7 +6,7 @@ class Datablobs
 
     # Datablobs::path_to_datablobs()
     def self.path_to_datablobs()
-        "#{Config::pathToCatalystDataRepository()}/datablobs"
+        "#{Config::pathToDataRepository()}/datablobs"
     end
 
     # ------------------------------------------------------------------

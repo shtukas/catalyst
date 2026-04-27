@@ -7,7 +7,7 @@ class BankDataRTCache
 
     # BankDataRTCache::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/index5-banking-rt-cache"
+        "#{Config::pathToDataRepository()}/index5-banking-rt-cache"
     end
 
     # BankDataRTCache::filepaths()
@@ -187,7 +187,7 @@ class Bank
 
     # Bank::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/index4-banking"
+        "#{Config::pathToDataRepository()}/index4-banking"
     end
 
     # Bank::filepaths()

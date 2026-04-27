@@ -24,14 +24,14 @@ class Broadcasts
 
     # Broadcasts::send(message)
     def self.send(message)
-        targetDirectory = "#{Config::pathToCatalystDataRepository()}/broadcasts/#{Broadcasts::otherInstanceId()}"
+        targetDirectory = "#{Config::pathToDataRepository()}/broadcasts/#{Broadcasts::otherInstanceId()}"
         filepath = "#{targetDirectory}/#{CommonUtils::timeStringL22()}.json"
         File.open(filepath, "w") {|f| f.puts(JSON.pretty_generate(message)) }
     end
 
     # Broadcasts::processIncoming()
     def self.processIncoming()
-        targetDirectory = "#{Config::pathToCatalystDataRepository()}/broadcasts/#{Config::instanceId()}"
+        targetDirectory = "#{Config::pathToDataRepository()}/broadcasts/#{Config::instanceId()}"
         LucilleCore::locationsAtFolder(targetDirectory)
         .select{|filepath| filepath[-5, 5] == ".json" }
         .sort

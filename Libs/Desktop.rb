@@ -5,7 +5,7 @@ class Desktop
 
     # Desktop::filepath()
     def self.filepath()
-        "#{Config::pathToCatalystDataRepository()}/desktop.txt"
+        "#{Config::pathToDataRepository()}/desktop.txt"
     end
 
     # Desktop::contents()

@@ -21,14 +21,14 @@ class DropBox
 
     # DropBox::items()
     def self.items()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DropBox")
+        LucilleCore::locationsAtFolder("#{Config::pathToDataRepository()}/DropBox")
             .select{|location| File.basename(location)[-4, 4] == ".txt" }
             .map{|location| DropBox::locationToItem(location)}
     end
 
     # DropBox::filepath(uuid)
     def self.filepath(uuid)
-        "#{Config::pathToCatalystDataRepository()}/DropBox/#{uuid}"
+        "#{Config::pathToDataRepository()}/DropBox/#{uuid}"
     end
 
     # DropBox::done(uuid)

@@ -3,7 +3,7 @@ class NxBalls
 
     # NxBalls::repository()
     def self.repository()
-        "#{Config::pathToCatalystDataRepository()}/NxBalls"
+        "#{Config::pathToDataRepository()}/NxBalls"
     end
 
     # ---------------------------------

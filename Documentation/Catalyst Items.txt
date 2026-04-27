@@ -1,4 +1,4 @@
-Catalyst items are json object with at least
+Dispatch items are json object with at least
     - uuid
     - mikuType
 

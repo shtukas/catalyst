@@ -1,6 +1,6 @@
-### Catalyst
+### Dispatch
 
-Catalyst is an advanced task management system.
+Dispatch is an advanced task management system.
 
 ### Install
 

@@ -7,7 +7,7 @@ class Items
 
     # Items::database_filepath()
     def self.database_filepath()
-        "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/items/#{Config::instanceId()}/items.sqlite"
+        "#{Config::pathToDataRepository()}/items/#{Config::instanceId()}/items.sqlite"
     end
 
     # Items::items()
