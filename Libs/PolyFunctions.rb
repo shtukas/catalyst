@@ -49,9 +49,6 @@ class PolyFunctions
         if item["mikuType"] == "DropBox" then
             return item["description"]
         end
-        if item["mikuType"] == "NxDeleted" then
-            return "NxDeleted: uuid: #{item["uuid"]}"
-        end
         if item["mikuType"] == "Anniversary" then
             return Anniversaries::toString(item)
         end

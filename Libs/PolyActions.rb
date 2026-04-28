@@ -63,11 +63,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDeleted" then
-            Items::deleteItem(item["uuid"])
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             Waves::performDone(item)
             return
