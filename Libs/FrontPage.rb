@@ -15,12 +15,14 @@ class FrontPage
         item["interruption"]
     end
 
-    # FrontPage::toString2(store, item, is_main_listing = false)
-    def self.toString2(store, item, is_main_listing = false)
+    # FrontPage::toString2(store, item, cursor = 0)
+    def self.toString2(store, item, cursor = 0)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        cursor = "[#{Time.at(cursor).to_s[11, 5]}]".red
+
+        line = "#{storePrefix} #{cursor} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -129,14 +131,17 @@ class FrontPage
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
 
+        cursor = Time.new.to_i
+
         items.each{|item|
             store.register(item, FrontPage::canBeDefault(item))
-            text = FrontPage::toString2(store, item, true)
+            text = FrontPage::toString2(store, item, cursor)
             text.lines.each {|line|
                 break if sheight <= 0
                 puts line
                 sheight = sheight - (line.size/swidth + 1)  
             }
+            cursor = cursor + Dispatch::item_to_timespan(item)
         }
 
         t2 = Time.new.to_f
