@@ -20,7 +20,13 @@ class FrontPage
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        cursor = "[#{Time.at(cursor).to_s[11, 5]}]".red
+        cursor = (lambda {|cursor|
+            if Dispatch::itemType(item) == "today" then
+                "[#{Time.at(cursor).to_s[11, 5]}]".red
+            else
+                "[#{Time.at(cursor).to_s[11, 5]}]"
+            end
+        }).call(cursor)
 
         line = "#{storePrefix} #{cursor} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
 
@@ -75,7 +81,7 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
-        managed = [
+        [
             NxEngineDelegate::listingItems(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
@@ -83,21 +89,12 @@ class FrontPage
             NxTasks::listingItems(),
             NxEngines::listingItems(),
             Waves::listingItemsNonInterruption(),
-            BufferIn::listingItems()
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item) }
-            .select{|item| FrontPage::isAccessible(item) }
-
-        managed = Dispatch::dispatch(managed)
-
-        [
+            BufferIn::listingItems(),
             Desktop::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxNotifications::listingItems(),
             NxOndates::listingItemsTodayAbsolute(),
-            managed
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -129,7 +126,7 @@ class FrontPage
         store = ItemStore.new()
         puts ""
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + FrontPage::itemsForListingOrdered(), "uuid")
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + Dispatch::dispatch(FrontPage::itemsForListingOrdered()), "uuid")
 
         cursor = Time.new.to_i
 

@@ -42,7 +42,7 @@ class Dispatch
 
         return "priority" if item["mikuType"] == "DesktopTx1"
         return "priority" if item["mikuType"] == "Anniversary"
-        return "priority" if item["mikuType"] == "Wave"
+        return "priority" if (item["mikuType"] == "Wave" and item["priority"])
         return "priority" if item["mikuType"] == "NxNotification"
         return "priority" if item["mikuType"] == "NxCounter"
 
@@ -54,6 +54,7 @@ class Dispatch
         return "leisure" if item["mikuType"] == "NxOndate"
         return "leisure" if item["mikuType"] == "BufferIn"
         return "leisure" if item["mikuType"] == "NxTask"
+        return "leisure" if item["mikuType"] == "Wave"
 
         raise "[error: a6135fae] I do not know how to itemType: #{item}"
     end
@@ -131,16 +132,9 @@ class Dispatch
         end
 
         if scoring[0] == "overflowing" then
-            puts "overflowing".yellow
             # We are overflowing, let's reduce the dispatch:position of every today item
-            todayOrLeisureItems = todayOrLeisureItems.map{|item|
-                if Dispatch::itemType(item) == "today" then
-                    item["dispatch:position"] = 0.8 * item["dispatch:position"]
-                    Items::setAttribute(item["uuid"], "dispatch:position", item["dispatch:position"])
-                end
-                item
-            }
-            return todayOrLeisureItems
+            todayitems, leisureItems = todayOrLeisureItems.partition{|item| Dispatch::itemType(item) == "today" }
+            return (todayitems + leisureItems)
         end
 
         # Here the scoring is ["score", score]
@@ -175,6 +169,6 @@ class Dispatch
 
         # otherwise we return todayOrLeisureItems
         puts "no improvment in the scoring".yellow
-        todayOrLeisureItems
+        todayOrLeisureItems.sort_by{|item| item["dispatch:position"] }
     end
 end

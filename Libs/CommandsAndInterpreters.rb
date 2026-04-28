@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | engine *",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance",
         ].join("\n")
@@ -283,6 +283,13 @@ class CommandsAndInterpreters
             Operations::program3(lambda { 
                 Items::mikuType("NxOndate")
                     .select{|item| item["date"] == CommonUtils::tomorrow() }
+            })
+            return
+        end
+
+        if Interpreting::match("delegates", input) then
+            Operations::program3(lambda { 
+                Items::mikuType("NxEngineDelegate")
             })
             return
         end
