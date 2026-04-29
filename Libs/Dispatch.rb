@@ -143,6 +143,7 @@ class Dispatch
         if scoring[0] == "[today/leisure]:not-found" then
             puts "all good, we only have priority items".yellow
             # All good, we only have priority items
+            return todayOrLeisureItems
         end
 
         if scoring[0] == "overflowing" then

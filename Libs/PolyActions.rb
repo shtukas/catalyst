@@ -91,6 +91,12 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             puts "#{PolyFunctions::toString(item).green}"
+
+            if item["engine-1437"] then
+                NxBalls::stop(item)
+                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            end
+
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
