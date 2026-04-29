@@ -64,7 +64,7 @@ class Dispatch
 
         # return:
         #   ["[today/leisure]:not-found"]
-        #   ["overflowing"]
+        #   ["overflowing", <datetime>]
         #   ["score", <score>]
 
         cursor = Time.new.to_i
@@ -79,7 +79,7 @@ class Dispatch
 
         extractUpToTheLastToday = lambda {|struct1|
             return [] if struct1.empty?
-            return struct1 if (Dispatch::itemType(struct1.last["item"]) == "today" or Dispatch::itemType(struct1.last["item"]) == "leisure")
+            return struct1 if (Dispatch::itemType(struct1.last["item"]) == "today")
             struct1 = struct1.take(struct1.length - 1)
             extractUpToTheLastToday.call(struct1)
         }
@@ -88,7 +88,7 @@ class Dispatch
 
         return ["[today/leisure]:not-found"] if struct1.empty?
 
-        return ["overflowing"] if Time.at(struct1.last["time"]).to_s[0, 10] != CommonUtils::today() # We are overflowing past midnight
+        return ["overflowing", Time.at(struct1.last["time"]).to_s] if Time.at(struct1.last["time"]).to_s[0, 10] != CommonUtils::today() # We are overflowing past midnight
 
         score = struct1.map{|packet| packet["item"] }.select{|item| Dispatch::itemType(item) == "leisure" }.size
 
@@ -120,6 +120,20 @@ class Dispatch
     # Dispatch::optimize(todayOrLeisureItems)
     def self.optimize(todayOrLeisureItems)
 
+        if !Config::isPrimaryInstance() then
+            return todayOrLeisureItems
+        end
+
+        getMinDispatchPosition = lambda {|items| (items.map{|item| item["dispatch:position"] } + [0]).min }
+
+        getMaxDispatchPosition = lambda {|items| (items.map{|item| item["dispatch:position"] } + [1]).max }
+
+        getNewDispatchPositionInFirstQuarter = lambda {|items|
+            a = getMinDispatchPosition.call(items)
+            b = getMaxDispatchPosition.call(items)
+            a + rand * 0.25*(b-a)
+        }
+
         # Here we only have "today" or "leisure"
 
         scoring = Dispatch::decide_scoring(todayOrLeisureItems)
@@ -134,41 +148,48 @@ class Dispatch
         if scoring[0] == "overflowing" then
             # We are overflowing, let's reduce the dispatch:position of every today item
             todayitems, leisureItems = todayOrLeisureItems.partition{|item| Dispatch::itemType(item) == "today" }
-            return (todayitems + leisureItems)
+            return leisureItems if todayitems.empty?
+            lastTodayItem = todayitems.last
+            todayItemsMinusSelected = todayitems.select{|item| item["uuid"] != lastTodayItem["uuid"] }
+            puts "repositioning '#{PolyFunctions::toString(lastTodayItem)}' to #{lastTodayItem["dispatch:position"]}".yellow
+            lastTodayItem["dispatch:position"] = getNewDispatchPositionInFirstQuarter.call(todayOrLeisureItems)
+            Items::setAttribute(lastTodayItem["uuid"], "dispatch:position", lastTodayItem["dispatch:position"])
+            return (todayItemsMinusSelected + [lastTodayItem] + leisureItems).sort_by{|item| item["dispatch:position"] }
         end
 
-        # Here the scoring is ["score", score]
+        if scoring[0] == "score" then
+            score = scoring[1]
 
-        score = scoring[1]
+            # We select a leisure item (we could take the last one)
+            # We give it a random dispatch:position, and check the score again
+            # If the score has increased we keep the change (we commit the new value)
+            # If the score has not increased we return the items as we found them
 
-        # We select a leisure item (we could take the last one)
-        # We give it a random dispatch:position, and check the score again
-        # If the score has increased we keep the change (we commit the new value)
-        # If the score has not increased we return the items as we found them
+            todayitems, leisureItems = todayOrLeisureItems.partition{|item| Dispatch::itemType(item) == "today" }
+            return todayitems if leisureItems.empty?
+            lastLeisureItem = leisureItems.last
+            leisureItemsWithoutTheSelectedOne = leisureItems.select{|item| item["uuid"] != lastLeisureItem["uuid"] }
 
-        todayitems, leisureItems = todayOrLeisureItems.partition{|item| Dispatch::itemType(item) == "today" }
-        return todayitems if leisureItems.empty?
-        lastLeisureItem = leisureItems.last
-        leisureItemsWithoutTheSelectedOne = leisureItems.select{|item| item["uuid"] != lastLeisureItem["uuid"] }
+            # We have the item, and the list without it.
+            # Now, we mark the item and make a new list
 
-        # We have the item, and the list without it.
-        # Now, we mark the item and make a new list
+            lastLeisureItem["dispatch:position"] = getNewDispatchPositionInFirstQuarter.call(todayOrLeisureItems)
+            modifiedTodayOrLeisureItemsInOrder = (todayitems + leisureItemsWithoutTheSelectedOne + [lastLeisureItem]).sort_by{|item| item["dispatch:position"] }
 
-        lastLeisureItem["dispatch:position"] = 0.5 * lastLeisureItem["dispatch:position"]
-        modifiedTodayOrLeisureItemsInOrder = (todayitems + leisureItemsWithoutTheSelectedOne + [lastLeisureItem]).sort_by{|item| item["dispatch:position"] }
+            modifiedScoring = Dispatch::decide_scoring(modifiedTodayOrLeisureItemsInOrder)
 
-        modifiedScoring = Dispatch::decide_scoring(modifiedTodayOrLeisureItemsInOrder)
+            if modifiedScoring[0] == "score" and modifiedScoring[1] > score then
+                puts "improved scoring from #{score} to #{modifiedScoring[1]}".yellow
+                puts "repositioning '#{PolyFunctions::toString(lastLeisureItem)}' to #{lastLeisureItem["dispatch:position"]}".yellow
+                Items::setAttribute(lastLeisureItem["uuid"], "dispatch:position", lastLeisureItem["dispatch:position"])
+                return modifiedTodayOrLeisureItemsInOrder
+            end
 
-        if modifiedScoring[0] == "score" and modifiedScoring[1] > score then
-            puts "improved scoring from #{score} to #{modifiedScoring[1]}".yellow
-            puts "the dispatch:position of #{PolyFunctions::toString(lastLeisureItem)} is now #{lastLeisureItem["dispatch:position"]}"
-            # We commit the modification that improved the score
-            Items::setAttribute(lastLeisureItem["uuid"], "dispatch:position", lastLeisureItem["dispatch:position"])
-            return modifiedTodayOrLeisureItemsInOrder
+            # otherwise we return todayOrLeisureItems
+            puts "no improvment in the scoring".yellow
+            return todayOrLeisureItems.sort_by{|item| item["dispatch:position"] }
         end
 
-        # otherwise we return todayOrLeisureItems
-        puts "no improvment in the scoring".yellow
-        todayOrLeisureItems.sort_by{|item| item["dispatch:position"] }
+        raise "[2821ee87] how did this happen ? 🤔"
     end
 end
