@@ -44,7 +44,7 @@ class FrontPage
 
         store.register(item, FrontPage::canBeDefault(item))
 
-        hcount = 0
+        height = 0
 
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
@@ -76,14 +76,14 @@ class FrontPage
 
         puts line
 
-        hcount = hcount + (line.size/screen_width + 1)
+        height = height + (line.size/screen_width + 1)
 
         SubTasks::getSubtasks(item).each{|child|
             h2 = FrontPage::printItem(store, child, cursor, screen_width, depth+1)
-            hcount += h2
+            height += h2
         }
 
-        hcount
+        height
     end
 
     # -----------------------------------------
@@ -173,6 +173,7 @@ class FrontPage
 
         items.each{|item|
             o = FrontPage::printItem(store, item, cursor, swidth, 0)
+            cursor = cursor + Dispatch::item_to_timespan(item)
             sheight = sheight - o
             break if sheight <= 0
         }
