@@ -107,7 +107,7 @@ class Dispatch
 
         score = struct1.map{|packet| packet["item"] }.select{|item| Dispatch::itemType(item) == "leisure" }.size
 
-        ["score", score]
+        ["score", score, Time.at(struct1.last["time"]).to_s]
     end
 
     # Dispatch::dispatch(items)
