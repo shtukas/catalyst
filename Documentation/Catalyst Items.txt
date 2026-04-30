@@ -2,8 +2,9 @@ Dispatch items are json object with at least
     - uuid
     - mikuType
 
-Database:
-    create table Items (_uuid_ TEXT primary key, _mikuType_ TEXT, _item_ TEXT)
+Items are in a database 
+    CREATE TABLE items (uuid TEXT primary key, mikuType TEXT, item TEXT);
+    See Items.rb for details
 
 Cross types conventions (all optional):
     - skip-0843             : unixtime (skipped until this time)
@@ -12,3 +13,8 @@ Cross types conventions (all optional):
     - donation-14           : null or String # bank account to donate to
     - global-pos-07         : global positioning, Real
     - engine-1437           : NxEngine or null
+
+It is possible to specify that that an item is a subtask of another one
+The parent keeps a list of subtasks in an array of uuids called `subtasks-24`
+Each subtasks has a pointer to its parent in a string attribute called `parent-task-25`
+
