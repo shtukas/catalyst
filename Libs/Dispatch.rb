@@ -1,6 +1,21 @@
 
 class Dispatch
 
+    # Dispatch::deadline()
+    def self.deadline()
+
+        if Time.new.hour < 12 then
+            return DateTime.parse("#{CommonUtils::today()}T12:00:00Z").to_time.to_i
+        end
+
+        if Time.new.hour < 18 then
+            return DateTime.parse("#{CommonUtils::today()}T18:00:00Z").to_time.to_i
+        end
+
+        DateTime.parse("#{CommonUtils::today()}T21:00:00Z").to_time.to_i
+
+    end
+
     # Dispatch::item_to_timespan(item)
     def self.item_to_timespan(item)
 
@@ -88,7 +103,7 @@ class Dispatch
 
         return ["[today/leisure]:not-found"] if struct1.empty?
 
-        return ["overflowing", Time.at(struct1.last["time"]).to_s] if Time.at(struct1.last["time"]).to_s[0, 10] != CommonUtils::today() # We are overflowing past midnight
+        return ["overflowing", Time.at(struct1.last["time"]).to_s] if Time.at(struct1.last["time"]).to_i > Dispatch::deadline()
 
         score = struct1.map{|packet| packet["item"] }.select{|item| Dispatch::itemType(item) == "leisure" }.size
 
