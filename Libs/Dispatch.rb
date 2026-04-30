@@ -78,7 +78,7 @@ class Dispatch
     def self.decide_scoring(items)
 
         # return:
-        #   ["[today/leisure]:not-found"]
+        #   ["today:not-found"]
         #   ["overflowing", <datetime>]
         #   ["score", <score>]
 
@@ -101,7 +101,7 @@ class Dispatch
 
         struct1 = extractUpToTheLastToday.call(struct1)
 
-        return ["[today/leisure]:not-found"] if struct1.empty?
+        return ["today:not-found"] if struct1.empty?
 
         return ["overflowing", Time.at(struct1.last["time"]).to_s] if Time.at(struct1.last["time"]).to_i > Dispatch::deadline()
 
@@ -155,7 +155,7 @@ class Dispatch
 
         puts JSON.generate(scoring).yellow
 
-        if scoring[0] == "[today/leisure]:not-found" then
+        if scoring[0] == "today:not-found" then
             puts "all good, we only have priority items".yellow
             # All good, we only have priority items
             return todayOrLeisureItems

@@ -32,22 +32,25 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
 
-        if item["subtasks-24"] and item["subtasks-24"].size > 0 then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss here", "traverse"])
-            return if option.nil?
-            if option == "dismiss here" then
-                PolyActions::stop(item)
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+        if item["subtasks-24"] then
+            item = SubTasks::normaliseChildrenArray(item)
+            if item["subtasks-24"].size > 0 then
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss here", "traverse"])
+                return if option.nil?
+                if option == "dismiss here" then
+                    PolyActions::stop(item)
+                    DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+                    return
+                end
+                if option == "traverse" then
+                    uuids = item["subtasks-24"].select{|uuid| Items::itemOrNull(uuid) }
+                    childuuid = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", item["subtasks-24"], lambda{|uuid| PolyFunctions::toString(Items::itemOrNull(uuid)) })
+                    return if childuuid.nil?
+                    PolyActions::done(Items::itemOrNull(childuuid))
+                    return
+                end
                 return
             end
-            if option == "traverse" then
-                uuids = item["subtasks-24"].select{|uuid| Items::itemOrNull(uuid) }
-                childuuid = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", item["subtasks-24"], lambda{|uuid| PolyFunctions::toString(Items::itemOrNull(uuid)) })
-                return if childuuid.nil?
-                PolyActions::done(Items::itemOrNull(childuuid))
-                return
-            end
-            return
         end
 
         PolyActions::stop(item)

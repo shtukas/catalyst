@@ -17,4 +17,15 @@ class SubTasks
         return [] if parent["subtasks-24"].nil?
         parent["subtasks-24"].map{|uuid| Items::itemOrNull(uuid) }.compact
     end
+
+    # SubTasks::normaliseChildrenArray(item)
+    def self.normaliseChildrenArray(item)
+        return item if item["subtasks-24"].nil?
+        uuids = item["subtasks-24"].select{|uuid| Items::itemOrNull(uuid) }
+        if uuids.size < item["subtasks-24"].size then
+            item["subtasks-24"] = uuids
+            Items::setAttribute(item["uuid"], "subtasks-24", uuids)
+        end
+        item
+    end
 end
