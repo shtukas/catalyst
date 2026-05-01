@@ -31,18 +31,19 @@ class Dispatch
             return item["dispatch:timespan"]
         end
 
-        lastTimeAsked = XCache::getOrDefaultValue("fd15039e-0c31-4ef6-b558-a8b0e72cde47", "0").to_i
-        if (Time.new.to_i - lastTimeAsked) < 60 then
-            return 300
+        if Config::isPrimaryInstance() then
+            lastTimeAsked = XCache::getOrDefaultValue("fd15039e-0c31-4ef6-b558-a8b0e72cde47", "0").to_i
+            if (Time.new.to_i - lastTimeAsked) < 60 then
+                return 300
+            end
+            timespan = LucilleCore::askQuestionAnswerAsString("dispatch timespan for #{PolyFunctions::toString(item)} in minutes ? ").to_f
+            timespan = timespan * 60
+            Items::setAttribute(item["uuid"], "dispatch:timespan", timespan)
+            XCache::set("fd15039e-0c31-4ef6-b558-a8b0e72cde47", Time.new.to_i)
+            return timespan
         end
 
-        timespan = LucilleCore::askQuestionAnswerAsString("dispatch timespan for #{PolyFunctions::toString(item)} in minutes ? ").to_f
-        timespan = timespan * 60
-        Items::setAttribute(item["uuid"], "dispatch:timespan", timespan)
-
-        XCache::set("fd15039e-0c31-4ef6-b558-a8b0e72cde47", Time.new.to_i)
-
-        timespan
+        300
     end
 
     # Dispatch::itemType(item)
