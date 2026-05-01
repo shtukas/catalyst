@@ -166,16 +166,16 @@ class FrontPage
 
         t1 = Time.new.to_f
 
-        if Config::isPrimaryInstance() then
-            report = `#{Config::pathToGalaxy()}/DataBank/Palmer/binary/palmer print-dispatch-missing-report`.strip
-            if report != "" then
-                puts report.green
-            end
-        end
-
         store = ItemStore.new()
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + Dispatch::dispatch(FrontPage::itemsForListingOrdered()), "uuid")
+
+        if Config::isPrimaryInstance() then
+            report = `#{Config::pathToGalaxy()}/DataBank/Palmer/binary/palmer print-dispatch-missing-report`.strip
+            if report != "" then
+                puts "palmer: ".green + report.red
+            end
+        end
 
         cursor = Time.new.to_i
 

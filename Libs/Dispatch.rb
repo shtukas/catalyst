@@ -58,7 +58,7 @@ class Dispatch
 
         return "priority" if item["mikuType"] == "DesktopTx1"
         return "priority" if item["mikuType"] == "Anniversary"
-        return "priority" if (item["mikuType"] == "Wave" and item["priority"])
+        return "priority" if (item["mikuType"] == "Wave" and item["interruption"])
         return "priority" if item["mikuType"] == "NxNotification"
         return "priority" if item["mikuType"] == "NxCounter"
 
