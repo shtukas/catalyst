@@ -73,9 +73,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxNotification" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteItem(item["uuid"])
-            end
+            Items::deleteItem(item["uuid"])
             return
         end
 
@@ -218,9 +216,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxNotification" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::deleteItem(item["uuid"])
-            end
+            Items::deleteItem(item["uuid"])
             return
         end
 
