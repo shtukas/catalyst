@@ -37,8 +37,7 @@ class BufferIn
         if BankDerivedData::recoveredAverageHoursPerDay("95580b8d-b62f-4fa2-88ad-aefdc3ca450c") > 1 then
             return []
         end
-        items = Items::mikuType("BufferIn")
-        items = FrontPage::ensure_and_apply_global_posionning_order(items)
+        items = Items::mikuType("BufferIn").sort_by{|item| item["unixtime"] }
         items.reduce([]){|selected, item|
             if selected.size >= 15 then
                 selected

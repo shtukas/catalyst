@@ -80,6 +80,7 @@ class Waves
         Items::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| item["interruption"] }
+            .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
     # Waves::listingItemsNonInterruption()
@@ -87,7 +88,7 @@ class Waves
         items = Items::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| !item["interruption"] }
-        FrontPage::ensure_and_apply_global_posionning_order(items)
+            .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
     # Waves::performDone(wave)
