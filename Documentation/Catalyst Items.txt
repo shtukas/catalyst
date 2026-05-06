@@ -11,7 +11,6 @@ Cross types conventions (all optional):
     - do-not-show-until-51  : null or DateTime Iso8601 # 2025-11-02T21:49:59Z
     - payload-37            : null or UxPayload
     - donation-14           : null or String # bank account to donate to
-    - global-pos-07         : global positioning, Real
     - engine-1437           : NxEngine or null
 
 It is possible to specify that that an item is a subtask of another one
