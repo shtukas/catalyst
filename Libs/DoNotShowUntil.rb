@@ -12,6 +12,13 @@ class DoNotShowUntil
         item["do-not-show-until-51"].nil? or item["do-not-show-until-51"] < Time.new.utc.iso8601
     end
 
+    # DoNotShowUntil::uuidIsVisible(uuid)
+    def self.uuidIsVisible(uuid)
+        item = Items::itemOrNull(uuid)
+        return false if item.nil?
+        item["do-not-show-until-51"].nil? or item["do-not-show-until-51"] < Time.new.utc.iso8601
+    end
+
     # DoNotShowUntil::suffix(item)
     def self.suffix(item)
         return "" if item["do-not-show-until-51"].nil?

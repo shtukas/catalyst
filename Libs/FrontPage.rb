@@ -48,14 +48,7 @@ class FrontPage
 
         storePrefix = store ? "(#{store.prefixString()})" : ""
 
-        cursor_string = (lambda {|cursor|
-            return "       " if depth > 0
-            if Dispatch::itemType(item) == "today" then
-                "[#{Time.at(cursor).to_s[11, 5]}]".red
-            else
-                "[#{Time.at(cursor).to_s[11, 5]}]"
-            end
-        }).call(cursor)
+        cursor_string = "[#{Time.at(cursor).to_s[11, 5]}]"
 
         displacement = "    " * depth
 
@@ -122,20 +115,43 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
+        # not needed at the moment
+    end
+
+    # FrontPage::head()
+    def self.head()
         [
-            NxEngineDelegate::listingItems(),
-            NxOndates::listingItems(),
-            NxBackups::listingItems(),
+            Anniversaries::listingItems(),
+            Desktop::listingItems(),
+            NxNotifications::listingItems(),
+            Waves::listingItemsInterruption(),
             NxCounters::listingItems(),
-            NxTasks::listingItems(),
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| FrontPage::isAccessible(item) }
+    end
+
+    # FrontPage::today()
+    def self.today()
+        [
+            NxOndates::listingItemsTodayAbsolute(),
+            NxBackups::listingItems(),
+            NxEngineDelegate::listingItems(),
             NxEngines::listingItems(),
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| FrontPage::isAccessible(item) }
+    end
+
+    # FrontPage::tail()
+    def self.tail()
+        [
+            NxOndates::listingItemsTail(),
             Waves::listingItemsNonInterruption(),
             BufferIn::listingItems(),
-            Desktop::listingItems(),
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxNotifications::listingItems(),
-            NxOndates::listingItemsTodayAbsolute(),
+            NxTasks::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -168,7 +184,7 @@ class FrontPage
 
         store = ItemStore.new()
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + Dispatch::dispatch(FrontPage::itemsForListingOrdered()), "uuid")
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxPriorities::listingItems() + NxBalls::activeItems() + Dispatch::dispatch(FrontPage::head(), [], FrontPage::today(), FrontPage::tail()), "uuid")
 
         if Config::isPrimaryInstance() then
             report = `#{Config::pathToGalaxy()}/DataBank/Palmer/binary/palmer print-dispatch-missing-report`.strip

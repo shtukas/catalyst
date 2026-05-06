@@ -45,6 +45,9 @@ class NxEngineDelegate
                 Items::deleteItem(item["uuid"])
                 return nil
             end
+            if !DoNotShowUntil::uuidIsVisible(item["targetuuid"]) then
+                return nil
+            end
             item
         }
         Items::mikuType("NxEngineDelegate")

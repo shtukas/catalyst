@@ -72,6 +72,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPriority" then
+            Items::deleteItem(item["uuid"])
+            return
+        end
+
         if item["mikuType"] == "NxNotification" then
             Items::deleteItem(item["uuid"])
             return
@@ -202,6 +207,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxPriority" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end

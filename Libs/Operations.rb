@@ -109,12 +109,10 @@ class Operations
         end
     end
 
-    # Operations::sort_frontpage()
-    def self.sort_frontpage()
-        items = FrontPage::itemsForListingOrdered()
-        selected = CommonUtils::selectZeroOrMore(items.first(20), lambda{|i| PolyFunctions::toString(i) })
-        selected.reverse.each{|item|
-            Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
-        }
+    # Operations::dismiss(item)
+    def self.dismiss(item)
+        unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+        puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
+        DoNotShowUntil::doNotShowUntil(item, unixtime)
     end
 end

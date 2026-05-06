@@ -1,0 +1,7 @@
+
+NxPriority:
+    - uuid         : String
+    - mikuType     : "NxPriority"
+    - unixtime     :
+    - datetime     :
+    - description  : String

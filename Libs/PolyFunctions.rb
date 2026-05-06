@@ -70,6 +70,9 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
+        if item["mikuType"] == "NxPriority" then
+            return NxPriorities::toString(item)
+        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end

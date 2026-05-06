@@ -60,9 +60,10 @@ class NxOndates
             .select{|item| item["today-absolute"] == CommonUtils::today() }
     end
 
-    # NxOndates::listingItems()
-    def self.listingItems()
+    # NxOndates::listingItemsTail()
+    def self.listingItemsTail()
         Items::mikuType("NxOndate")
             .select{|item| item["date"] <= CommonUtils::today() }
+            .select{|item| item["today-absolute"] != CommonUtils::today() }
     end
 end

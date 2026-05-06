@@ -90,9 +90,7 @@ class CommandsAndInterpreters
         if Interpreting::match("dismiss", input) then
             item = store.getDefault()
             return if item.nil?
-            unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
-            puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
-            DoNotShowUntil::doNotShowUntil(item, unixtime)
+            Operations::dismiss(item)
             return
         end
 
@@ -266,6 +264,7 @@ class CommandsAndInterpreters
             Items::setAttribute(uuid, "date", CommonUtils::today())
             Items::setAttribute(uuid, "payload-37", payload)
             Items::setAttribute(uuid, "mikuType", "NxOndate")
+            Items::setAttribute(uuid, "today-absolute", CommonUtils::today())
             item = Items::itemOrNull(uuid)
             puts JSON.pretty_generate(item)
             return
@@ -357,6 +356,14 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::access(item)
+            return
+        end
+
+        if Interpreting::match("priority", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            item = NxPriorities::issueNew(description)
+            puts JSON.pretty_generate(item)
             return
         end
 
