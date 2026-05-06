@@ -6,7 +6,6 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | engine *",
-            "on items : subtask * | sort *",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -136,21 +135,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sort * ", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["subtasks-24"].nil?
-            uuids = item["subtasks-24"].select{|uuid| Items::itemOrNull(uuid) }
-            selected = CommonUtils::selectZeroOrMore(item["subtasks-24"], lambda{|uuid| PolyFunctions::toString(Items::itemOrNull(uuid)) })
-            selected.reverse.each{|uuid|
-                uuids = [uuid] + uuids
-            }
-            uuids = uuids.uniq
-            Items::setAttribute(item["uuid"], "subtasks-24", uuids)
-            return
-        end
-
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
@@ -189,17 +173,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Donations::interactivelySetDonation(item)
-            return
-        end
-
-        if Interpreting::match("subtask *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            parent = item
-            child = NxTasks::interactivelyIssueNewOrNull()
-            return if child.nil?
-            SubTasks::link(parent, child)
             return
         end
 

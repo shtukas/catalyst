@@ -19,9 +19,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
-
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -34,26 +32,17 @@ class FrontPage
         if NxBalls::itemIsRunning(item) then
             line = line.green
         end
-
         line
     end
 
-    # FrontPage::printItem(store, item, cursor, screen_width, depth)
-    def self.printItem(store, item, cursor, screen_width, depth)
+    # FrontPage::printItem(store, item, cursor, screen_width)
+    def self.printItem(store, item, cursor, screen_width)
         return 0 if item.nil?
-
         store.register(item, FrontPage::canBeDefault(item))
-
         height = 0
-
         storePrefix = store ? "(#{store.prefixString()})" : ""
-
         cursor_string = "[#{Time.at(cursor).to_s[11, 5]}]"
-
-        displacement = "    " * depth
-
-        line = "#{storePrefix} #{cursor_string} #{displacement}#{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
-
+        line = "#{storePrefix} #{cursor_string} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -66,16 +55,8 @@ class FrontPage
         if NxBalls::itemIsRunning(item) then
             line = line.green
         end
-
         puts line
-
         height = height + (line.size/screen_width + 1)
-
-        SubTasks::getSubtasks(item).each{|child|
-            h2 = FrontPage::printItem(store, child, cursor, screen_width, depth+1)
-            height += h2
-        }
-
         height
     end
 
@@ -184,9 +165,9 @@ class FrontPage
         cursor = Time.new.to_i
 
         items.each{|item|
-            o = FrontPage::printItem(store, item, cursor, swidth, 0)
+            d = FrontPage::printItem(store, item, cursor, swidth)
             cursor = cursor + Dispatch::item_to_timespan(item)
-            sheight = sheight - o
+            sheight = sheight - d
             break if sheight <= 0
         }
 

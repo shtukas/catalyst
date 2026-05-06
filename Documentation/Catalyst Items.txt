@@ -12,8 +12,3 @@ Cross types conventions (all optional):
     - payload-37            : null or UxPayload
     - donation-14           : null or String # bank account to donate to
     - engine-1437           : NxEngine or null
-
-It is possible to specify that that an item is a subtask of another one
-The parent keeps a list of subtasks in an array of uuids called `subtasks-24`
-Each subtasks has a pointer to its parent in a string attribute called `parent-task-25`
-
