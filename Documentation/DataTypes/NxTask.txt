@@ -5,3 +5,6 @@ NxTask:
     - unixtime     :
     - datetime     :
     - description  : String
+    - clique-13    : null or String # name of the clique the item belong to
+
+Cliqued items don't show up in the main listing but one that operate the clique itself.
