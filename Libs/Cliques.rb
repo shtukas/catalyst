@@ -15,4 +15,13 @@ class Cliques
                     .sort
         LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", names)
     end
+
+    # Cliques::architectCliqueNameOrNull()
+    def self.architectCliqueNameOrNull()
+        cliquename = Cliques::interactivelySelectCliqueNameOrNull()
+        return cliquename if cliquename
+        cliquename = LucilleCore::askQuestionAnswerAsString("clique name (empty for null): ")
+        return cliquename if cliquename != ""
+        nil
+    end
 end
